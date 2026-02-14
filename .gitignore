@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Nuxt build output
+client/.nuxt/
+client/.output/
+client/dist
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Firebase
+.firebase/
+.firebaserc
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log

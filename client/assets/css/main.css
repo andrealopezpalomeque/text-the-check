@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* DARK MODE (default) — "Deep Trust" palette */
+:root {
+  --color-bg: #0C1017;
+  --color-surface: #131920;
+  --color-card: #1A222C;
+  --color-border: #242E3C;
+  --color-primary: #4A90D9;
+  --color-primary-light: #6BA8ED;
+  --color-secondary: #A78BFA;
+  --color-accent: #34D399;
+  --color-text: #E2E8F0;
+  --color-text-muted: #7B8FA6;
+  --color-text-dim: #4A5A6E;
+  --color-danger: #EF4444;
+}
+
+/* LIGHT MODE */
+[data-theme="light"] {
+  --color-bg: #F8FAFB;
+  --color-surface: #FFFFFF;
+  --color-card: #FFFFFF;
+  --color-border: #E2E7ED;
+  --color-primary: #3B7DD8;
+  --color-primary-light: #5A9AE8;
+  --color-secondary: #8B6FE0;
+  --color-accent: #059669;
+  --color-text: #1A2030;
+  --color-text-muted: #5A6B80;
+  --color-text-dim: #8A96A8;
+  --color-danger: #DC2626;
+}
+
+/* Base styles */
+body {
+  font-family: 'DM Sans', sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Smooth transitions for theme changes */
+* {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* Scrollbar styling for dark mode */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-dim);
+}
+
+/* Scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
