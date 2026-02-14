@@ -27,13 +27,13 @@
         </a>
       </div>
 
-      <!-- Copyright + Buenos Aires -->
+      <!-- Copyright + Argentina -->
       <div class="flex flex-col items-center gap-1">
         <p class="font-body text-xs text-ttc-text-dim">
           &copy; 2026 Text the Check
         </p>
         <p class="font-body text-xs text-ttc-text-dim">
-          Hecho en Buenos Aires
+          Hecho en Argentina
         </p>
       </div>
     </div>
