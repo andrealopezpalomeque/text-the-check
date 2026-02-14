@@ -3,12 +3,7 @@
     <div class="max-w-5xl mx-auto flex flex-col items-center gap-4">
       <!-- Logo (small) -->
       <div class="flex items-center gap-2">
-        <img
-          src="/img/ttc_symbol.svg"
-          alt=""
-          class="w-5 h-5 opacity-50"
-          aria-hidden="true"
-        />
+        <TtcSymbol size-class="w-5 h-5 opacity-50" />
         <span class="font-outfit font-medium text-xs tracking-[3px] text-ttc-text-dim">
           text <span class="text-ttc-primary/60">the</span> check
         </span>

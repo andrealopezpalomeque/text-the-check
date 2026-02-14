@@ -2,12 +2,7 @@
   <section class="min-h-screen flex flex-col items-center justify-center px-4 relative">
     <div class="flex flex-col items-center text-center max-w-lg mx-auto">
       <!-- Receipt icon -->
-      <img
-        src="/img/ttc_symbol.svg"
-        alt=""
-        class="w-20 h-20 mb-6"
-        aria-hidden="true"
-      />
+      <TtcSymbol size-class="w-20 h-20 mb-6" />
 
       <!-- Wordmark -->
       <h1 class="font-outfit font-semibold text-3xl sm:text-4xl tracking-[3px] text-ttc-text mb-4">
