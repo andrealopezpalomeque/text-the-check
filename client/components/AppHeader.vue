@@ -1,5 +1,5 @@
 <template>
-  <header class="fixed top-0 left-0 right-0 z-50 bg-ttc-surface border-b border-ttc-border">
+  <header class="fixed top-0 left-0 right-0 z-50 bg-ttc-surface/85 backdrop-blur-xl border-b border-ttc-border">
     <div class="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
       <!-- Logo -->
       <div class="flex items-center gap-2.5">

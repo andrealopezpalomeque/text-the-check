@@ -10,7 +10,8 @@
       "Bash(lsof:*)",
       "Bash(xargs kill:*)",
       "Bash(npm run generate:*)",
-      "Bash(git -C /Users/andreavictorialopezpalomeque/Documents/personal-projects/text-the-check status)"
+      "Bash(git -C /Users/andreavictorialopezpalomeque/Documents/personal-projects/text-the-check status)",
+      "Bash(npm run build:*)"
     ]
   }
 }

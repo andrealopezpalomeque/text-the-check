@@ -14,7 +14,7 @@
 
         <!-- Instagram link -->
         <a
-          href="https://instagram.com/textthecheck"
+          href="https://www.instagram.com/textthecheck"
           target="_blank"
           rel="noopener noreferrer"
           class="inline-flex items-center gap-2.5 bg-ttc-primary text-white font-body font-semibold text-sm py-2.5 px-5 rounded-btn hover:opacity-90 transition-opacity"
