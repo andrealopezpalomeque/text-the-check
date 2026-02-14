@@ -1,6 +1,6 @@
 # text the check
 
-Tu compañero financiero por WhatsApp. Manejá tu plata con amigos o en lo personal — todo en un mensaje.
+Dividí gastos con tus amigos, llevá tus finanzas personales — todo desde WhatsApp, sin complicarte.
 
 ## What is Text the Check?
 
