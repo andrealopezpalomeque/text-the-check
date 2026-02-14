@@ -20,8 +20,9 @@
           href="https://instagram.com/textthecheck"
           target="_blank"
           rel="noopener noreferrer"
-          class="font-body text-xs text-ttc-text-dim hover:text-ttc-text-muted transition-colors"
+          class="inline-flex items-center gap-1.5 font-body text-xs text-ttc-text-dim hover:text-ttc-text-muted transition-colors"
         >
+          <Instagram :size="14" :stroke-width="1.5" />
           @textthecheck
         </a>
       </div>
@@ -32,9 +33,13 @@
           &copy; 2026 Text the Check
         </p>
         <p class="font-body text-xs text-ttc-text-dim">
-          Hecho en Buenos Aires 🇦🇷
+          Hecho en Buenos Aires
         </p>
       </div>
     </div>
   </footer>
 </template>
+
+<script setup>
+import { Instagram } from 'lucide-vue-next'
+</script>

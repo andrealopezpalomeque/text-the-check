@@ -27,16 +27,11 @@
 
     <!-- Scroll indicator -->
     <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="w-5 h-5 text-ttc-text-dim"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        stroke-width="2"
-      >
-        <path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-      </svg>
+      <ChevronDown :size="18" :stroke-width="1.5" class="text-ttc-text-dim" />
     </div>
   </section>
 </template>
+
+<script setup>
+import { ChevronDown } from 'lucide-vue-next'
+</script>

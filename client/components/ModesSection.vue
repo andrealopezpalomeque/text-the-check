@@ -17,7 +17,9 @@
         <div class="bg-ttc-card border border-ttc-border rounded-xl p-6">
           <!-- Icon + tag -->
           <div class="flex items-start justify-between mb-4">
-            <span class="text-4xl">✈️</span>
+            <div class="w-12 h-12 rounded-xl bg-ttc-primary/10 flex items-center justify-center">
+              <Plane :size="22" :stroke-width="1.5" class="text-ttc-primary" />
+            </div>
             <span class="font-body font-semibold text-[11px] tracking-[1px] uppercase text-ttc-primary bg-ttc-primary/10 px-2.5 py-1 rounded-md">
               Dividí gastos con amigos
             </span>
@@ -36,15 +38,15 @@
           <!-- Features -->
           <ul class="space-y-2.5">
             <li class="flex items-center gap-2.5 font-body text-sm text-ttc-text-muted">
-              <span class="w-1.5 h-1.5 rounded-full bg-ttc-primary flex-shrink-0"></span>
+              <MessageSquareText :size="14" :stroke-width="1.5" class="text-ttc-primary mt-0.5 flex-shrink-0" />
               Gastos por WhatsApp con IA
             </li>
             <li class="flex items-center gap-2.5 font-body text-sm text-ttc-text-muted">
-              <span class="w-1.5 h-1.5 rounded-full bg-ttc-primary flex-shrink-0"></span>
+              <ArrowLeftRight :size="14" :stroke-width="1.5" class="text-ttc-primary mt-0.5 flex-shrink-0" />
               Balances automáticos y justos
             </li>
             <li class="flex items-center gap-2.5 font-body text-sm text-ttc-text-muted">
-              <span class="w-1.5 h-1.5 rounded-full bg-ttc-primary flex-shrink-0"></span>
+              <DollarSign :size="14" :stroke-width="1.5" class="text-ttc-primary mt-0.5 flex-shrink-0" />
               Multi-moneda (ARS, USD, BRL)
             </li>
           </ul>
@@ -54,7 +56,9 @@
         <div class="bg-ttc-card border border-ttc-border rounded-xl p-6">
           <!-- Icon + tag -->
           <div class="flex items-start justify-between mb-4">
-            <span class="text-4xl">💰</span>
+            <div class="w-12 h-12 rounded-xl bg-ttc-accent/10 flex items-center justify-center">
+              <Wallet :size="22" :stroke-width="1.5" class="text-ttc-accent" />
+            </div>
             <span class="font-body font-semibold text-[11px] tracking-[1px] uppercase text-ttc-accent bg-ttc-accent/10 px-2.5 py-1 rounded-md">
               Tu día a día financiero
             </span>
@@ -73,15 +77,15 @@
           <!-- Features -->
           <ul class="space-y-2.5">
             <li class="flex items-center gap-2.5 font-body text-sm text-ttc-text-muted">
-              <span class="w-1.5 h-1.5 rounded-full bg-ttc-accent flex-shrink-0"></span>
+              <MessageSquareText :size="14" :stroke-width="1.5" class="text-ttc-accent mt-0.5 flex-shrink-0" />
               Registro rápido por WhatsApp
             </li>
             <li class="flex items-center gap-2.5 font-body text-sm text-ttc-text-muted">
-              <span class="w-1.5 h-1.5 rounded-full bg-ttc-accent flex-shrink-0"></span>
+              <CalendarClock :size="14" :stroke-width="1.5" class="text-ttc-accent mt-0.5 flex-shrink-0" />
               Pagos recurrentes y recordatorios
             </li>
             <li class="flex items-center gap-2.5 font-body text-sm text-ttc-text-muted">
-              <span class="w-1.5 h-1.5 rounded-full bg-ttc-accent flex-shrink-0"></span>
+              <ChartLine :size="14" :stroke-width="1.5" class="text-ttc-accent mt-0.5 flex-shrink-0" />
               Análisis con IA de tus gastos
             </li>
           </ul>
@@ -90,3 +94,7 @@
     </div>
   </section>
 </template>
+
+<script setup>
+import { Plane, Wallet, MessageSquareText, ArrowLeftRight, DollarSign, CalendarClock, ChartLine } from 'lucide-vue-next'
+</script>
