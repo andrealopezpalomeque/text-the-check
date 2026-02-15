@@ -15,7 +15,7 @@
       </h1>
 
       <!-- Tagline -->
-      <p class="mt-3 font-body font-medium text-[10px] sm:text-xs tracking-[3px] uppercase text-ttc-text-muted">
+      <p class="mt-3 font-body font-medium text-[10px] sm:text-xs tracking-[5px] uppercase text-ttc-text-muted">
         tu plata, a un mensaje
       </p>
 
