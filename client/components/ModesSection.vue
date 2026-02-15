@@ -20,7 +20,7 @@
 
     <div class="relative max-w-5xl mx-auto">
       <!-- Section label -->
-      <p class="font-body font-semibold text-[11px] tracking-[1px] uppercase text-ttc-text-muted text-center mb-3">
+      <p class="font-body font-semibold text-[11px] tracking-[2px] uppercase text-ttc-primary text-center mb-3">
         dos modos, un chat
       </p>
 

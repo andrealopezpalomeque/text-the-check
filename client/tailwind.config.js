@@ -22,6 +22,11 @@ module.exports = {
         'ttc-text-muted': 'var(--color-text-muted)',
         'ttc-text-dim': 'var(--color-text-dim)',
         'ttc-danger': 'var(--color-danger)',
+        'ttc-bubble-user-primary': 'var(--color-bubble-user-primary)',
+        'ttc-bubble-user-accent': 'var(--color-bubble-user-accent)',
+        'ttc-bubble-bot': 'var(--color-bubble-bot)',
+        'ttc-toggle-primary': 'var(--color-toggle-primary)',
+        'ttc-toggle-accent': 'var(--color-toggle-accent)',
       },
       fontFamily: {
         'outfit': ['Outfit', 'sans-serif'],

@@ -16,6 +16,13 @@
   --color-text-muted: #7B8FA6;
   --color-text-dim: #4A5A6E;
   --color-danger: #EF4444;
+  /* Chat bubble backgrounds (pre-mixed for reliable rendering) */
+  --color-bubble-user-primary: #1E3254;
+  --color-bubble-user-accent: #153B2E;
+  --color-bubble-bot: #141C26;
+  /* Toggle active backgrounds */
+  --color-toggle-primary: #1A2D4A;
+  --color-toggle-accent: #132E23;
 }
 
 /* LIGHT MODE */
@@ -32,6 +39,13 @@
   --color-text-muted: #5A6B80;
   --color-text-dim: #8A96A8;
   --color-danger: #DC2626;
+  /* Chat bubble backgrounds (pre-mixed for reliable rendering) */
+  --color-bubble-user-primary: #D6E5F6;
+  --color-bubble-user-accent: #D1F0E4;
+  --color-bubble-bot: #EEF1F5;
+  /* Toggle active backgrounds */
+  --color-toggle-primary: #D6E5F6;
+  --color-toggle-accent: #D1F0E4;
 }
 
 /* Base styles */

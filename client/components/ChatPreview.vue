@@ -25,7 +25,7 @@
 
     <!-- Messages -->
     <div class="p-5">
-      <div class="flex flex-col gap-2">
+      <div class="flex flex-col gap-3">
         <div
           v-for="(msg, i) in messages"
           :key="activeMode + '-' + i"
@@ -36,12 +36,12 @@
         >
           <div
             :class="[
-              'max-w-[85%] rounded-2xl px-3.5 py-2.5',
+              'max-w-[85%] rounded-2xl px-4 py-3',
               msg.sender === 'user'
                 ? activeMode === 'viajes'
-                  ? 'bg-ttc-primary/20'
-                  : 'bg-ttc-accent/20'
-                : 'bg-ttc-border/50'
+                  ? 'bg-ttc-bubble-user-primary'
+                  : 'bg-ttc-bubble-user-accent'
+                : 'bg-ttc-bubble-bot'
             ]"
           >
             <p class="font-body text-sm leading-relaxed text-ttc-text">{{ msg.text }}</p>
