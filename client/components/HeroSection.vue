@@ -1,32 +1,54 @@
 <template>
-  <section class="pt-32 pb-20 md:pt-40 md:pb-28 flex flex-col items-center px-4 relative">
-    <!-- Subtle radial glow behind hero content -->
-    <div class="absolute inset-0 overflow-hidden pointer-events-none">
-      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-white/[0.03]" style="filter: blur(120px);" />
+  <section class="py-20 md:py-32 px-5 relative overflow-hidden">
+    <!-- Subtle radial glow behind title area -->
+    <div class="absolute inset-0 pointer-events-none">
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] rounded-full bg-ttc-primary/[0.03]" style="filter: blur(100px);" />
     </div>
 
-    <div class="flex flex-col items-center text-center max-w-lg mx-auto relative z-10">
-      <!-- Receipt icon -->
-      <TtcSymbol size-class="w-[120px] h-[120px] md:w-[140px] md:h-[140px]" />
+    <div class="relative z-10 max-w-5xl mx-auto text-center">
+      <!-- Pill badge -->
+      <div class="animate-fade-up">
+        <span class="inline-block rounded-full border border-ttc-primary/30 bg-ttc-primary/[0.08] px-5 py-2 font-body text-[11px] font-semibold uppercase tracking-[3px] text-ttc-primary">
+          Tu plata, a un mensaje
+        </span>
+      </div>
 
-      <!-- Wordmark -->
-      <h1 class="mt-5 font-outfit font-semibold text-3xl sm:text-4xl tracking-[3px] text-ttc-text">
-        text <span class="text-ttc-primary">the</span> check
+      <!-- Main title -->
+      <h1 class="mt-6 font-nunito font-extrabold text-4xl md:text-6xl leading-tight text-balance animate-fade-up" style="animation-delay: 0.1s;">
+        Controlá tus finanzas<br>
+        <span class="text-ttc-primary">desde WhatsApp</span>
       </h1>
 
-      <!-- Tagline -->
-      <p class="mt-3 font-body font-medium text-[10px] sm:text-xs tracking-[5px] uppercase text-ttc-text-muted">
-        tu plata, a un mensaje
-      </p>
-
       <!-- Subtitle -->
-      <p class="mt-6 font-body text-base sm:text-lg text-ttc-text-muted leading-relaxed max-w-md">
+      <p class="mt-6 font-body text-base md:text-lg font-normal text-ttc-text-muted leading-relaxed max-w-[540px] mx-auto animate-fade-up" style="animation-delay: 0.2s;">
         Dividí gastos con tus amigos, llevá tus finanzas personales
         — todo desde WhatsApp, sin complicarte.
       </p>
+
+      <!-- Buttons -->
+      <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-up" style="animation-delay: 0.3s;">
+        <button
+          @click="scrollToModes"
+          class="inline-flex items-center gap-2 bg-ttc-primary text-white rounded-xl px-7 py-3 font-body text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer"
+        >
+          Empezar ahora
+          <ArrowRight :size="16" :stroke-width="2" />
+        </button>
+        <button
+          @click="scrollToModes"
+          class="inline-flex items-center gap-2 border border-ttc-border bg-transparent text-ttc-text rounded-xl px-7 py-3 font-body text-sm font-semibold hover:bg-ttc-card hover:border-ttc-text-dim transition-colors cursor-pointer"
+        >
+          Ver cómo funciona
+        </button>
+      </div>
     </div>
   </section>
 </template>
 
 <script setup>
+import { ArrowRight } from 'lucide-vue-next'
+
+const scrollToModes = () => {
+  document.getElementById('modes')?.scrollIntoView({ behavior: 'smooth' })
+}
 </script>

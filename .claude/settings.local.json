@@ -11,7 +11,8 @@
       "Bash(xargs kill:*)",
       "Bash(npm run generate:*)",
       "Bash(git -C /Users/andreavictorialopezpalomeque/Documents/personal-projects/text-the-check status)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(npx nuxt dev:*)"
     ]
   }
 }
