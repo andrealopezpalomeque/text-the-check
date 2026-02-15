@@ -39,19 +39,15 @@
         <ModeToggle :active-mode="activeMode" @update:active-mode="activeMode = $event" />
       </div>
 
-      <!-- Desktop: two columns | Mobile: stacked -->
-      <div class="grid lg:grid-cols-2 gap-8 max-w-4xl mx-auto items-start">
+      <!-- Desktop: two columns -->
+      <div class="hidden lg:grid lg:grid-cols-2 gap-8 max-w-4xl mx-auto items-start">
         <!-- Left column: Cards -->
-        <div class="space-y-4 order-1">
+        <div class="space-y-4">
           <ModeCard
             mode="viajes"
             :is-active="activeMode === 'viajes'"
             @select="activeMode = 'viajes'"
           />
-          <!-- On mobile: show chat between the two cards -->
-          <div class="lg:hidden">
-            <ChatPreview :active-mode="activeMode" />
-          </div>
           <ModeCard
             mode="finanzas"
             :is-active="activeMode === 'finanzas'"
@@ -59,10 +55,20 @@
           />
         </div>
 
-        <!-- Right column: Chat preview (desktop only) -->
-        <div class="hidden lg:block order-2 sticky top-20">
+        <!-- Right column: Chat preview -->
+        <div class="sticky top-20">
           <ChatPreview :active-mode="activeMode" />
         </div>
+      </div>
+
+      <!-- Mobile: only active card + its chat -->
+      <div class="lg:hidden space-y-4 max-w-4xl mx-auto">
+        <ModeCard
+          :mode="activeMode"
+          :is-active="true"
+          @select="() => {}"
+        />
+        <ChatPreview :active-mode="activeMode" />
       </div>
     </div>
   </section>

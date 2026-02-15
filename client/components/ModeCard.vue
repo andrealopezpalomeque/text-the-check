@@ -5,8 +5,8 @@
       'bg-ttc-card border rounded-xl overflow-hidden cursor-pointer transition-all duration-200',
       isActive
         ? mode === 'viajes'
-          ? 'border-ttc-primary/40 ring-1 ring-ttc-primary/20'
-          : 'border-ttc-accent/40 ring-1 ring-ttc-accent/20'
+          ? 'border-[#4A90D9]/40 ring-1 ring-[#4A90D9]/20'
+          : 'border-[#34D399]/40 ring-1 ring-[#34D399]/20'
         : 'border-ttc-border'
     ]"
   >
@@ -15,47 +15,39 @@
       :class="[
         'h-[3px] transition-colors duration-200',
         isActive
-          ? mode === 'viajes' ? 'bg-ttc-primary' : 'bg-ttc-accent'
+          ? mode === 'viajes' ? 'bg-[#4A90D9]' : 'bg-[#34D399]'
           : 'bg-transparent'
       ]"
     />
 
     <div class="p-6">
-      <!-- Icon -->
-      <div
-        :class="[
-          'w-12 h-12 rounded-xl flex items-center justify-center mb-3 transition-colors duration-200',
-          isActive
-            ? mode === 'viajes' ? 'bg-ttc-primary/15' : 'bg-ttc-accent/15'
-            : 'bg-ttc-border/50'
-        ]"
-      >
-        <component
-          :is="mode === 'viajes' ? Plane : Wallet"
-          :size="22"
-          :stroke-width="1.5"
+      <!-- Icon + Tag row -->
+      <div class="flex items-center gap-3 mb-5">
+        <div
           :class="[
-            'transition-colors duration-200',
+            'w-11 h-11 rounded-xl flex items-center justify-center transition-colors duration-200',
+            isActive
+              ? mode === 'viajes' ? 'bg-ttc-toggle-primary text-ttc-primary' : 'bg-ttc-toggle-accent text-ttc-accent'
+              : 'bg-ttc-surface text-ttc-text-dim'
+          ]"
+        >
+          <component
+            :is="mode === 'viajes' ? Plane : Wallet"
+            :size="20"
+            :stroke-width="1.5"
+          />
+        </div>
+        <span
+          :class="[
+            'font-body font-semibold text-[11px] tracking-[1px] uppercase transition-colors duration-200',
             isActive
               ? mode === 'viajes' ? 'text-ttc-primary' : 'text-ttc-accent'
-              : 'text-ttc-text-dim'
+              : 'text-ttc-text-muted'
           ]"
-        />
+        >
+          {{ mode === 'viajes' ? 'Dividí gastos con amigos' : 'Finanzas personales' }}
+        </span>
       </div>
-
-      <!-- Tag -->
-      <span
-        :class="[
-          'inline-block font-body font-semibold text-[11px] tracking-[1px] uppercase px-2.5 py-1 rounded-md mb-4 transition-colors duration-200',
-          isActive
-            ? mode === 'viajes'
-              ? 'text-ttc-primary bg-ttc-primary/10'
-              : 'text-ttc-accent bg-ttc-accent/10'
-            : 'text-ttc-text-dim bg-ttc-border/50'
-        ]"
-      >
-        {{ mode === 'viajes' ? 'Viajes y salidas' : 'Finanzas personales' }}
-      </span>
 
       <!-- Title -->
       <h3 class="font-nunito font-bold text-xl text-ttc-text mb-3">
@@ -71,24 +63,25 @@
       </p>
 
       <!-- Features -->
-      <ul class="space-y-2.5">
+      <ul class="space-y-3">
         <li
           v-for="(feature, i) in features"
           :key="i"
-          class="flex items-center gap-2.5 font-body text-sm text-ttc-text-muted"
+          class="flex items-start gap-3 font-body text-sm leading-relaxed text-ttc-text-muted"
         >
-          <component
-            :is="feature.icon"
-            :size="14"
-            :stroke-width="1.5"
+          <div
             :class="[
-              'mt-0.5 flex-shrink-0 transition-colors duration-200',
-              isActive
-                ? mode === 'viajes' ? 'text-ttc-primary' : 'text-ttc-accent'
-                : 'text-ttc-text-dim'
+              'mt-0.5 flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center',
+              mode === 'viajes' ? 'bg-ttc-toggle-primary text-ttc-primary' : 'bg-ttc-toggle-accent text-ttc-accent'
             ]"
-          />
-          {{ feature.text }}
+          >
+            <component
+              :is="feature.icon"
+              :size="16"
+              :stroke-width="1.5"
+            />
+          </div>
+          <span class="pt-1">{{ feature.text }}</span>
         </li>
       </ul>
     </div>
