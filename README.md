@@ -1,6 +1,6 @@
 # text the check
 
-Dividí gastos con tus amigos, llevá tus finanzas personales — todo desde WhatsApp, sin complicarte.
+Registrá gastos, dividí cuentas con amigos y recibí resumenes inteligentes. Todo con un simple mensaje.
 
 ## What is Text the Check?
 
