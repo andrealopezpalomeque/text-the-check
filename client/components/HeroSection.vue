@@ -21,8 +21,7 @@
 
       <!-- Subtitle -->
       <p class="mt-6 font-body text-base md:text-lg font-normal text-ttc-text-muted leading-relaxed max-w-[540px] mx-auto animate-fade-up" style="animation-delay: 0.2s;">
-        Dividí gastos con tus amigos, llevá tus finanzas personales
-        — todo desde WhatsApp, sin complicarte.
+        Registrá gastos, dividí cuentas con amigos y recibí resumenes inteligentes. Todo con un simple mensaje.
       </p>
 
       <!-- Buttons -->
