@@ -12,7 +12,14 @@
       "Bash(npm run generate:*)",
       "Bash(git -C /Users/andreavictorialopezpalomeque/Documents/personal-projects/text-the-check status)",
       "Bash(npm run build:*)",
-      "Bash(npx nuxt dev:*)"
+      "Bash(npx nuxt dev:*)",
+      "Bash(firebase:*)",
+      "Bash(git checkout:*)",
+      "Bash(git check-ignore:*)",
+      "Bash(convert:*)",
+      "Bash(magick identify:*)",
+      "Bash(magick:*)",
+      "WebFetch(domain:textthecheck.app)"
     ]
   }
 }
