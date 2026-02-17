@@ -8,7 +8,7 @@
     <div class="relative z-10 max-w-5xl mx-auto text-center">
       <!-- Pill badge -->
       <div class="animate-fade-up">
-        <span class="inline-block rounded-full border border-[#4A90D9]/30 shadow-[0_0_20px_rgba(74,144,217,0.15)] px-6 py-2 font-body text-[11px] font-semibold uppercase tracking-[3px] text-ttc-primary">
+        <span class="inline-block rounded-full border border-[#4A90D9]/30 bg-[#4A90D9]/[0.08] px-6 py-2 font-body text-[11px] font-semibold uppercase tracking-[3px] text-ttc-primary">
           Tu plata, a un mensaje
         </span>
       </div>
