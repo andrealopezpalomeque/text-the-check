@@ -1,0 +1,56 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Nuxt dev/build outputs (client)
+client/.output
+client/.data
+client/.nuxt
+client/.nitro
+client/.cache
+client/dist
+
+# Server build outputs
+server/dist
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+*~
+.fleet
+.claude/
+
+# Testing
+coverage
+.nyc_output
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+
+yarn.lock

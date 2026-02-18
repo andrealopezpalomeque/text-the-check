@@ -1,0 +1,42 @@
+{
+    "root": true,
+    "env": {
+        "browser": true,
+        "node": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:vue/essential",
+        "plugin:prettier/recommended" // This will ensure ESLint and Prettier play nicely together
+    ],
+    "rules": {
+        // extend prettier rules
+        "prettier/prettier": "error",
+        // Disables the strict use of "===" instead of "=="
+        "eqeqeq": "off",
+        // Checks the correct use of curly braces
+        "curly": [
+            "error",
+            "all"
+        ],
+        // Allows the use of .hasOwnProperty
+        "no-prototype-builtins": "off",
+        // Allows the use of index.vue as a name file
+        "vue/multi-word-component-names": "off",
+        // Useful to allow better regex
+        "no-useless-escape": "off",
+        // Ignores undefineds, lots of fake positives due to nuxt 3 autoimports
+        "no-undef": "off"
+    },
+    "parserOptions": {
+        "ecmaFeatures": {},
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    },
+    "plugins": [
+        "prettier"
+    ],
+    "ignorePatterns": [
+        "node_modules/*"
+    ]
+}

@@ -1,0 +1,55 @@
+<template>
+    <section class="w-full py-12 lg:pt-14">
+        <div class="container px-4 grid gap-12 lg:px-6">
+            <div class="space-y-3">
+                <h1 class="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Blog</h1>
+                <p class="text-gray-500 md:text-xl/relaxed dark:text-gray-400 text-center xl:px-14 max-w-md xl:max-w-2xl m-auto">
+                    Discover tips to better understand PayTrackr page and will help you to keep organized
+                </p>
+            </div>
+        </div>
+    </section>
+    <div class="px-4 py-6 md:px-6 lg:py-12">
+        <div class="grid max-w-5xl gap-6 mx-auto lg:gap-8 lg:grid-cols-2">
+            <div
+                class="flex flex-col rounded-lg overflow-hidden border shadow-sm dark:border-gray-700 max-w-md m-auto h-full">
+                <NuxtLink class="flex-1" to="/blog/stay-financially-fit">
+                    <img src="/img/financially-fit.jpg" alt="Mobile device with statistics" width="600" height="300" style="max-height: 300px;"
+                        class="aspect-post object-cover" />
+                    <div class="p-4">
+                        <h2 class="text-2xl font-bold">Stay Financially Fit</h2>
+                        <p class="text-gray-500 dark:text-gray-400">Why You Need an App to Keep Track of Your Payments</p>
+                    </div>
+                </NuxtLink>
+            </div>
+            <div
+                class="flex flex-col rounded-lg overflow-hidden border shadow-sm dark:border-gray-700 max-w-md m-auto h-full">
+                <NuxtLink class="flex-1" to="/blog/why-paytrackr">
+                    <img src="/img/logo_w_b.png" alt="Mobile device with statistics" width="600" height="300" style="max-height: 300px;"
+                        class="aspect-post object-cover" />
+                    <div class="p-4">
+                        <h2 class="text-2xl font-bold">Why PayTrackr?</h2>
+                        <p class="text-gray-500 dark:text-gray-400">Learn How To Use Our App and Why We Created It</p>
+                    </div>
+                </NuxtLink>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script setup>
+definePageMeta({
+    layout: "landing"
+})
+
+
+useHead({
+    title: 'Blogs - PayTrackr',
+    meta: [
+        {
+            name: 'description',
+            content: 'Learn more about PayTrackr and why we consider you should use a payment tracker app.'
+        }
+    ]
+})
+</script>

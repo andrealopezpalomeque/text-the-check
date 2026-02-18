@@ -16,5 +16,9 @@
         ]
       }
     ]
+  },
+  "firestore": {
+    "rules": "pay-trackr/firestore.rules",
+    "indexes": "pay-trackr/firestore.indexes.json"
   }
 }

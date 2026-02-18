@@ -1,0 +1,13 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.wiseutils.paytrackr",
+      "sha256_cert_fingerprints": [
+        "31:4D:B4:C2:85:6B:4E:B4:05:8A:F2:89:57:6F:F3:27:FB:72:BA:D8:75:AC:E9:B5:9F:B0:0D:BF:D3:0C:48:E2",
+        "23:5A:0F:26:93:AB:A9:AE:69:F5:5F:FF:19:BC:E5:6D:60:84:28:DA:26:67:7E:33:3C:E3:3E:60:5B:F7:90:C5"
+      ]
+    }
+  }
+]

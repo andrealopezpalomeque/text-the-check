@@ -1,0 +1,259 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ============================================
+    // Helper Functions
+    // ============================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    function isUserOwner() {
+      return resource.data.authUid == request.auth.uid;
+    }
+
+    function isItemOwnerByLookup(creatorUserId) {
+      let creatorAuthUid = get(/databases/$(database)/documents/ttc_user/$(creatorUserId)).data.authUid;
+      return request.auth.uid == creatorAuthUid;
+    }
+
+    function canLinkAuthUid() {
+      return !('authUid' in resource.data) || resource.data.authUid == request.auth.uid;
+    }
+
+    function isValidExpenseCreate() {
+      let data = request.resource.data;
+
+      return data.keys().hasAll(['userId', 'userName', 'authUid', 'amount', 'description', 'category', 'timestamp', 'originalInput'])
+        && data.userId is string
+        && data.userName is string
+        && data.authUid is string
+        && data.amount is number
+        && data.amount > 0
+        && data.description is string
+        && data.description.size() >= 1
+        && data.description.size() <= 500
+        && data.category in ['food', 'transport', 'accommodation', 'entertainment', 'shopping', 'general']
+        && data.originalInput is string
+        && data.timestamp is timestamp
+        && (!data.keys().hasAny(['originalAmount']) || data.originalAmount is number)
+        && (!data.keys().hasAny(['originalCurrency']) || data.originalCurrency is string)
+        && (!data.keys().hasAny(['splitAmong']) || data.splitAmong is list);
+    }
+
+    function isValidExpenseUpdate() {
+      let data = request.resource.data;
+
+      return data.keys().hasAll(['userId', 'userName', 'amount', 'description', 'category', 'timestamp'])
+        && data.userId is string
+        && data.userName is string
+        && data.amount is number
+        && data.amount > 0
+        && data.description is string
+        && data.description.size() >= 1
+        && data.description.size() <= 500
+        && data.category in ['food', 'transport', 'accommodation', 'entertainment', 'shopping', 'general']
+        && data.timestamp is timestamp
+        && (!data.keys().hasAny(['authUid']) || data.authUid is string)
+        && (!data.keys().hasAny(['originalInput']) || data.originalInput is string)
+        && (!data.keys().hasAny(['originalAmount']) || data.originalAmount is number)
+        && (!data.keys().hasAny(['originalCurrency']) || data.originalCurrency is string)
+        && (!data.keys().hasAny(['splitAmong']) || data.splitAmong is list);
+    }
+
+    function isValidPayment() {
+      let data = request.resource.data;
+
+      return data.keys().hasAll(['groupId', 'fromUserId', 'toUserId', 'amount', 'recordedBy', 'authUid', 'createdAt'])
+        && data.groupId is string
+        && data.fromUserId is string
+        && data.toUserId is string
+        && data.fromUserId != data.toUserId
+        && data.amount is number
+        && data.amount > 0
+        && data.recordedBy is string
+        && data.authUid is string
+        && data.createdAt is timestamp
+        && (!data.keys().hasAny(['note']) || data.note is string);
+    }
+
+    function isValidUser() {
+      let data = request.resource.data;
+
+      return data.keys().hasAll(['name', 'phone'])
+        && data.name is string
+        && data.name.size() >= 1
+        && data.name.size() <= 100
+        && data.phone is string
+        && (!data.keys().hasAny(['email']) || data.email is string)
+        && (!data.keys().hasAny(['authUid']) || data.authUid is string)
+        && (!data.keys().hasAny(['aliases']) || data.aliases is list)
+        && (!data.keys().hasAny(['paymentInfo']) || data.paymentInfo is map)
+        && (!data.keys().hasAny(['phoneNumber']) || data.phoneNumber is string)
+        && (!data.keys().hasAny(['avatar']) || data.avatar is string);
+    }
+
+    // ============================================
+    // Text the Check - ttc_user
+    // ============================================
+    match /ttc_user/{userId} {
+      allow read: if isAuthenticated();
+
+      allow create: if isAuthenticated()
+                    && request.resource.data.authUid == request.auth.uid
+                    && isValidUser();
+
+      allow update: if isAuthenticated()
+                    && canLinkAuthUid()
+                    && request.resource.data.phone == resource.data.phone
+                    && (
+                      !('authUid' in resource.data)
+                      || resource.data.authUid == request.auth.uid
+                    );
+
+      allow delete: if false;
+    }
+
+    // ============================================
+    // Text the Check - ttc_expense
+    // ============================================
+    match /ttc_expense/{expenseId} {
+      allow read: if isAuthenticated();
+
+      allow create: if isAuthenticated()
+                    && request.resource.data.authUid == request.auth.uid
+                    && isValidExpenseCreate();
+
+      allow update: if isAuthenticated()
+                    && isValidExpenseUpdate()
+                    && request.resource.data.userId == resource.data.userId;
+
+      allow delete: if isAuthenticated();
+    }
+
+    // ============================================
+    // Text the Check - ttc_group
+    // ============================================
+    match /ttc_group/{groupId} {
+      allow read: if isAuthenticated();
+
+      allow create: if isAuthenticated()
+                    && request.resource.data.keys().hasAll(['name', 'members', 'createdBy'])
+                    && request.resource.data.name is string
+                    && request.resource.data.members is list
+                    && request.resource.data.createdBy is string;
+
+      allow update: if isAuthenticated()
+                    && request.resource.data.keys().hasAll(['name', 'members', 'createdBy']);
+
+      allow delete: if false;
+    }
+
+    // ============================================
+    // Text the Check - ttc_payment
+    // ============================================
+    match /ttc_payment/{paymentId} {
+      function isPaymentParty() {
+        let fromUserAuthUid = get(/databases/$(database)/documents/ttc_user/$(resource.data.fromUserId)).data.authUid;
+        let toUserAuthUid = get(/databases/$(database)/documents/ttc_user/$(resource.data.toUserId)).data.authUid;
+        return request.auth.uid == fromUserAuthUid || request.auth.uid == toUserAuthUid;
+      }
+
+      function isPaymentRecorder() {
+        let recorderAuthUid = get(/databases/$(database)/documents/ttc_user/$(resource.data.recordedBy)).data.authUid;
+        return request.auth.uid == recorderAuthUid;
+      }
+
+      allow read: if isAuthenticated();
+
+      allow create: if isAuthenticated()
+                    && request.resource.data.authUid == request.auth.uid
+                    && isValidPayment();
+
+      allow update: if isAuthenticated()
+                    && isPaymentRecorder()
+                    && isValidPayment()
+                    && request.resource.data.recordedBy == resource.data.recordedBy;
+
+      allow delete: if isAuthenticated() && isPaymentParty();
+    }
+
+    // ============================================
+    // PayTrackr - One-time & recurrent payment instances
+    // ============================================
+    match /p_t_payment/{docId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    // ============================================
+    // PayTrackr - Recurrent payment templates
+    // ============================================
+    match /p_t_recurrent/{docId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    // ============================================
+    // PayTrackr - Expense categories
+    // ============================================
+    match /p_t_expense_category/{docId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    // ============================================
+    // PayTrackr - FCM push notification tokens
+    // ============================================
+    match /p_t_fcm_token/{docId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    // ============================================
+    // PayTrackr - WhatsApp account linking
+    // ============================================
+    match /p_t_whatsapp_link/{docId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow update: if false;
+    }
+
+    // ============================================
+    // PayTrackr - Payment templates (quick-add)
+    // ============================================
+    match /p_t_payment_template/{docId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    // ============================================
+    // PayTrackr - Weekly summaries (server-written, client read-only)
+    // Doc ID = userId, so we match on docId directly
+    // ============================================
+    match /p_t_weekly_summary/{docId} {
+      allow read: if isAuthenticated() && docId == request.auth.uid;
+      allow create, update, delete: if false;
+    }
+
+    // ============================================
+    // Deny everything else
+    // ============================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,12 @@
+User-agent: *
+Disallow: /edit/
+Disallow: /history
+Disallow: /summary
+Disallow: /new-payment
+Disallow: /contact-us
+Disallow: /fijos
+Disallow: /one-time
+Disallow: /weekly-summary
+Disallow: /settings/
+
+Sitemap: https://paytrackr.wiseutils.com/sitemap.xml

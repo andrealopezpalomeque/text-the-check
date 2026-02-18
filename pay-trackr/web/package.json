@@ -1,0 +1,38 @@
+{
+  "name": "PayTrackr",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "deploy": "nuxt generate && firebase deploy",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "devDependencies": {
+    "@iconify/json": "^2.2.208",
+    "@vite-pwa/nuxt": "^0.10.0",
+    "@vueuse/nuxt": "^12.0.0",
+    "autoprefixer": "^10.4.17",
+    "dayjs-nuxt": "^2.1.9",
+    "nuxt": "^4.0.0",
+    "postcss": "^8.4.33",
+    "tailwindcss": "^3.4.1",
+    "unplugin-icons": "^22.0.0",
+    "vue": "^3.5.13"
+  },
+  "dependencies": {
+    "@firebase/app-types": "^0.9.0",
+    "@pinia/nuxt": "^0.9.0",
+    "@vueuse/core": "^12.0.0",
+    "chart.js": "^4.4.2",
+    "dotenv": "^17.2.3",
+    "firebase": "^10.8.0",
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^4.6.0",
+    "pinia": "^2.3.0",
+    "vue3-popper": "^1.5.0",
+    "vue3-toastify": "^0.2.1"
+  }
+}

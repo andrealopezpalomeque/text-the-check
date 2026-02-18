@@ -1,0 +1,39 @@
+# Nuxt dev/build outputs
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
+
+# Node dependencies
+node_modules
+
+# Logs
+logs
+*.log
+
+# Misc
+.DS_Store
+.fleet
+.idea
+web/yarn.lock
+
+# Local env files
+.env
+.env.*
+!.env.example
+
+# Firebase
+service-account.json
+.firebase
+.firebase/*
+
+# Firebase service account & scripts
+**/scripts/*.json
+**/scripts/*.txt
+**/scripts/update-privileges-to-users*.js
+**/scripts/export-prod-to-develop.js
+
+# VSCode
+.vscode
