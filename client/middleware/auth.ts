@@ -31,7 +31,7 @@ export default defineNuxtRouteMiddleware((to) => {
   }
 
   // If not authenticated and trying to access a protected route, redirect to login
-  if (!isAuthenticated.value && to.path !== '/login') {
+  if (!isAuthenticated.value && !publicRoutes.includes(to.path)) {
     return navigateTo('/login', { replace: true })
   }
 

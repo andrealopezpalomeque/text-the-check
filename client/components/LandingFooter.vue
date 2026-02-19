@@ -22,6 +22,14 @@
         <Instagram :size="16" :stroke-width="1.5" />
       </a>
 
+      <!-- Links -->
+      <NuxtLink
+        to="/privacy"
+        class="text-xs text-ttc-text-dim hover:text-ttc-text transition-colors"
+      >
+        Politica de Privacidad
+      </NuxtLink>
+
       <!-- Domain -->
       <p class="text-xs text-ttc-text-dim">
         textthecheck.app
