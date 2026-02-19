@@ -2,13 +2,35 @@
   "name": "text-the-check-server",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "start": "node index.js",
-    "dev": "node index.js"
+    "start": "node --import ./instrument.js dist/webhooks/wp_webhook.js",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "reminders:morning": "tsx scripts/send-reminders.ts --mode morning",
+    "reminders:evening": "tsx scripts/send-reminders.ts --mode evening",
+    "weekly-summary": "tsx scripts/send-weekly-summary.ts"
   },
   "dependencies": {
-    "express": "^4.18.0",
+    "@google/generative-ai": "^0.24.1",
+    "@sentry/node": "^10.38.0",
+    "axios": "^1.13.2",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.0"
+    "dayjs": "^1.11.13",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "express-rate-limit": "^8.2.1",
+    "firebase-admin": "^12.0.0",
+    "fuse.js": "^7.1.0",
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.10.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.7.2"
   }
 }

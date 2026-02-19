@@ -22,7 +22,7 @@ Text the Check — WhatsApp-first financial companion for Argentina/Latin Americ
 
 **Firestore collections** — Grupos: `ttc_user`, `ttc_group`, `ttc_expense`, `ttc_payment`. Finanzas: `ttc_finanzas_payment`, `ttc_finanzas_recurring`, `ttc_finanzas_category`, `ttc_finanzas_template`.
 
-**Backend** (`viaje-grupo/server/`) — Express.js + TypeScript, WhatsApp Business API webhook, Gemini 2.0 Flash for NL expense parsing, Fuse.js for fuzzy @mention matching, Firebase Admin SDK.
+**Backend** (`server/`) — Express.js + TypeScript, single WhatsApp Business API webhook serving both modes, Gemini AI for NL parsing, Firebase Admin SDK. See `server/CLAUDE.md` for server-specific architecture and conventions.
 
 ## Key Conventions
 
