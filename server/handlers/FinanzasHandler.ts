@@ -24,7 +24,7 @@ const COLLECTIONS = {
 
 const FALLBACK_CATEGORIES = ['supermercado', 'salidas', 'transporte', 'servicios', 'suscripciones']
 
-const NOT_LINKED_MSG = 'Este numero no esta vinculado a ninguna cuenta de PayTrackr.\n\nPara vincular tu cuenta:\n1. Ingresa a la app\n2. Ve a Configuracion > WhatsApp\n3. Genera un codigo de vinculacion\n4. Envialo aqui: VINCULAR <codigo>'
+const NOT_LINKED_MSG = 'Este número no está vinculado a ninguna cuenta.\n\nPara vincular tu cuenta:\n1. Registrate en https://textthecheck.app\n2. Andá a tu Perfil\n3. Tocá "Generar código" en la sección WhatsApp\n4. Enviá acá: VINCULAR <código>'
 
 // ─── Helpers ───────────────────────────────────────────────────────
 
@@ -96,12 +96,6 @@ export default class FinanzasHandler {
   private async processTextMessage(from: string, text: string, contactName: string): Promise<void> {
     const normalized = text.trim().toLowerCase()
 
-    if (normalized.startsWith('vincular ')) {
-      const code = text.trim().split(' ')[1]?.toUpperCase()
-      await this.handleLinkCommand(from, code, contactName)
-      return
-    }
-    if (normalized === 'desvincular') { await this.handleUnlinkCommand(from); return }
     if (normalized === 'ayuda' || normalized === 'help') { await this.sendHelpMessage(from); return }
     if (normalized === 'categorias') { await this.handleCategoriesCommand(from); return }
     if (normalized === 'resumen') { await this.handleResumenCommand(from); return }
@@ -109,67 +103,6 @@ export default class FinanzasHandler {
     if (normalized === 'analisis') { await this.handleAnalisisCommand(from); return }
 
     await this.handleExpenseMessage(from, text)
-  }
-
-  // ─── Account linking ───────────────────────────────────────────
-
-  private async handleLinkCommand(phone: string, code: string, contactName: string): Promise<void> {
-    if (!code) {
-      await sendMessage(phone, 'Formato incorrecto. Usa: VINCULAR <codigo>\n\nEjemplo: VINCULAR ABC123')
-      return
-    }
-
-    try {
-      const codeDoc = await db.collection(COLLECTIONS.WHATSAPP_LINKS).doc(code).get()
-      if (!codeDoc.exists) {
-        await sendMessage(phone, 'Codigo no encontrado o expirado. Genera un nuevo codigo desde la app.')
-        return
-      }
-
-      const codeData = codeDoc.data()!
-      if (codeData.status !== 'pending') {
-        await sendMessage(phone, 'Codigo no valido. Genera un nuevo codigo desde la app.')
-        return
-      }
-
-      // Check 10-minute expiry
-      const createdAt = codeData.createdAt?.toDate() || new Date(0)
-      if ((Date.now() - createdAt.getTime()) / (1000 * 60) > 10) {
-        await db.collection(COLLECTIONS.WHATSAPP_LINKS).doc(code).delete()
-        await sendMessage(phone, 'El codigo ha expirado. Genera un nuevo codigo desde la app.')
-        return
-      }
-
-      // Delete pending code, create linked doc
-      await db.collection(COLLECTIONS.WHATSAPP_LINKS).doc(code).delete()
-      await db.collection(COLLECTIONS.WHATSAPP_LINKS).doc(phone).set({
-        status: 'linked',
-        userId: codeData.userId,
-        phoneNumber: phone,
-        contactName,
-        linkedAt: admin.firestore.FieldValue.serverTimestamp(),
-      })
-
-      await sendMessage(phone, `Cuenta vinculada!\n\nAhora podes registrar gastos:\n\n\`$500 Super #supermercado\`\n\`$1500 Cena #salidas\`\n\nEscribi AYUDA para mas info.`)
-    } catch (error) {
-      logError('Error linking account:', error)
-      await sendMessage(phone, 'Error al vincular la cuenta. Intenta nuevamente.')
-    }
-  }
-
-  private async handleUnlinkCommand(phone: string): Promise<void> {
-    try {
-      const linkDoc = await db.collection(COLLECTIONS.WHATSAPP_LINKS).doc(phone).get()
-      if (!linkDoc.exists || linkDoc.data()?.status !== 'linked') {
-        await sendMessage(phone, 'Este numero no esta vinculado a ninguna cuenta.')
-        return
-      }
-      await db.collection(COLLECTIONS.WHATSAPP_LINKS).doc(phone).delete()
-      await sendMessage(phone, 'Cuenta desvinculada exitosamente. Ya no se registraran gastos desde este numero.')
-    } catch (error) {
-      logError('Error unlinking account:', error)
-      await sendMessage(phone, 'Error al desvincular la cuenta. Intenta nuevamente.')
-    }
   }
 
   /** Check if phone is linked. Returns userId or null. */

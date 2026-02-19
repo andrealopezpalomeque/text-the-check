@@ -106,6 +106,91 @@
           </div>
         </div>
 
+        <!-- WhatsApp Card -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow mb-6">
+          <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <h2 class="font-display text-lg font-semibold text-gray-900 dark:text-white">
+              WhatsApp
+            </h2>
+          </div>
+          <div class="p-6">
+            <!-- Linked state -->
+            <div v-if="whatsapp.isLinked.value" class="space-y-4">
+              <div class="flex items-center gap-3">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 text-sm font-medium rounded-full">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                  </svg>
+                  WhatsApp vinculado
+                </span>
+              </div>
+              <div>
+                <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Numero vinculado</label>
+                <p class="text-gray-900 dark:text-white font-mono">+{{ whatsapp.linkedAccount.value?.phoneNumber }}</p>
+              </div>
+              <button
+                @click="whatsapp.unlinkAccount()"
+                :disabled="whatsapp.isLoading.value"
+                class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 text-sm font-medium"
+              >
+                Desvincular
+              </button>
+            </div>
+
+            <!-- Not linked state -->
+            <div v-else class="space-y-4">
+              <p class="text-gray-600 dark:text-gray-400 text-sm">
+                Vinculá tu WhatsApp para registrar gastos y dividir cuentas por mensaje.
+              </p>
+
+              <!-- Pending code display -->
+              <div v-if="whatsapp.pendingCode.value" class="space-y-3">
+                <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                  <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Enviá este mensaje por WhatsApp:</p>
+                  <div class="flex items-center gap-3">
+                    <code class="flex-1 text-lg font-bold text-gray-900 dark:text-white tracking-wider">VINCULAR {{ whatsapp.pendingCode.value }}</code>
+                    <button
+                      @click="copyCode"
+                      class="shrink-0 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+                    >
+                      {{ codeCopied ? 'Copiado' : 'Copiar' }}
+                    </button>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between">
+                  <p v-if="whatsapp.countdown.value" class="text-sm text-gray-500 dark:text-gray-400">
+                    Expira en {{ whatsapp.countdown.value }}
+                  </p>
+                  <button
+                    @click="whatsapp.generateCode()"
+                    :disabled="whatsapp.isGenerating.value"
+                    class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium"
+                  >
+                    Regenerar
+                  </button>
+                </div>
+              </div>
+
+              <!-- Generate code button -->
+              <div v-else>
+                <button
+                  @click="whatsapp.generateCode()"
+                  :disabled="whatsapp.isGenerating.value"
+                  class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white font-medium rounded-lg transition-colors"
+                >
+                  <span v-if="whatsapp.isGenerating.value">Generando...</span>
+                  <span v-else>Generar codigo</span>
+                </button>
+              </div>
+
+              <!-- Error -->
+              <div v-if="whatsapp.error.value" class="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                <p class="text-sm text-red-800 dark:text-red-200">{{ whatsapp.error.value }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Payment Info Card -->
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
           <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
@@ -267,6 +352,19 @@ const userStore = useUserStore()
 const groupStore = useGroupStore()
 const { mode } = useAppMode()
 const backRoute = computed(() => mode.value === 'finanzas' ? '/finanzas' : '/grupos')
+const whatsapp = useWhatsappLink()
+const codeCopied = ref(false)
+
+const copyCode = async () => {
+  if (!whatsapp.pendingCode.value) return
+  try {
+    await navigator.clipboard.writeText(`VINCULAR ${whatsapp.pendingCode.value}`)
+    codeCopied.value = true
+    setTimeout(() => { codeCopied.value = false }, 2000)
+  } catch {
+    // Fallback: select text for manual copy
+  }
+}
 
 const isEditing = ref(false)
 const saving = ref(false)
