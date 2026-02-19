@@ -35,7 +35,7 @@ function generateRandomCode(): string {
 export const useWhatsappLink = () => {
   const { $db } = useNuxtApp()
   const db = $db as Firestore
-  const { firestoreUser } = useAuth()
+  const { user, firestoreUser } = useAuth()
 
   const linkedAccount = ref<LinkedAccount | null>(null)
   const pendingCode = ref<string | null>(null)
@@ -81,13 +81,13 @@ export const useWhatsappLink = () => {
 
   // Subscribe to real-time link changes for the current user
   function subscribe() {
-    const userId = firestoreUser.value?.id
-    if (!userId) return
+    const authUid = user.value?.uid
+    if (!authUid) return
 
     unsubscribe()
 
     const linksRef = collection(db, 'p_t_whatsapp_link')
-    const q = query(linksRef, where('userId', '==', userId), where('status', '==', 'linked'))
+    const q = query(linksRef, where('authUid', '==', authUid), where('status', '==', 'linked'))
 
     unsubscribeLink = onSnapshot(q, (snapshot) => {
       if (!snapshot.empty) {
@@ -116,8 +116,9 @@ export const useWhatsappLink = () => {
 
   // Generate a new linking code
   async function generateCode() {
+    const authUid = user.value?.uid
     const userId = firestoreUser.value?.id
-    if (!userId) return
+    if (!authUid || !userId) return
 
     isGenerating.value = true
     error.value = null
@@ -127,6 +128,7 @@ export const useWhatsappLink = () => {
       await setDoc(doc(db, 'p_t_whatsapp_link', code), {
         status: 'pending',
         userId,
+        authUid,
         createdAt: serverTimestamp(),
       })
 

@@ -270,6 +270,7 @@ async function handleVincular(phone: string, code: string, contactName: string):
     }
 
     const userId = codeData.userId
+    const authUid = codeData.authUid || ''
 
     // Delete pending code doc
     await db.collection('p_t_whatsapp_link').doc(codeUpper).delete()
@@ -281,6 +282,7 @@ async function handleVincular(phone: string, code: string, contactName: string):
     await db.collection('p_t_whatsapp_link').doc(phone).set({
       status: 'linked',
       userId,
+      authUid,
       phoneNumber: phone,
       contactName,
       linkedAt: admin.firestore.FieldValue.serverTimestamp(),
