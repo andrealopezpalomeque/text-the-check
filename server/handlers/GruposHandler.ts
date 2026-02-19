@@ -192,10 +192,7 @@ export default class GruposHandler {
   // ─── Main entry point ──────────────────────────────────────────
 
   async handleMessage(from: string, text: string, messageId: string, user: User): Promise<void> {
-    // 1. Check phone authorization
-    if (!this.isAuthorizedPhone(from)) return
-
-    // 2. Welcome message check
+    // 1. Welcome message check
     if (!user.welcomedAt) {
       const userGroups = await this.getAllGroupsByUserId(user.id)
       await sendMessage(from, this.getWelcomeMessage(user.name, userGroups))
@@ -858,11 +855,6 @@ export default class GruposHandler {
     return { command: parts[0].toLowerCase(), args: parts.slice(1).join(' ') }
   }
 
-  private isAuthorizedPhone(phone: string): boolean {
-    const allowed = process.env.ALLOWED_PHONE_NUMBERS?.split(',') || []
-    const normalized = normalizeForComparison(phone)
-    return allowed.some(a => normalizeForComparison(a) === normalized)
-  }
 
   // ─── Message formatting ─────────────────────────────────────────
 

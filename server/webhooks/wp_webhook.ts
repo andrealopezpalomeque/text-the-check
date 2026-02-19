@@ -183,7 +183,8 @@ async function processMessage(message: any, contacts: any[]): Promise<void> {
   const contactName = contacts?.[0]?.profile?.name || 'Usuario'
   const messageType = message.type
 
-  console.log(`[WEBHOOK] ${messageType} from ${from}`)
+  const preview = messageType === 'text' ? ` "${(message.text?.body || '').slice(0, 80)}"` : ''
+  console.log(`[MSG] ${contactName} (${from}) ${messageType}${preview}`)
 
   // ── Global commands (before mode routing) ──
 
