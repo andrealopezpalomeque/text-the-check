@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node --import ./instrument.js dist/webhooks/wp_webhook.js",
+    "start": "node --import ./dist/instrument.js dist/webhooks/wp_webhook.js",
     "build": "tsc",
     "typecheck": "tsc --noEmit",
     "reminders:morning": "tsx scripts/send-reminders.ts --mode morning",
