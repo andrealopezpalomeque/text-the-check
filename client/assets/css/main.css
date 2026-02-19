@@ -99,3 +99,52 @@ html {
 .animate-fade-up {
   animation: fadeUp 0.6s ease-out both;
 }
+
+/* Body scroll lock when modal is open */
+body.modal-opened {
+  overflow: hidden;
+}
+
+/* Thin dark scrollbar for containers */
+.dark-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.dark-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.dark-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dark-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 2px;
+}
+
+.dark-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-dim);
+}
+
+/* Skeleton loading shimmer */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-shimmer > * {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface) 25%,
+    var(--color-card) 50%,
+    var(--color-surface) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}

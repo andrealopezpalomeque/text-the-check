@@ -10,7 +10,7 @@
       </div>
 
       <!-- Right side -->
-      <div class="flex items-center gap-1">
+      <div class="flex items-center gap-2">
         <!-- Instagram link -->
         <a
           href="https://instagram.com/textthecheck"
@@ -24,11 +24,20 @@
 
         <!-- Theme toggle -->
         <ThemeToggle />
+
+        <!-- Login button -->
+        <a
+          href="/login"
+          class="inline-flex items-center gap-1.5 bg-ttc-primary text-white rounded-lg px-4 py-1.5 font-body text-xs font-semibold hover:opacity-90 transition-opacity ml-1"
+        >
+          <LogIn :size="14" :stroke-width="2" />
+          <span>Iniciar sesión</span>
+        </a>
       </div>
     </div>
   </header>
 </template>
 
 <script setup>
-import { Instagram } from 'lucide-vue-next'
+import { Instagram, LogIn } from 'lucide-vue-next'
 </script>

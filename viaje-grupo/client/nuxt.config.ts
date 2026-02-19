@@ -7,8 +7,14 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt',
     '@vueuse/nuxt',
-    'unplugin-icons/nuxt'
+    'unplugin-icons/nuxt',
+    'dayjs-nuxt'
   ],
+
+  dayjs: {
+    locales: ['es'],
+    defaultLocale: 'es'
+  },
 
   components: [
     {
@@ -26,7 +32,7 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: 'Text The Check - Expense Tracker',
+      title: 'Text The Check',
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1, viewport-fit=cover' },
@@ -59,10 +65,11 @@ export default defineNuxtConfig({
 
   // Route rules for static generation
   // Auth-protected pages use ssr: false and shouldn't be prerendered
-  // The SPA fallback (200.html) will handle client-side routing
   routeRules: {
     '/': { prerender: false },
     '/login': { prerender: false },
-    '/profile': { prerender: false }
+    '/profile': { prerender: false },
+    '/grupos/**': { ssr: false },
+    '/finanzas/**': { ssr: false }
   }
 })

@@ -40,6 +40,6 @@ export default defineNuxtRouteMiddleware((to) => {
   // If authenticated and trying to access login page, redirect to home
   if (isAuthenticated.value && to.path === '/login') {
     // Use replace to prevent back button returning to login
-    return navigateTo('/', { replace: true })
+    return navigateTo('/grupos', { replace: true })
   }
 })

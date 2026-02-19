@@ -1,9 +1,19 @@
 export const useTheme = () => {
   const theme = useState('theme', () => 'dark')
 
+  const applyTheme = (value) => {
+    document.documentElement.setAttribute('data-theme', value)
+    // Sync Tailwind dark mode class for app components (grupos/finanzas)
+    if (value === 'dark') {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+  }
+
   const toggleTheme = () => {
     theme.value = theme.value === 'dark' ? 'light' : 'dark'
-    document.documentElement.setAttribute('data-theme', theme.value)
+    applyTheme(theme.value)
     localStorage.setItem('ttc-theme', theme.value)
   }
 
@@ -13,7 +23,7 @@ export const useTheme = () => {
       if (saved) {
         theme.value = saved
       }
-      document.documentElement.setAttribute('data-theme', theme.value)
+      applyTheme(theme.value)
     }
   }
 

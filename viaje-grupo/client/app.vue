@@ -1,8 +1,10 @@
 <template>
   <div>
-    <div v-show="!authLoading">
-      <NuxtPage />
-    </div>
+    <NuxtLayout>
+      <div v-show="!authLoading">
+        <NuxtPage />
+      </div>
+    </NuxtLayout>
 
     <!-- Global loading overlay while auth initializes - ClientOnly to prevent SSR hydration issues -->
     <ClientOnly>
@@ -26,8 +28,9 @@ const expenseStore = useExpenseStore()
 const paymentStore = usePaymentStore()
 const userStore = useUserStore()
 const groupStore = useGroupStore()
+const { mode } = useAppMode()
 
-// Initialize data when authenticated
+// Initialize grupos data when authenticated
 const initializeData = async () => {
   if (!firestoreUser.value) return
 

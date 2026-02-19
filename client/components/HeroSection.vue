@@ -26,13 +26,13 @@
 
       <!-- Buttons -->
       <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-up" style="animation-delay: 0.3s;">
-        <button
-          @click="scrollToModes"
+        <a
+          href="/login"
           class="inline-flex items-center gap-2 bg-ttc-primary text-white rounded-xl px-7 py-3 font-body text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer"
         >
           Empezar ahora
           <ArrowRight :size="16" :stroke-width="2" />
-        </button>
+        </a>
         <button
           @click="scrollToModes"
           class="inline-flex items-center gap-2 border border-ttc-border bg-transparent text-ttc-text rounded-xl px-7 py-3 font-body text-sm font-semibold hover:bg-ttc-card hover:border-ttc-text-dim transition-colors cursor-pointer"

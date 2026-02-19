@@ -10,13 +10,30 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@iconify-json/lucide": "^1.2.87",
+    "@iconify/vue": "^5.0.0",
+    "@nuxtjs/tailwindcss": "^6.12.0",
+    "@pinia/nuxt": "^0.11.2",
+    "@vueuse/nuxt": "^13.6.0",
+    "chart.js": "^4.4.1",
+    "dayjs": "^1.11.10",
+    "dayjs-nuxt": "^2.1.11",
+    "firebase": "^12.9.0",
     "lucide-vue-next": "^0.564.0",
     "nuxt": "^3.15.0",
+    "pinia": "^3.0.4",
     "vue": "^3.5.0",
-    "vue-router": "^4.5.0"
+    "vue-chartjs": "^5.3.0",
+    "vue-router": "^4.5.0",
+    "vue-toastification": "^2.0.0-rc.5",
+    "vue3-popper": "^1.5.0"
   },
   "devDependencies": {
+    "@iconify/json": "^2.2.419",
     "@nuxtjs/google-fonts": "^3.2.0",
-    "@nuxtjs/tailwindcss": "^6.12.0"
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2",
+    "unplugin-icons": "^22.0.0",
+    "vue-tsc": "^2.2.0"
   }
 }

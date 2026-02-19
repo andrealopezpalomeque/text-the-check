@@ -83,8 +83,8 @@ const route = useRoute()
 const { activeTab, switchTab, openExpenseModal } = useNavigationState()
 
 const isActive = (tab) => {
-  // Only show tab as active when on dashboard
-  if (route.path !== '/') return false
+  // Only show tab as active when on grupos dashboard
+  if (route.path !== '/grupos') return false
   return activeTab.value === tab
 }
 
@@ -92,19 +92,19 @@ const isProfileActive = computed(() => route.path === '/profile')
 
 const handleTabClick = (tab) => {
   // If already on dashboard, just switch tab
-  if (route.path === '/') {
+  if (route.path === '/grupos') {
     switchTab(tab)
   } else {
     // Navigate to dashboard with tab in URL
     const query = tab === 'inicio' ? {} : { tab }
-    navigateTo({ path: '/', query })
+    navigateTo({ path: '/grupos', query })
   }
 }
 
 const handleAddExpense = () => {
   // If not on dashboard, navigate first
-  if (route.path !== '/') {
-    navigateTo('/')
+  if (route.path !== '/grupos') {
+    navigateTo('/grupos')
   }
   openExpenseModal()
 }

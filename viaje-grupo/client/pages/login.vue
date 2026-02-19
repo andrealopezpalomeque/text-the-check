@@ -124,7 +124,7 @@ const handleGoogleSignIn = async () => {
   isSigningIn.value = true
   try {
     await signInWithGoogle()
-    navigateTo('/', { replace: true })
+    navigateTo('/grupos', { replace: true })
   } catch (error) {
     // Error is already set in useAuth
   } finally {
@@ -135,14 +135,14 @@ const handleGoogleSignIn = async () => {
 // Watch for auth state changes - redirect authenticated users
 watch(isAuthenticated, (authenticated) => {
   if (authenticated) {
-    navigateTo('/', { replace: true })
+    navigateTo('/grupos', { replace: true })
   }
 })
 
 // Also check on mount for immediate redirect
 onMounted(() => {
   if (!authLoading.value && isAuthenticated.value) {
-    navigateTo('/', { replace: true })
+    navigateTo('/grupos', { replace: true })
   }
 })
 </script>
