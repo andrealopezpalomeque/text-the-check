@@ -194,7 +194,7 @@ export default class GeminiHandler {
     const startTime = Date.now()
 
     try {
-      const model = this.getModel('gemini-2.0-flash')
+      const model = this.getModel('gemini-2.5-flash-lite')
       const systemPrompt = this.buildExtractionPrompt(groupMembers)
 
       console.log('[AI] Input:', message)
