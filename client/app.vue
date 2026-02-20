@@ -63,7 +63,7 @@ watch(authLoading, (loading) => {
   if (!loading) {
     const currentPath = route.path
 
-    const publicPaths = ['/login', '/setup', '/join', '/']
+    const publicPaths = ['/login', '/setup', '/join', '/', '/privacy']
     if (!isAuthenticated.value && !publicPaths.includes(currentPath)) {
       navigateTo('/login', { replace: true })
     }
