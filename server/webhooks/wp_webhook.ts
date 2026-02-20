@@ -270,8 +270,12 @@ async function handleVincular(phone: string, code: string, contactName: string):
       return
     }
 
-    const userId = codeData.userId        // Auth UID (for Finanzas)
-    const ttcUserId = codeData.ttcUserId  // Firestore doc ID (for ttc_user)
+    // Support both old and new pending code formats:
+    // New format: userId = Auth UID, ttcUserId = Firestore doc ID
+    // Old format: userId = Firestore doc ID, authUid = Auth UID
+    const isNewFormat = !!codeData.ttcUserId
+    const userId = isNewFormat ? codeData.userId : (codeData.authUid || codeData.userId)
+    const ttcUserId = isNewFormat ? codeData.ttcUserId : codeData.userId
 
     // Delete pending code doc
     await db.collection('p_t_whatsapp_link').doc(codeUpper).delete()
