@@ -373,6 +373,31 @@ export const useUserStore = defineStore('user', {
     },
 
     /**
+     * Update user's aliases (for @mention matching)
+     */
+    async updateUserAliases(userId: string, aliases: string[]) {
+      const { db } = useFirebase()
+
+      try {
+        const userRef = doc(db, 'ttc_user', userId)
+        await updateDoc(userRef, { aliases })
+
+        // Update local state
+        const user = this.users.find(u => u.id === userId)
+        if (user) {
+          user.aliases = aliases
+        }
+        const allUser = this.allUsers.find(u => u.id === userId)
+        if (allUser) {
+          allUser.aliases = aliases
+        }
+      } catch (err: any) {
+        console.error('Error updating aliases:', err)
+        throw err
+      }
+    },
+
+    /**
      * Update user's payment info
      */
     async updateUserPaymentInfo(userId: string, paymentInfo: PaymentInfo) {
