@@ -40,7 +40,7 @@ async function sendTestNotifications() {
   try {
     // Query all enabled FCM tokens
     const tokensSnapshot = await db
-      .collection('p_t_fcm_token')
+      .collection('pt_fcm_token')
       .where('notificationsEnabled', '==', true)
       .get();
 
@@ -93,7 +93,7 @@ async function sendTestNotifications() {
         if (error.code === 'messaging/invalid-registration-token' ||
             error.code === 'messaging/registration-token-not-registered') {
           console.log(`   🗑️  Removing invalid token for user ${data.userId.substring(0, 8)}...`);
-          await db.collection('p_t_fcm_token').doc(doc.id).delete();
+          await db.collection('pt_fcm_token').doc(doc.id).delete();
         }
       }
     }

@@ -41,9 +41,9 @@ console.log('[INIT] Firestore connection established');
 // Collections
 // ============================================
 const COLLECTIONS = {
-  WHATSAPP_LINKS: 'p_t_whatsapp_link', // Single collection for both pending codes and linked accounts
-  PAYMENTS: 'p_t_payment',
-  CATEGORIES: 'p_t_expense_category'
+  WHATSAPP_LINKS: 'pt_whatsapp_link', // Single collection for both pending codes and linked accounts
+  PAYMENTS: 'pt_payment',
+  CATEGORIES: 'pt_expense_category'
 };
 
 // ============================================
@@ -602,7 +602,7 @@ async function handleFijosCommand(phoneNumber) {
   try {
     // Get all recurrent templates
     const recurrentSnapshot = await db
-      .collection('p_t_recurrent')
+      .collection('pt_recurrent')
       .where('userId', '==', userId)
       .get();
 
@@ -750,7 +750,7 @@ async function handleAnalisisCommand(phoneNumber) {
 
     // Get recurrent templates
     const recurrentSnapshot = await db
-      .collection('p_t_recurrent')
+      .collection('pt_recurrent')
       .where('userId', '==', userId)
       .get();
 

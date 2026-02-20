@@ -2,7 +2,7 @@ import { Schema } from '../schema';
 import type { SchemaDefinition, FetchResult } from '../types';
 
 export class RecurrentSchema extends Schema {
-  protected collectionName = 'p_t_recurrent';
+  protected collectionName = 'pt_recurrent';
 
   protected schema: SchemaDefinition = {
     userId: {

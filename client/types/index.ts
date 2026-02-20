@@ -9,11 +9,10 @@ export interface PaymentInfo {
 
 // The 11 Travelers
 export interface User {
-  id: string              // unique string (auto-generated)
+  id: string              // Firebase Auth UID (also the Firestore doc ID)
   name: string            // Display name (e.g., "Pipi López Palomeque")
   phone: string           // Format: +5493794702813 (Key for WhatsApp identification)
   email: string | null    // Nullable, populated via Google Auth
-  authUid?: string        // Firebase Auth UID (for security rules)
   aliases: string[]       // For @mention matching (lowercase, e.g., ["pipi"])
   paymentInfo?: PaymentInfo // Payment details for settlements
   activeGroupId?: string | null  // Currently selected group for WhatsApp expense logging
@@ -35,8 +34,7 @@ export interface Group {
 // The Expense Record
 export interface Expense {
   id: string
-  userId: string         // Who paid? (Firestore user ID)
-  authUid?: string       // Firebase Auth UID (for security rules)
+  userId: string         // Who paid? (Firebase Auth UID = Firestore doc ID)
   userName: string       // Denormalized name for easier display
   amount: number         // Always in base currency (ARS)
   originalAmount?: number // Amount entered by user (if different currency)

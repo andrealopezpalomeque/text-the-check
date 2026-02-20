@@ -20,7 +20,7 @@ Two independent services sharing the same Firebase project:
 - Handles account linking via verification codes
 - Parses natural language expense messages (e.g., `$500 Super #supermercado`)
 - Commands: `VINCULAR`, `DESVINCULAR`, `AYUDA`, `CATEGORIAS`, `RESUMEN`, `FIJOS`, `ANALISIS`
-- Writes directly to `p_t_payment` collection (same as web app)
+- Writes directly to `pt_payment` collection (same as web app)
 - AI-powered financial analysis via Gemini API
 
 ### 2. Notification Scripts (`scripts/`)
@@ -34,11 +34,11 @@ Two independent services sharing the same Firebase project:
 
 ## Firestore Collections Used
 
-- `p_t_payment` - Reads/writes one-time payments (shared with web)
-- `p_t_recurrent` - Reads recurring payment templates (shared with web)
-- `p_t_whatsapp_link` - Account linking state (pending codes + linked accounts)
-- `p_t_fcm_token` - Push notification tokens per user
-- `p_t_expense_category` - User category definitions
+- `pt_payment` - Reads/writes one-time payments (shared with web)
+- `pt_recurrent` - Reads recurring payment templates (shared with web)
+- `pt_whatsapp_link` - Account linking state (pending codes + linked accounts)
+- `pt_fcm_token` - Push notification tokens per user
+- `pt_expense_category` - User category definitions
 
 ## Key Patterns
 

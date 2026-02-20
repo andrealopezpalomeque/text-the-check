@@ -60,7 +60,7 @@ async function main(): Promise<void> {
     : [String(todayDay)]
   console.log(`Filtering by dueDateDay in [${dueDays.join(', ')}]`)
 
-  const recurrentsSnapshot = await db.collection('p_t_recurrent')
+  const recurrentsSnapshot = await db.collection('pt_recurrent')
     .where('dueDateDay', 'in', dueDays)
     .get()
 
@@ -113,7 +113,7 @@ async function main(): Promise<void> {
     const monthEnd = new Date(checkYear, checkMonth + 1, 0, 23, 59, 59, 999)
 
     const instancesSnapshot = await db
-      .collection('p_t_payment')
+      .collection('pt_payment')
       .where('recurrentId', '==', recurrent.id)
       .where('isPaid', '==', true)
       .where('createdAt', '>=', admin.firestore.Timestamp.fromDate(monthStart))
@@ -152,7 +152,7 @@ async function main(): Promise<void> {
 
   for (const [userId, payments] of Object.entries(paymentsByUser)) {
     const tokensSnapshot = await db
-      .collection('p_t_fcm_token')
+      .collection('pt_fcm_token')
       .where('userId', '==', userId)
       .where('notificationsEnabled', '==', true)
       .get()
@@ -209,7 +209,7 @@ async function main(): Promise<void> {
             error.code === 'messaging/invalid-registration-token' ||
             error.code === 'messaging/registration-token-not-registered'
           ) {
-            await db.collection('p_t_fcm_token').doc(tokenDoc.id).delete()
+            await db.collection('pt_fcm_token').doc(tokenDoc.id).delete()
             console.log(`      Removed invalid token`)
           }
         }

@@ -4,7 +4,7 @@ import { doc, updateDoc, increment } from 'firebase/firestore';
 import { getFirestoreInstance, getCurrentUser } from '~/utils/finanzas/firebase';
 
 export class TemplateSchema extends Schema {
-  protected collectionName = 'p_t_payment_template';
+  protected collectionName = 'pt_payment_template';
 
   protected schema: SchemaDefinition = {
     userId: {

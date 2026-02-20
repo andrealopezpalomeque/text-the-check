@@ -60,7 +60,7 @@ async function getCategoryMapForUser(userId) {
   const categoryMap = new Map(); // Maps legacy key to categoryId
 
   try {
-    const existingCategories = await db.collection('p_t_expense_category')
+    const existingCategories = await db.collection('pt_expense_category')
       .where('userId', '==', userId)
       .where('deletedAt', '==', null)
       .get();
@@ -97,7 +97,7 @@ async function migrateTemplatesForUser(userId, categoryMap) {
 
   try {
     // Fetch all templates for this user
-    const templatesSnapshot = await db.collection('p_t_payment_template')
+    const templatesSnapshot = await db.collection('pt_payment_template')
       .where('userId', '==', userId)
       .get();
 

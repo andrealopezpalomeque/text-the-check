@@ -5,7 +5,7 @@ import { getCurrentUser } from '~/utils/finanzas/firebase';
 import { DEFAULT_CATEGORIES } from '~/types/finanzas/category';
 
 export class CategorySchema extends Schema {
-  protected collectionName = 'p_t_expense_category';
+  protected collectionName = 'pt_expense_category';
 
   protected schema: SchemaDefinition = {
     userId: {

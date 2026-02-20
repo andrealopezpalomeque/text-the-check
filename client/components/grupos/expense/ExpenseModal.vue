@@ -301,7 +301,6 @@ const handleSubmit = async () => {
       await expenseStore.addExpense(
         firestoreUser.value.id,
         firestoreUser.value.name,
-        user.value.uid,
         Math.round(amountInARS),
         form.description.trim(),
         form.category,

@@ -249,7 +249,7 @@ async function handleVincular(phone: string, code: string, contactName: string):
 
   try {
     const codeUpper = code.toUpperCase()
-    const codeDoc = await db.collection('p_t_whatsapp_link').doc(codeUpper).get()
+    const codeDoc = await db.collection('pt_whatsapp_link').doc(codeUpper).get()
 
     if (!codeDoc.exists) {
       await sendMessage(phone, 'Código no encontrado o expirado. Generá un nuevo código desde tu Perfil en la app.')
@@ -265,31 +265,23 @@ async function handleVincular(phone: string, code: string, contactName: string):
     // Check 10-minute expiry
     const createdAt = codeData.createdAt?.toDate() || new Date(0)
     if ((Date.now() - createdAt.getTime()) / (1000 * 60) > 10) {
-      await db.collection('p_t_whatsapp_link').doc(codeUpper).delete()
+      await db.collection('pt_whatsapp_link').doc(codeUpper).delete()
       await sendMessage(phone, 'El código expiró. Generá un nuevo código desde tu Perfil en la app.')
       return
     }
 
-    // Support both old and new pending code formats:
-    // New format: userId = Auth UID, ttcUserId = Firestore doc ID
-    // Old format: userId = Firestore doc ID, authUid = Auth UID
-    const isNewFormat = !!codeData.ttcUserId
-    const userId = isNewFormat ? codeData.userId : (codeData.authUid || codeData.userId)
-    const ttcUserId = isNewFormat ? codeData.ttcUserId : codeData.userId
+    const userId = codeData.userId // Auth UID = ttc_user doc ID
 
     // Delete pending code doc
-    await db.collection('p_t_whatsapp_link').doc(codeUpper).delete()
+    await db.collection('pt_whatsapp_link').doc(codeUpper).delete()
 
     // Set ttc_user.phone (enables Grupos)
-    if (ttcUserId) {
-      await db.collection('ttc_user').doc(ttcUserId).update({ phone })
-    }
+    await db.collection('ttc_user').doc(userId).update({ phone })
 
-    // Create linked doc in p_t_whatsapp_link (enables Finanzas)
-    await db.collection('p_t_whatsapp_link').doc(phone).set({
+    // Create linked doc in pt_whatsapp_link (enables Finanzas)
+    await db.collection('pt_whatsapp_link').doc(phone).set({
       status: 'linked',
       userId,
-      ttcUserId,
       phoneNumber: phone,
       contactName,
       linkedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -304,21 +296,21 @@ async function handleVincular(phone: string, code: string, contactName: string):
 
 async function handleDesvincular(phone: string): Promise<void> {
   try {
-    const linkDoc = await db.collection('p_t_whatsapp_link').doc(phone).get()
+    const linkDoc = await db.collection('pt_whatsapp_link').doc(phone).get()
     if (!linkDoc.exists || linkDoc.data()?.status !== 'linked') {
       await sendMessage(phone, 'Este número no está vinculado a ninguna cuenta.')
       return
     }
 
-    const ttcUserId = linkDoc.data()!.ttcUserId
+    const userId = linkDoc.data()!.userId
 
     // Clear ttc_user.phone
-    if (ttcUserId) {
-      await db.collection('ttc_user').doc(ttcUserId).update({ phone: '' })
+    if (userId) {
+      await db.collection('ttc_user').doc(userId).update({ phone: '' })
     }
 
     // Delete linked doc
-    await db.collection('p_t_whatsapp_link').doc(phone).delete()
+    await db.collection('pt_whatsapp_link').doc(phone).delete()
 
     await sendMessage(phone, 'Cuenta desvinculada. Para volver a vincular, generá un nuevo código desde tu Perfil en la app.')
   } catch (error) {

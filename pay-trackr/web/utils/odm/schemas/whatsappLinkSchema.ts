@@ -4,7 +4,7 @@ import { doc, setDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { getFirestoreInstance, getCurrentUser } from '~/utils/firebase';
 
 export class WhatsappLinkSchema extends Schema {
-  protected collectionName = 'p_t_whatsapp_link';
+  protected collectionName = 'pt_whatsapp_link';
 
   protected schema: SchemaDefinition = {
     status: {

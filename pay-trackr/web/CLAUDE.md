@@ -88,9 +88,9 @@ A Progressive Web Application for personal financial management built with Nuxt 
 
 ### Core Collections
 
-#### p_t_payment (One-time Payments)
+#### pt_payment (One-time Payments)
 ```
-p_t_payment/{document-id}/
+pt_payment/{document-id}/
   id: string                     // Document ID
   title: string                  // Payment description
   description: string            // Additional details
@@ -105,9 +105,9 @@ p_t_payment/{document-id}/
   dueDate: Timestamp|null        // When payment is due
 ```
 
-#### p_t_recurrent (Recurring Payment Templates)
+#### pt_recurrent (Recurring Payment Templates)
 ```
-p_t_recurrent/{document-id}/
+pt_recurrent/{document-id}/
   id: string                     // Document ID
   title: string                  // Payment name
   description: string            // Payment description
@@ -172,7 +172,7 @@ p_t_recurrent/{document-id}/
 - **Data Integrity**: Validation and backup during migration
 
 ### Database Evolution
-- **V1 to V2 Migration**: From `payment` to `p_t_payment` collection
+- **V1 to V2 Migration**: From `payment` to `pt_payment` collection
 - **Schema Improvements**: Better type safety and data structure
 - **Performance Optimizations**: Indexed queries and efficient data access
 

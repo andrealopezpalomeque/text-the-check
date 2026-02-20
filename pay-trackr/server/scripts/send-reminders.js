@@ -70,7 +70,7 @@ async function main() {
     ? [String(todayDay), String(threeDaysDay)]
     : [String(todayDay)];
   console.log(`Filtering by dueDateDay in [${dueDays.join(', ')}]`);
-  const recurrentsSnapshot = await db.collection('p_t_recurrent')
+  const recurrentsSnapshot = await db.collection('pt_recurrent')
     .where('dueDateDay', 'in', dueDays)
     .get();
 
@@ -134,7 +134,7 @@ async function main() {
 
     // Check if there's a paid instance for this recurrent in the target month
     const instancesSnapshot = await db
-      .collection('p_t_payment')
+      .collection('pt_payment')
       .where('recurrentId', '==', recurrent.id)
       .where('isPaid', '==', true)
       .where('createdAt', '>=', admin.firestore.Timestamp.fromDate(monthStart))
@@ -178,7 +178,7 @@ async function main() {
   for (const [userId, payments] of Object.entries(paymentsByUser)) {
     // Fetch FCM tokens for this user
     const tokensSnapshot = await db
-      .collection('p_t_fcm_token')
+      .collection('pt_fcm_token')
       .where('userId', '==', userId)
       .where('notificationsEnabled', '==', true)
       .get();
@@ -232,7 +232,7 @@ async function main() {
           // Remove invalid tokens
           if (error.code === 'messaging/invalid-registration-token' ||
               error.code === 'messaging/registration-token-not-registered') {
-            await db.collection('p_t_fcm_token').doc(tokenDoc.id).delete();
+            await db.collection('pt_fcm_token').doc(tokenDoc.id).delete();
             console.log(`      Removed invalid token`);
           }
         }

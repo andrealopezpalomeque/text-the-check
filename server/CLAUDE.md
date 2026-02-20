@@ -128,7 +128,7 @@ Handlers use helpers directly via imports (no dependency injection for stateless
 - Recurring payment status (pending/paid, days until due, monthly total)
 - AI financial health analysis (3 months data, 2-3 actionable tips, max 800 chars)
 - Common categories fallback (supermercado, salidas, transporte, servicios, suscripciones)
-- Firestore: `ttc_user`, `ttc_finanzas_payment`, `ttc_finanzas_recurring`, `ttc_finanzas_category`, `ttc_finanzas_template`, `p_t_whatsapp_link`
+- Firestore: `ttc_user`, `ttc_finanzas_payment`, `ttc_finanzas_recurring`, `ttc_finanzas_category`, `ttc_finanzas_template`, `pt_whatsapp_link`
 
 ### GeminiHandler (`handlers/GeminiHandler.ts`)
 All AI operations via Google Generative AI SDK. All prompts defined in this class.
@@ -214,13 +214,13 @@ SENTRY_DSN=
 
 Shared: `ttc_user`
 Grupos: `ttc_group`, `ttc_expense`, `ttc_payment`
-Finanzas: `ttc_finanzas_payment`, `ttc_finanzas_recurring`, `ttc_finanzas_category`, `ttc_finanzas_template`, `p_t_whatsapp_link`
+Finanzas: `ttc_finanzas_payment`, `ttc_finanzas_recurring`, `ttc_finanzas_category`, `ttc_finanzas_template`, `pt_whatsapp_link`
 
 ## Scripts
 
 Standalone Node.js scripts for cron jobs. Import `instrument.ts` first for Sentry. Share Firebase + Gemini config.
-- `send-reminders.ts` — Morning (due today + 3 days) and evening (due today) FCM push notifications for pending recurring payments. Queries `p_t_fcm_token` for enabled tokens, auto-removes invalid tokens.
-- `send-weekly-summary.ts` — Computes weekly stats (paid/unpaid, past/next week), generates AI insight via GeminiHandler, saves to `p_t_weekly_summary`, sends FCM notification.
+- `send-reminders.ts` — Morning (due today + 3 days) and evening (due today) FCM push notifications for pending recurring payments. Queries `pt_fcm_token` for enabled tokens, auto-removes invalid tokens.
+- `send-weekly-summary.ts` — Computes weekly stats (paid/unpaid, past/next week), generates AI insight via GeminiHandler, saves to `pt_weekly_summary`, sends FCM notification.
 
 ## Key Conventions
 

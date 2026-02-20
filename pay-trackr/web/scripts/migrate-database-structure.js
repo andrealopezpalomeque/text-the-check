@@ -82,7 +82,7 @@ async function createRecurrentPayments(payments) {
       };
 
       try {
-        const newDoc = await db.collection("p_t_recurrent").add(recurrent);
+        const newDoc = await db.collection("pt_recurrent").add(recurrent);
         logStatus(`Created recurrent payment with ID: ${newDoc.id}`);
         recurrentObjects.push({ ...recurrent, id: newDoc.id });
         stats.createdRecurrents++;
@@ -137,7 +137,7 @@ async function createPaymentsFromTrackers(trackers, recurrentObjects) {
       };
 
       try {
-        const newDoc = await db.collection("p_t_payment").add(payment);
+        const newDoc = await db.collection("pt_payment").add(payment);
         logStatus(`Created new payment with ID: ${newDoc.id}`);
         stats.createdNewPayments++;
       } catch (error) {
@@ -157,7 +157,7 @@ async function runMigration() {
   // const allPayments = await fetchCollection("payment");
   
   // Step 2: Create recurrent payments and get references
-  const recurrentObjects = await fetchCollection("p_t_recurrent");//await createRecurrentPayments(allPayments);
+  const recurrentObjects = await fetchCollection("pt_recurrent");//await createRecurrentPayments(allPayments);
   logStatus(`Created ${recurrentObjects.length} recurrent payment references`);
   
   // Step 3: Fetch all trackers

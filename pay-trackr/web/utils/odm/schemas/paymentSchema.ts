@@ -11,7 +11,7 @@ import {
 import { getFirestoreInstance, getCurrentUser } from '~/utils/firebase';
 
 export class PaymentSchema extends Schema {
-  protected collectionName = 'p_t_payment';
+  protected collectionName = 'pt_payment';
 
   protected schema: SchemaDefinition = {
     userId: {

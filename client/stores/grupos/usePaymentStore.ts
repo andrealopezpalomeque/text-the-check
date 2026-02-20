@@ -146,7 +146,6 @@ export const usePaymentStore = defineStore('payment', {
       toUserId: string,
       amount: number,
       recordedBy: string,
-      authUid: string,
       note?: string
     ): Promise<string> {
       const { db } = useFirebase()
@@ -159,7 +158,6 @@ export const usePaymentStore = defineStore('payment', {
           toUserId,
           amount,
           recordedBy,
-          authUid,
           createdAt: Timestamp.now()
         }
 

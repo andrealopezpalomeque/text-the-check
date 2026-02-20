@@ -172,7 +172,6 @@ export const useExpenseStore = defineStore('expense', {
     async addExpense(
       userId: string,
       userName: string,
-      authUid: string,
       amount: number,
       description: string,
       category: ExpenseCategory,
@@ -189,7 +188,6 @@ export const useExpenseStore = defineStore('expense', {
         const expenseData: any = {
           userId,
           userName,
-          authUid,
           amount,
           description,
           category,

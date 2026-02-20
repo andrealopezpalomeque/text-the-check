@@ -427,8 +427,7 @@ const confirmPayment = async () => {
 
     // Get the current user's ID (the one recording the payment)
     const recordedBy = firestoreUser.value?.id
-    const authUid = firebaseUser.value?.uid
-    if (!recordedBy || !authUid) {
+    if (!recordedBy) {
       console.error('No linked user found')
       return
     }
@@ -438,8 +437,7 @@ const confirmPayment = async () => {
       props.settlement.fromUserId,
       props.settlement.toUserId,
       paymentAmount.value,
-      recordedBy,
-      authUid
+      recordedBy
     )
 
     // Show success message

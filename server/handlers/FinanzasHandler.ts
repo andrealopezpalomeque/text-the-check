@@ -4,7 +4,7 @@
  * Commands, expense parsing, account linking, audio/image/PDF processing,
  * category matching, monthly summary, recurring payments, AI analysis.
  *
- * Firestore collections: p_t_whatsapp_link, p_t_payment, p_t_expense_category, p_t_recurrent
+ * Firestore collections: pt_whatsapp_link, pt_payment, pt_expense_category, pt_recurrent
  */
 
 import admin from 'firebase-admin'
@@ -16,10 +16,10 @@ import type GeminiHandler from './GeminiHandler.js'
 // ─── Constants ─────────────────────────────────────────────────────
 
 const COLLECTIONS = {
-  WHATSAPP_LINKS: 'p_t_whatsapp_link',
-  PAYMENTS: 'p_t_payment',
-  CATEGORIES: 'p_t_expense_category',
-  RECURRENTS: 'p_t_recurrent',
+  WHATSAPP_LINKS: 'pt_whatsapp_link',
+  PAYMENTS: 'pt_payment',
+  CATEGORIES: 'pt_expense_category',
+  RECURRENTS: 'pt_recurrent',
 }
 
 const FALLBACK_CATEGORIES = ['supermercado', 'salidas', 'transporte', 'servicios', 'suscripciones']

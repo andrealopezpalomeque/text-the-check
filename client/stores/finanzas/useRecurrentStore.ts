@@ -309,7 +309,7 @@ export const useFinanzasRecurrentStore = defineStore("finanzas-recurrent", {
       this.isLoading = true;
 
       try {
-        await updateDoc(doc(db, "p_t_payment", paymentId), {
+        await updateDoc(doc(db, "pt_payment", paymentId), {
           isPaid: isPaid,
           paidDate: isPaid ? serverTimestamp() : null
         });
@@ -385,7 +385,7 @@ export const useFinanzasRecurrentStore = defineStore("finanzas-recurrent", {
           createdAt: Timestamp.fromDate(paymentDate)
         };
 
-        const docRef = await addDoc(collection(db, "p_t_payment"), newPayment);
+        const docRef = await addDoc(collection(db, "pt_payment"), newPayment);
 
         this.paymentInstances.push({
           id: docRef.id,
@@ -445,7 +445,7 @@ export const useFinanzasRecurrentStore = defineStore("finanzas-recurrent", {
         }
 
         const paymentInstancesQuery = query(
-          collection(db, "p_t_payment"),
+          collection(db, "pt_payment"),
           where("recurrentId", "==", recurrentId),
           where("userId", "==", user.uid)
         );

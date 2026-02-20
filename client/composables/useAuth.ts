@@ -116,30 +116,17 @@ export const useAuth = () => {
     const existingUser = await findUserByEmail(email)
 
     if (existingUser) {
-      // Store/update the authUid if not already set or if it changed
-      if (existingUser.authUid !== firebaseUser.uid) {
-        try {
-          const database = requireDb()
-          const userRef = doc(database, 'ttc_user', existingUser.id)
-          await updateDoc(userRef, { authUid: firebaseUser.uid })
-          existingUser.authUid = firebaseUser.uid
-        } catch (err) {
-          console.error('Error updating authUid:', err)
-          // Continue anyway - user can still use the app, just can't update their profile yet
-        }
-      }
       return existingUser
     }
 
     // Email not found - auto-create user on first sign-in
     const database = requireDb()
-    const newUserRef = doc(collection(database, 'ttc_user'))
+    const newUserRef = doc(database, 'ttc_user', firebaseUser.uid)
     const newUser: User = {
       id: newUserRef.id,
       name: firebaseUser.displayName || email.split('@')[0],
       phone: '',
       email: email.toLowerCase(),
-      authUid: firebaseUser.uid,
       aliases: [],
     }
     await setDoc(newUserRef, { ...newUser, createdAt: Timestamp.now() })

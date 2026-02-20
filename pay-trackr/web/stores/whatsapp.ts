@@ -172,7 +172,7 @@ export const useWhatsappStore = defineStore('whatsapp', {
       this.unsubscribe();
 
       const db = getFirestoreInstance();
-      const linksRef = collection(db, 'p_t_whatsapp_link');
+      const linksRef = collection(db, 'pt_whatsapp_link');
       const q = query(linksRef, where('userId', '==', user.uid), where('status', '==', 'linked'));
 
       unsubscribeLink = onSnapshot(q, (snapshot) => {

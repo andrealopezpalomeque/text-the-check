@@ -74,7 +74,7 @@ async function main(): Promise<void> {
   // ── Step 1: Fetch ALL recurrent templates ──
 
   console.log('\n--- Fetching recurrent templates ---')
-  const recurrentsSnapshot = await db.collection('p_t_recurrent').get()
+  const recurrentsSnapshot = await db.collection('pt_recurrent').get()
 
   if (recurrentsSnapshot.empty) {
     console.log('No recurrent templates found')
@@ -139,7 +139,7 @@ async function main(): Promise<void> {
     })
 
     // Current month payments
-    const paymentsSnapshot = await db.collection('p_t_payment')
+    const paymentsSnapshot = await db.collection('pt_payment')
       .where('userId', '==', userId)
       .where('createdAt', '>=', admin.firestore.Timestamp.fromDate(monthStart))
       .where('createdAt', '<=', admin.firestore.Timestamp.fromDate(monthEnd))
@@ -214,7 +214,7 @@ async function main(): Promise<void> {
     // ── Step 3.5: Persist weekly summary ──
 
     try {
-      await db.collection('p_t_weekly_summary').doc(userId).set({
+      await db.collection('pt_weekly_summary').doc(userId).set({
         userId,
         stats,
         aiInsight,
@@ -238,7 +238,7 @@ async function main(): Promise<void> {
 
     // ── Step 5: Send FCM notifications ──
 
-    const tokensSnapshot = await db.collection('p_t_fcm_token')
+    const tokensSnapshot = await db.collection('pt_fcm_token')
       .where('userId', '==', userId)
       .where('notificationsEnabled', '==', true)
       .get()
@@ -285,7 +285,7 @@ async function main(): Promise<void> {
           error.code === 'messaging/invalid-registration-token' ||
           error.code === 'messaging/registration-token-not-registered'
         ) {
-          await db.collection('p_t_fcm_token').doc(tokenDoc.id).delete()
+          await db.collection('pt_fcm_token').doc(tokenDoc.id).delete()
           console.log(`      Removed invalid token`)
         }
       }

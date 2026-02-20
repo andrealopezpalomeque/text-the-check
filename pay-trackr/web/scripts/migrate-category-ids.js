@@ -64,7 +64,7 @@ async function getOrCreateCategoriesForUser(userId) {
 
   try {
     // Check if user already has categories
-    const existingCategories = await db.collection('p_t_expense_category')
+    const existingCategories = await db.collection('pt_expense_category')
       .where('userId', '==', userId)
       .where('deletedAt', '==', null)
       .get();
@@ -99,7 +99,7 @@ async function getOrCreateCategoriesForUser(userId) {
         deletedAt: null
       };
 
-      const docRef = await db.collection('p_t_expense_category').add(newCategory);
+      const docRef = await db.collection('pt_expense_category').add(newCategory);
       categoryMap.set(key, docRef.id);
       stats.categoriesCreated++;
       logStatus(`Created category: ${mapping.name} (${docRef.id})`);
@@ -118,7 +118,7 @@ async function migratePaymentsForUser(userId, categoryMap) {
 
   try {
     // Fetch all payments for this user
-    const paymentsSnapshot = await db.collection('p_t_payment')
+    const paymentsSnapshot = await db.collection('pt_payment')
       .where('userId', '==', userId)
       .get();
 
@@ -181,7 +181,7 @@ async function migrateRecurrentsForUser(userId, categoryMap) {
 
   try {
     // Fetch all recurrent payments for this user
-    const recurrentsSnapshot = await db.collection('p_t_recurrent')
+    const recurrentsSnapshot = await db.collection('pt_recurrent')
       .where('userId', '==', userId)
       .get();
 

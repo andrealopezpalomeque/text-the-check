@@ -86,7 +86,7 @@ export const useWhatsappLink = () => {
 
     unsubscribe()
 
-    const linksRef = collection(db, 'p_t_whatsapp_link')
+    const linksRef = collection(db, 'pt_whatsapp_link')
     const q = query(linksRef, where('userId', '==', authUid), where('status', '==', 'linked'))
 
     unsubscribeLink = onSnapshot(q, (snapshot) => {
@@ -117,18 +117,16 @@ export const useWhatsappLink = () => {
   // Generate a new linking code
   async function generateCode() {
     const authUid = user.value?.uid
-    const userId = firestoreUser.value?.id
-    if (!authUid || !userId) return
+    if (!authUid) return
 
     isGenerating.value = true
     error.value = null
 
     try {
       const code = generateRandomCode()
-      await setDoc(doc(db, 'p_t_whatsapp_link', code), {
+      await setDoc(doc(db, 'pt_whatsapp_link', code), {
         status: 'pending',
         userId: authUid,
-        ttcUserId: userId,
         createdAt: serverTimestamp(),
       })
 
@@ -151,7 +149,7 @@ export const useWhatsappLink = () => {
     error.value = null
 
     try {
-      await deleteDoc(doc(db, 'p_t_whatsapp_link', linkedAccount.value.id))
+      await deleteDoc(doc(db, 'pt_whatsapp_link', linkedAccount.value.id))
       linkedAccount.value = null
     } catch (err: any) {
       console.error('Error unlinking account:', err)

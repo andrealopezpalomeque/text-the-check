@@ -17,31 +17,13 @@ service cloud.firestore {
       return request.auth.uid == userId;
     }
 
-    // Check if the authenticated user owns the user document (via authUid field)
-    function isUserOwner() {
-      return resource.data.authUid == request.auth.uid;
-    }
-
-    // Check if the authenticated user is the owner of an expense/payment by looking up their authUid
-    // This works for both WhatsApp-created items (no authUid on item) and Dashboard-created items
-    function isItemOwnerByLookup(creatorUserId) {
-      let creatorAuthUid = get(/databases/$(database)/documents/ttc_user/$(creatorUserId)).data.authUid;
-      return request.auth.uid == creatorAuthUid;
-    }
-
-    // Check if this is the first time linking (authUid not set yet) or already linked
-    function canLinkAuthUid() {
-      return !('authUid' in resource.data) || resource.data.authUid == request.auth.uid;
-    }
-
     // Validate expense data structure and constraints for CREATE
     function isValidExpenseCreate() {
       let data = request.resource.data;
 
-      return data.keys().hasAll(['userId', 'userName', 'authUid', 'amount', 'description', 'category', 'timestamp', 'originalInput'])
+      return data.keys().hasAll(['userId', 'userName', 'amount', 'description', 'category', 'timestamp', 'originalInput'])
         && data.userId is string
         && data.userName is string
-        && data.authUid is string
         && data.amount is number
         && data.amount > 0  // Amount must be positive
         && data.description is string
@@ -57,7 +39,7 @@ service cloud.firestore {
     }
 
     // Validate expense data structure and constraints for UPDATE
-    // More lenient: authUid and originalInput are optional (WhatsApp-created expenses may not have them)
+    // More lenient: originalInput is optional (WhatsApp-created expenses may not have it)
     function isValidExpenseUpdate() {
       let data = request.resource.data;
 
@@ -72,7 +54,6 @@ service cloud.firestore {
         && data.category in ['food', 'transport', 'accommodation', 'entertainment', 'shopping', 'general']
         && data.timestamp is timestamp
         // Optional fields validation
-        && (!data.keys().hasAny(['authUid']) || data.authUid is string)
         && (!data.keys().hasAny(['originalInput']) || data.originalInput is string)
         && (!data.keys().hasAny(['originalAmount']) || data.originalAmount is number)
         && (!data.keys().hasAny(['originalCurrency']) || data.originalCurrency is string)
@@ -83,7 +64,7 @@ service cloud.firestore {
     function isValidPayment() {
       let data = request.resource.data;
 
-      return data.keys().hasAll(['groupId', 'fromUserId', 'toUserId', 'amount', 'recordedBy', 'authUid', 'createdAt'])
+      return data.keys().hasAll(['groupId', 'fromUserId', 'toUserId', 'amount', 'recordedBy', 'createdAt'])
         && data.groupId is string
         && data.fromUserId is string
         && data.toUserId is string
@@ -91,7 +72,6 @@ service cloud.firestore {
         && data.amount is number
         && data.amount > 0  // Amount must be positive
         && data.recordedBy is string
-        && data.authUid is string
         && data.createdAt is timestamp
         // Optional fields validation
         && (!data.keys().hasAny(['note']) || data.note is string);
@@ -108,7 +88,6 @@ service cloud.firestore {
         && data.phone is string
         // Optional fields
         && (!data.keys().hasAny(['email']) || data.email is string)
-        && (!data.keys().hasAny(['authUid']) || data.authUid is string)
         && (!data.keys().hasAny(['aliases']) || data.aliases is list)
         && (!data.keys().hasAny(['paymentInfo']) || data.paymentInfo is map)
         && (!data.keys().hasAny(['phoneNumber']) || data.phoneNumber is string) // legacy field
@@ -122,24 +101,14 @@ service cloud.firestore {
       // Anyone authenticated can read user profiles (needed for @mentions and display)
       allow read: if isAuthenticated();
 
-      // Only allow creating/updating own user document
-      // In production, user creation should be handled by backend/Cloud Functions
+      // Doc ID must equal Auth UID — one user, one document
       allow create: if isAuthenticated()
-                    && request.resource.data.authUid == request.auth.uid
+                    && userId == request.auth.uid
                     && isValidUser();
 
-      // Allow updates if:
-      // 1. User is authenticated
-      // 2. Either first time linking authUid OR authUid matches
-      // 3. Phone number cannot be changed after creation
+      // Only the owner (doc ID == Auth UID) can update their profile
       allow update: if isAuthenticated()
-                    && canLinkAuthUid()
-                    && request.resource.data.phone == resource.data.phone
-                    // Once authUid is set, only that user can update
-                    && (
-                      !('authUid' in resource.data)
-                      || resource.data.authUid == request.auth.uid
-                    );
+                    && userId == request.auth.uid;
 
       // Users cannot delete their own profile (should be handled by admin)
       allow delete: if false;
@@ -152,10 +121,10 @@ service cloud.firestore {
       // All authenticated users can read expenses (collaborative tracking)
       allow read: if isAuthenticated();
 
-      // Users can create expenses - authUid must match their Firebase Auth UID
+      // Users can create expenses - userId must match their Firebase Auth UID
       // Note: WhatsApp-created expenses bypass rules (Admin SDK), so this only applies to Dashboard
       allow create: if isAuthenticated()
-                    && request.resource.data.authUid == request.auth.uid
+                    && request.resource.data.userId == request.auth.uid
                     && isValidExpenseCreate();
 
       // Any authenticated user can update expenses (collaborative editing)
@@ -197,24 +166,22 @@ service cloud.firestore {
     match /ttc_payment/{paymentId} {
       // Helper: Check if current user is one of the parties in the payment
       function isPaymentParty() {
-        let fromUserAuthUid = get(/databases/$(database)/documents/ttc_user/$(resource.data.fromUserId)).data.authUid;
-        let toUserAuthUid = get(/databases/$(database)/documents/ttc_user/$(resource.data.toUserId)).data.authUid;
-        return request.auth.uid == fromUserAuthUid || request.auth.uid == toUserAuthUid;
+        return request.auth.uid == resource.data.fromUserId
+            || request.auth.uid == resource.data.toUserId;
       }
 
       // Helper: Check if current user is the one who recorded the payment
       function isPaymentRecorder() {
-        let recorderAuthUid = get(/databases/$(database)/documents/ttc_user/$(resource.data.recordedBy)).data.authUid;
-        return request.auth.uid == recorderAuthUid;
+        return request.auth.uid == resource.data.recordedBy;
       }
 
       // All authenticated users can read payments (collaborative tracking)
       allow read: if isAuthenticated();
 
-      // Users can create payments - authUid must match their Firebase Auth UID
+      // Users can create payments - recordedBy must match their Firebase Auth UID
       // Note: WhatsApp-created payments bypass rules (Admin SDK), so this only applies to Dashboard
       allow create: if isAuthenticated()
-                    && request.resource.data.authUid == request.auth.uid
+                    && request.resource.data.recordedBy == request.auth.uid
                     && isValidPayment();
 
       // Only the person who recorded the payment can update it
@@ -230,9 +197,9 @@ service cloud.firestore {
     }
 
     // ============================================
-    // p_t_whatsapp_link Collection
+    // pt_whatsapp_link Collection
     // ============================================
-    match /p_t_whatsapp_link/{docId} {
+    match /pt_whatsapp_link/{docId} {
       // Users can only read/create/delete their own link docs (userId = Auth UID)
       allow read: if isAuthenticated()
                   && resource.data.userId == request.auth.uid;
@@ -248,7 +215,7 @@ service cloud.firestore {
     // ============================================
     // Finanzas Collections
     // ============================================
-    match /p_t_payment/{docId} {
+    match /pt_payment/{docId} {
       allow read: if isAuthenticated()
                   && resource.data.userId == request.auth.uid;
       allow create: if isAuthenticated()
@@ -259,7 +226,7 @@ service cloud.firestore {
                     && resource.data.userId == request.auth.uid;
     }
 
-    match /p_t_recurrent/{docId} {
+    match /pt_recurrent/{docId} {
       allow read: if isAuthenticated()
                   && resource.data.userId == request.auth.uid;
       allow create: if isAuthenticated()
@@ -270,7 +237,7 @@ service cloud.firestore {
                     && resource.data.userId == request.auth.uid;
     }
 
-    match /p_t_expense_category/{docId} {
+    match /pt_expense_category/{docId} {
       allow read: if isAuthenticated()
                   && resource.data.userId == request.auth.uid;
       allow create: if isAuthenticated()
@@ -281,7 +248,7 @@ service cloud.firestore {
                     && resource.data.userId == request.auth.uid;
     }
 
-    match /p_t_payment_template/{docId} {
+    match /pt_payment_template/{docId} {
       allow read: if isAuthenticated()
                   && resource.data.userId == request.auth.uid;
       allow create: if isAuthenticated()

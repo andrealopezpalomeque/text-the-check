@@ -188,7 +188,7 @@ service cloud.firestore {
     // ============================================
     // PayTrackr - One-time & recurrent payment instances
     // ============================================
-    match /p_t_payment/{docId} {
+    match /pt_payment/{docId} {
       allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
       allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
@@ -197,7 +197,7 @@ service cloud.firestore {
     // ============================================
     // PayTrackr - Recurrent payment templates
     // ============================================
-    match /p_t_recurrent/{docId} {
+    match /pt_recurrent/{docId} {
       allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
       allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
@@ -206,7 +206,7 @@ service cloud.firestore {
     // ============================================
     // PayTrackr - Expense categories
     // ============================================
-    match /p_t_expense_category/{docId} {
+    match /pt_expense_category/{docId} {
       allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
       allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
@@ -215,7 +215,7 @@ service cloud.firestore {
     // ============================================
     // PayTrackr - FCM push notification tokens
     // ============================================
-    match /p_t_fcm_token/{docId} {
+    match /pt_fcm_token/{docId} {
       allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
       allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
@@ -224,7 +224,7 @@ service cloud.firestore {
     // ============================================
     // PayTrackr - WhatsApp account linking
     // ============================================
-    match /p_t_whatsapp_link/{docId} {
+    match /pt_whatsapp_link/{docId} {
       allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
       allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
@@ -234,7 +234,7 @@ service cloud.firestore {
     // ============================================
     // PayTrackr - Payment templates (quick-add)
     // ============================================
-    match /p_t_payment_template/{docId} {
+    match /pt_payment_template/{docId} {
       allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
       allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
@@ -244,7 +244,7 @@ service cloud.firestore {
     // PayTrackr - Weekly summaries (server-written, client read-only)
     // Doc ID = userId, so we match on docId directly
     // ============================================
-    match /p_t_weekly_summary/{docId} {
+    match /pt_weekly_summary/{docId} {
       allow read: if isAuthenticated() && docId == request.auth.uid;
       allow create, update, delete: if false;
     }

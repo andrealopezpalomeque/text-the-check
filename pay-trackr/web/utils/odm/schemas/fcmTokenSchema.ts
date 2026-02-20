@@ -11,7 +11,7 @@ import {
 import { getFirestoreInstance } from '~/utils/firebase';
 
 export class FcmTokenSchema extends Schema {
-  protected collectionName = 'p_t_fcm_token';
+  protected collectionName = 'pt_fcm_token';
 
   protected schema: SchemaDefinition = {
     userId: {
