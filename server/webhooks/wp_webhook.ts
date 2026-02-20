@@ -270,20 +270,22 @@ async function handleVincular(phone: string, code: string, contactName: string):
       return
     }
 
-    const userId = codeData.userId
-    const authUid = codeData.authUid || ''
+    const userId = codeData.userId        // Auth UID (for Finanzas)
+    const ttcUserId = codeData.ttcUserId  // Firestore doc ID (for ttc_user)
 
     // Delete pending code doc
     await db.collection('p_t_whatsapp_link').doc(codeUpper).delete()
 
     // Set ttc_user.phone (enables Grupos)
-    await db.collection('ttc_user').doc(userId).update({ phone })
+    if (ttcUserId) {
+      await db.collection('ttc_user').doc(ttcUserId).update({ phone })
+    }
 
     // Create linked doc in p_t_whatsapp_link (enables Finanzas)
     await db.collection('p_t_whatsapp_link').doc(phone).set({
       status: 'linked',
       userId,
-      authUid,
+      ttcUserId,
       phoneNumber: phone,
       contactName,
       linkedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -304,11 +306,11 @@ async function handleDesvincular(phone: string): Promise<void> {
       return
     }
 
-    const userId = linkDoc.data()!.userId
+    const ttcUserId = linkDoc.data()!.ttcUserId
 
     // Clear ttc_user.phone
-    if (userId) {
-      await db.collection('ttc_user').doc(userId).update({ phone: '' })
+    if (ttcUserId) {
+      await db.collection('ttc_user').doc(ttcUserId).update({ phone: '' })
     }
 
     // Delete linked doc

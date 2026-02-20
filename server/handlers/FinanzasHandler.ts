@@ -105,20 +105,11 @@ export default class FinanzasHandler {
     await this.handleExpenseMessage(from, text)
   }
 
-  /** Check if phone is linked. Returns authUid (Firebase Auth UID) or null. */
+  /** Check if phone is linked. Returns userId (Firebase Auth UID) or null. */
   async checkLinked(phone: string): Promise<string | null> {
     const linkDoc = await db.collection(COLLECTIONS.WHATSAPP_LINKS).doc(phone).get()
     if (linkDoc.exists && linkDoc.data()?.status === 'linked') {
-      const data = linkDoc.data()!
-      if (!data.authUid) {
-        Sentry.captureMessage('WhatsApp link doc missing authUid — payments will be invisible to frontend', {
-          level: 'warning',
-          extra: { phone, userId: data.userId },
-        })
-      }
-      // Return authUid (Firebase Auth UID) — this is what the frontend uses
-      // to query payments with where('userId', '==', user.uid)
-      return data.authUid || data.userId
+      return linkDoc.data()!.userId
     }
     return null
   }

@@ -233,8 +233,13 @@ service cloud.firestore {
     // p_t_whatsapp_link Collection
     // ============================================
     match /p_t_whatsapp_link/{docId} {
-      // Authenticated users can read/write their own link docs
-      allow read, create, delete: if isAuthenticated();
+      // Users can only read/create/delete their own link docs (userId = Auth UID)
+      allow read: if isAuthenticated()
+                  && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated()
+                    && request.resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated()
+                    && resource.data.userId == request.auth.uid;
 
       // No client-side updates — linking is done by the server (Admin SDK)
       allow update: if false;

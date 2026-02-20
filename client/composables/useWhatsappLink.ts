@@ -87,7 +87,7 @@ export const useWhatsappLink = () => {
     unsubscribe()
 
     const linksRef = collection(db, 'p_t_whatsapp_link')
-    const q = query(linksRef, where('authUid', '==', authUid), where('status', '==', 'linked'))
+    const q = query(linksRef, where('userId', '==', authUid), where('status', '==', 'linked'))
 
     unsubscribeLink = onSnapshot(q, (snapshot) => {
       if (!snapshot.empty) {
@@ -127,8 +127,8 @@ export const useWhatsappLink = () => {
       const code = generateRandomCode()
       await setDoc(doc(db, 'p_t_whatsapp_link', code), {
         status: 'pending',
-        userId,
-        authUid,
+        userId: authUid,
+        ttcUserId: userId,
         createdAt: serverTimestamp(),
       })
 
