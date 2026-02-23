@@ -20,6 +20,7 @@ import {
   formatTransferConfirmation,
   type MonthlySummaryOptions,
 } from '../helpers/responseFormatter.js'
+import { generatePhoneCandidates } from '../helpers/phone.js'
 import type GeminiHandler from './GeminiHandler.js'
 import type { AIPersonalExpenseResult } from './GeminiHandler.js'
 
@@ -160,11 +161,13 @@ export default class FinanzasHandler {
     await this.handleExpenseMessage(from, text)
   }
 
-  /** Check if phone is linked. Returns userId (Firebase Auth UID) or null. */
+  /** Check if phone is linked. Tries multiple format candidates. Returns userId (Firebase Auth UID) or null. */
   async checkLinked(phone: string): Promise<string | null> {
-    const linkDoc = await db.collection(COLLECTIONS.WHATSAPP_LINKS).doc(phone).get()
-    if (linkDoc.exists && linkDoc.data()?.status === 'linked') {
-      return linkDoc.data()!.userId
+    for (const candidate of generatePhoneCandidates(phone)) {
+      const linkDoc = await db.collection(COLLECTIONS.WHATSAPP_LINKS).doc(candidate).get()
+      if (linkDoc.exists && linkDoc.data()?.status === 'linked') {
+        return linkDoc.data()!.userId
+      }
     }
     return null
   }

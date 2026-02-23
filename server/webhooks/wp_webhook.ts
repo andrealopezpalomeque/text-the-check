@@ -341,6 +341,11 @@ async function determineUserMode(phone: string): Promise<UserWithMode> {
   // 4. Check if member of any grupo
   const hasGroups = user !== null
 
+  if (!isLinked && !hasGroups) {
+    const candidates = generatePhoneCandidates(phone)
+    console.log(`[MODE] User not found for phone ${phone}. Candidates tried: ${candidates.join(', ')}`)
+  }
+
   if (isLinked && hasGroups) {
     // Both — need explicit mode selection
     // For now, default to the one they used most recently, or prompt
