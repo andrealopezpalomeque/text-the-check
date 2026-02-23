@@ -16,7 +16,7 @@ import {
   formatParseError, formatSaveError, formatMediaError,
   formatMonthlySummary, formatRecurringSummary,
   buildConfirmationRequest, buildConfirmationSuccess, buildConfirmationCancelled,
-  isAffirmativeResponse, isNegativeResponse,
+  isAffirmativeResponse, isNegativeResponse, isGreeting, formatGreetingResponse,
   formatTransferConfirmation, formatExpenseList,
   type MonthlySummaryOptions, type ExpenseListEntry,
 } from '../helpers/responseFormatter.js'
@@ -197,6 +197,12 @@ export default class FinanzasHandler {
     if (normalized === 'fijos' || normalized === '/fijos') { await this.handleFijosCommand(from); return }
     if (normalized === 'analisis' || normalized === '/analisis') { await this.handleAnalisisCommand(from); return }
     if (normalized === '/lista') { await this.handleListaCommand(from); return }
+
+    // Greeting detection — respond with mode context, don't send to AI
+    if (isGreeting(normalized)) {
+      await sendMessage(from, formatGreetingResponse('finanzas'))
+      return
+    }
 
     await this.handleExpenseMessage(from, text)
   }
@@ -451,12 +457,7 @@ export default class FinanzasHandler {
         return
       }
 
-      if (aiResult.type === 'unknown' && aiResult.suggestion) {
-        await sendMessage(phone, aiResult.suggestion)
-        return
-      }
-
-      // AI couldn't parse — show parse error with NLP examples
+      // AI couldn't parse — show our formatted parse error (not raw AI suggestion)
       const commonCats = await this.getUserCommonCategories(userId)
       await sendMessage(phone, formatParseError('finanzas', commonCats))
     } catch (error) {

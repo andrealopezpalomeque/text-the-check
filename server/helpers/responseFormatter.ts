@@ -104,6 +104,7 @@ const CATEGORY_EMOJIS: Record<string, string> = {
 
 const AFFIRMATIVE_WORDS = ['si', 'sí', 'yes', 's', 'ok', 'dale', 'va', 'bueno', 'listo', 'confirmo']
 const NEGATIVE_WORDS = ['no', 'n', 'cancelar', 'cancel', 'nope', 'na', 'nel']
+const GREETING_WORDS = ['hola', 'hello', 'hi', 'hey', 'buenas', 'buen dia', 'buen día', 'buenos dias', 'buenos días', 'buenas tardes', 'buenas noches', 'que tal', 'qué tal', 'ey', 'ea', 'wena']
 
 // ─── Amount Formatting ──────────────────────────────────────────
 
@@ -163,6 +164,19 @@ export function isAffirmativeResponse(text: string): boolean {
 
 export function isNegativeResponse(text: string): boolean {
   return NEGATIVE_WORDS.includes(text.trim().toLowerCase())
+}
+
+export function isGreeting(text: string): boolean {
+  return GREETING_WORDS.includes(text.trim().toLowerCase())
+}
+
+export function formatGreetingResponse(mode: AppMode, context?: { groupName?: string }): string {
+  if (mode === 'grupos') {
+    const groupLine = context?.groupName ? `\n📁 Grupo activo: ${bold(context.groupName)}` : ''
+    return `👋 *¡Hola!*\n\nEstás en modo ${bold('grupos')} 👥${groupLine}\nContame qué pagaste y lo divido.\n\n${italic('Escribí /ayuda para ver todas las opciones.')}`
+  }
+
+  return `👋 *¡Hola!*\n\nEstás en modo ${bold('finanzas')} 📊\nContame qué pagaste o enviá un comprobante.\n\n${italic('Escribí /ayuda para ver todas las opciones.')}`
 }
 
 export function buildConfirmationRequest(options: ConfirmationRequestOptions): string {

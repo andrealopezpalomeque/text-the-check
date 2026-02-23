@@ -15,7 +15,7 @@ import { sendMessage, downloadMedia } from '../helpers/whatsapp.js'
 import { normalizeForComparison, generatePhoneCandidates } from '../helpers/phone.js'
 import {
   appFooter,
-  isAffirmativeResponse, isNegativeResponse,
+  isAffirmativeResponse, isNegativeResponse, isGreeting, formatGreetingResponse,
   buildConfirmationRequest, buildConfirmationSuccess, buildConfirmationCancelled,
   formatParseError, formatValidationError, formatUnresolvedNamesError,
   formatPaymentError, formatSaveError, formatMediaError,
@@ -285,7 +285,14 @@ export default class GruposHandler {
       return
     }
 
-    // 7. Multi-group user without activeGroupId
+    // 7. Greeting detection — respond with mode + group context, don't send to AI
+    if (isGreeting(text.trim().toLowerCase())) {
+      const group = await this.getGroupByUserId(user.id)
+      await sendMessage(from, formatGreetingResponse('grupos', { groupName: group?.name }))
+      return
+    }
+
+    // 8. Multi-group user without activeGroupId
     const allGroups = await this.getAllGroupsByUserId(user.id)
     if (allGroups.length > 1 && !user.activeGroupId) {
       this.pendingExpenses.set(user.id, {
@@ -314,8 +321,9 @@ export default class GruposHandler {
         } else if (aiResult.type === 'payment' && aiResult.confidence >= threshold) {
           await this.handleAIPayment(from, aiResult, user, groupId, group?.name || '')
           return
-        } else if (aiResult.type === 'unknown' && aiResult.suggestion && aiResult.confidence < 0.5) {
-          await sendMessage(from, `🤔 ${aiResult.suggestion}`)
+        } else if (aiResult.type === 'unknown') {
+          // AI couldn't parse — show our formatted parse error (not raw AI suggestion)
+          await sendMessage(from, formatParseError('grupos'))
           return
         }
         // Low confidence → fall through to regex
