@@ -39,6 +39,7 @@ interface PendingFinanzasExpense {
   phone: string
   userId: string
   originalText: string
+  type: 'expense' | 'transfer'
   expense: {
     amount: number
     title: string
@@ -48,6 +49,16 @@ interface PendingFinanzasExpense {
     isRecurrent: boolean
     frequency: 'monthly' | 'weekly' | 'biweekly' | 'yearly' | null
   }
+  source: string
+  audioTranscription?: string | null
+  paymentDate?: admin.firestore.FieldValue | admin.firestore.Timestamp
+  recipient?: {
+    name: string | null
+    cbu: string | null
+    alias: string | null
+    bank: string | null
+  } | null
+  needsRevision?: boolean
   createdAt: Date
 }
 
@@ -82,6 +93,7 @@ function parseDateOrNow(dateStr: string | null | undefined): admin.firestore.Fie
 export default class FinanzasHandler {
   private gemini: GeminiHandler
   private pendingAIExpenses = new Map<string, PendingFinanzasExpense>()
+  private welcomedPhones = new Set<string>()
   private readonly AI_EXPENSE_TIMEOUT = 5 * 60 * 1000
 
   constructor(gemini: GeminiHandler) {
@@ -96,6 +108,30 @@ export default class FinanzasHandler {
     }
   }
 
+  private async checkAndSendWelcome(phone: string, contactName: string): Promise<boolean> {
+    if (this.welcomedPhones.has(phone)) return false
+
+    for (const candidate of generatePhoneCandidates(phone)) {
+      const linkDoc = await db.collection(COLLECTIONS.WHATSAPP_LINKS).doc(candidate).get()
+      if (linkDoc.exists && linkDoc.data()?.status === 'linked') {
+        this.welcomedPhones.add(phone)
+        if (!linkDoc.data()?.finanzasWelcomedAt) {
+          const firstName = contactName?.split(' ')[0] || ''
+          await sendMessage(phone, this.getWelcomeMessage(firstName))
+          await db.collection(COLLECTIONS.WHATSAPP_LINKS).doc(candidate).update({ finanzasWelcomedAt: new Date() })
+          return true
+        }
+        return false
+      }
+    }
+    return false
+  }
+
+  private getWelcomeMessage(firstName: string): string {
+    const greeting = firstName ? `¡Hola ${firstName}! 👋` : '¡Hola! 👋'
+    return `${greeting} Bienvenido a *text the check*\n\nSoy tu bot para registrar gastos personales.\n\n💬 *Simplemente contame qué pagaste:*\n"1500 café"\n"Gasté 2 lucas en uber"\n"50 dólares la cena"\n\nLa IA entiende lo que escribas y te pide confirmar antes de guardar.\n\n🎤 *También podés enviar:*\n- Audio describiendo tu gasto\n- Foto de comprobante\n- PDF de comprobante\n\n⚡ *Comandos:*\n/balance → resumen del mes\n/lista → últimos gastos\n/ayuda → más opciones\n\n━━━━━━━━━━━━━━━━━━━━━━\n\n📊 Desde el dashboard podés ver y editar tus gastos:\nhttps://textthecheck.app\n\n¡Empezá a cargar gastos! 🎉`
+  }
+
   private hasPendingAIExpense(phone: string): boolean {
     return this.pendingAIExpenses.has(phone)
   }
@@ -108,6 +144,9 @@ export default class FinanzasHandler {
 
   async handleMessage(from: string, messageType: string, messageData: any, contactName: string): Promise<void> {
     try {
+      // Welcome message on first interaction
+      if (await this.checkAndSendWelcome(from, contactName)) return
+
       if (messageType === 'text') {
         const text = messageData.text?.body || messageData
         await this.processTextMessage(from, typeof text === 'string' ? text : String(text), contactName)
@@ -120,7 +159,7 @@ export default class FinanzasHandler {
         if (mimeType === 'application/pdf') {
           await this.processPDFMessage(from, messageData.document.id, messageData.document?.caption, contactName)
         } else {
-          await sendMessage(from, 'Solo se aceptan documentos PDF.')
+          await sendMessage(from, '⚠️ Solo se aceptan documentos PDF.')
         }
       }
     } catch (error) {
@@ -138,7 +177,7 @@ export default class FinanzasHandler {
       if (isAffirmativeResponse(normalized)) {
         const pending = this.getPendingAIExpense(from)
         if (pending) {
-          await this.saveConfirmedAIExpense(pending)
+          await this.saveConfirmedExpense(pending)
           this.pendingAIExpenses.delete(from)
           return
         }
@@ -190,17 +229,17 @@ export default class FinanzasHandler {
     try {
       const snapshot = await db.collection(COLLECTIONS.CATEGORIES).where('userId', '==', userId).get()
       if (snapshot.empty) {
-        await sendMessage(phone, 'No tenes categorias configuradas en tu cuenta.')
+        await sendMessage(phone, '📋 No tenés categorías configuradas en tu cuenta.\n\nPodés crearlas desde la app.')
         return
       }
 
       const names = snapshot.docs.map(d => d.data().name).filter(Boolean).sort()
       const formatted = names.map(n => `#${n.toLowerCase()}`).join('\n')
 
-      await sendMessage(phone, `*Tus categorias:*\n\n${formatted}\n\n*Tip:* Podes escribir solo parte del nombre y se detecta automaticamente.\n\nEjemplos:\n#super -> Supermercado\n#sal -> Salidas\n#trans -> Transporte`)
+      await sendMessage(phone, `🏷️ *Tus categorías:*\n\n${formatted}\n\n💡 *Tip:* Podés escribir solo parte del nombre y se detecta automáticamente.\n\nEjemplos:\n#super → Supermercado\n#sal → Salidas\n#trans → Transporte`)
     } catch (error) {
       logError('Error fetching categories:', error)
-      await sendMessage(phone, 'Error al obtener las categorias.')
+      await sendMessage(phone, '⚠️ Error al obtener las categorías. Intentá nuevamente.')
     }
   }
 
@@ -254,7 +293,7 @@ export default class FinanzasHandler {
       await sendMessage(phone, formatMonthlySummary(summaryOptions))
     } catch (error) {
       logError('Error in RESUMEN command:', error)
-      await sendMessage(phone, 'Error al obtener el resumen. Intenta nuevamente.')
+      await sendMessage(phone, '⚠️ Error al obtener el resumen. Intentá nuevamente.')
     }
   }
 
@@ -265,7 +304,7 @@ export default class FinanzasHandler {
     try {
       const recurrentSnap = await db.collection(COLLECTIONS.RECURRENTS).where('userId', '==', userId).get()
       if (recurrentSnap.empty) {
-        await sendMessage(phone, 'No tenes gastos fijos configurados.\n\nPodes agregarlos desde la app en la seccion "Fijos".')
+        await sendMessage(phone, '📌 No tenés gastos fijos configurados.\n\nPodés agregarlos desde la app en la sección "Fijos".')
         return
       }
 
@@ -300,7 +339,7 @@ export default class FinanzasHandler {
       await sendMessage(phone, formatRecurringSummary({ totalMonthly: total, pending, paid }))
     } catch (error) {
       logError('Error in FIJOS command:', error)
-      await sendMessage(phone, 'Error al obtener los gastos fijos. Intenta nuevamente.')
+      await sendMessage(phone, '⚠️ Error al obtener los gastos fijos. Intentá nuevamente.')
     }
   }
 
@@ -309,12 +348,12 @@ export default class FinanzasHandler {
     if (!userId) { await sendMessage(phone, NOT_LINKED_MSG); return }
 
     if (!this.gemini.isAIEnabled()) {
-      await sendMessage(phone, 'El analisis con IA no esta disponible en este momento.')
+      await sendMessage(phone, '⚠️ El análisis con IA no está disponible en este momento.')
       return
     }
 
     try {
-      await sendMessage(phone, 'Analizando tus finanzas... esto puede tomar unos segundos.')
+      await sendMessage(phone, '🤖 Analizando tus finanzas...')
 
       const now = new Date()
       const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 3, 1)
@@ -358,7 +397,7 @@ export default class FinanzasHandler {
       await sendMessage(phone, analysis)
     } catch (error) {
       logError('Error in ANALISIS command:', error)
-      await sendMessage(phone, 'Error al analizar tus finanzas. Intenta nuevamente.')
+      await sendMessage(phone, '⚠️ Error al analizar tus finanzas. Intentá nuevamente.')
     }
   }
 
@@ -388,7 +427,7 @@ export default class FinanzasHandler {
       await sendMessage(phone, formatExpenseList(entries))
     } catch (error) {
       logError('Error in LISTA command:', error)
-      await sendMessage(phone, 'Error al obtener la lista. Intenta nuevamente.')
+      await sendMessage(phone, '⚠️ Error al obtener la lista. Intentá nuevamente.')
     }
   }
 
@@ -433,7 +472,7 @@ export default class FinanzasHandler {
     if (!userId) { await sendMessage(from, NOT_LINKED_MSG); return }
 
     if (!this.gemini.isAIEnabled()) {
-      await sendMessage(from, 'Esta funcion no esta disponible en este momento.')
+      await sendMessage(from, '⚠️ Esta función no está disponible en este momento.')
       return
     }
 
@@ -443,49 +482,53 @@ export default class FinanzasHandler {
     const catsSnap = await db.collection(COLLECTIONS.CATEGORIES).where('userId', '==', userId).get()
     const categoryNames = catsSnap.docs.map(d => d.data().name).filter(Boolean)
 
-    await sendMessage(from, 'Procesando audio...')
+    await sendMessage(from, '🎤 Procesando audio...')
     const transcription = await this.gemini.transcribeAudio(media.base64, media.mimeType, categoryNames)
     if (!transcription) { await sendMessage(from, formatMediaError('procesar')); return }
 
     const amount = parseFloat(String(transcription.totalAmount)) || 0
     if (amount <= 0) {
-      let msg = 'No pude determinar el gasto.'
+      let msg = '⚠️ No pude determinar el gasto del audio.'
       if (transcription.transcription) msg = `_"${transcription.transcription}"_\n\n${msg}`
       await sendMessage(from, msg)
       return
     }
 
     const categoryResult = await this.findCategoryId(userId, transcription.category)
-    const paymentDate = parseDateOrNow(transcription.date)
-
-    await db.collection(COLLECTIONS.PAYMENTS).add({
-      title: transcription.title || 'Gasto por audio',
-      description: transcription.description || '',
-      amount,
-      categoryId: categoryResult.id,
-      isPaid: true,
-      paidDate: paymentDate,
-      paymentType: 'one-time',
-      userId,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      dueDate: paymentDate,
-      recurrentId: null,
-      isWhatsapp: true,
-      status: 'pending',
-      source: 'whatsapp-audio',
-      needsRevision: false,
-      recipient: null,
-      audioTranscription: transcription.transcription || null,
-    })
-
     const audioTitle = transcription.title || 'Gasto por audio'
-    let msg = buildConfirmationSuccess({
-      mode: 'finanzas', title: audioTitle, amount,
-      categoryName: categoryResult.name,
+
+    // Store pending and send confirmation request
+    this.pendingAIExpenses.set(from, {
+      phone: from,
+      userId,
+      originalText: `[audio] ${transcription.transcription || ''}`,
+      type: 'expense',
+      expense: {
+        amount,
+        title: audioTitle,
+        categoryId: categoryResult.id,
+        categoryName: categoryResult.name,
+        description: transcription.description || '',
+        isRecurrent: false,
+        frequency: null,
+      },
+      source: 'whatsapp-audio',
+      audioTranscription: transcription.transcription || null,
+      paymentDate: parseDateOrNow(transcription.date),
+      createdAt: new Date(),
     })
-    // Append transcription as extra context
-    if (transcription.transcription) msg += `\n_"${transcription.transcription}"_`
-    await sendMessage(from, msg)
+
+    let confirmMsg = buildConfirmationRequest({
+      mode: 'finanzas',
+      amount,
+      title: audioTitle,
+      categoryName: categoryResult.name,
+      description: transcription.description || undefined,
+    })
+    if (transcription.transcription) {
+      confirmMsg = `_"${transcription.transcription}"_\n\n${confirmMsg}`
+    }
+    await sendMessage(from, confirmMsg)
   }
 
   // ─── Image processing ──────────────────────────────────────────
@@ -495,14 +538,14 @@ export default class FinanzasHandler {
     if (!userId) { await sendMessage(from, NOT_LINKED_MSG); return }
 
     if (!this.gemini.isAIEnabled()) {
-      await sendMessage(from, 'Esta funcion no esta disponible en este momento.')
+      await sendMessage(from, '⚠️ Esta función no está disponible en este momento.')
       return
     }
 
     const media = await downloadMedia(imageId)
     if (!media) { await sendMessage(from, formatMediaError('descargar')); return }
 
-    await sendMessage(from, 'Procesando imagen...')
+    await sendMessage(from, '📷 Procesando imagen...')
     const transferData = await this.gemini.parseTransferImage(media.base64, media.mimeType)
     if (!transferData) { await sendMessage(from, formatMediaError('procesar')); return }
 
@@ -516,14 +559,14 @@ export default class FinanzasHandler {
     if (!userId) { await sendMessage(from, NOT_LINKED_MSG); return }
 
     if (!this.gemini.isAIEnabled()) {
-      await sendMessage(from, 'Esta funcion no esta disponible en este momento.')
+      await sendMessage(from, '⚠️ Esta función no está disponible en este momento.')
       return
     }
 
     const media = await downloadMedia(docId)
     if (!media) { await sendMessage(from, formatMediaError('descargar')); return }
 
-    await sendMessage(from, 'Procesando PDF...')
+    await sendMessage(from, '📄 Procesando PDF...')
     const transferData = await this.gemini.parseTransferPDF(media.base64, media.mimeType)
     if (!transferData) { await sendMessage(from, formatMediaError('procesar')); return }
 
@@ -535,7 +578,7 @@ export default class FinanzasHandler {
   private async processTransferData(phone: string, userId: string, transferData: any, caption: string | undefined, source: string): Promise<void> {
     const amount = parseFloat(transferData.amount) || 0
     if (amount <= 0) {
-      await sendMessage(phone, 'No pude determinar el monto del comprobante.')
+      await sendMessage(phone, '⚠️ No pude determinar el monto del comprobante.')
       return
     }
 
@@ -577,18 +620,6 @@ export default class FinanzasHandler {
       }
     }
 
-    const paymentDate = parseDateOrNow(transferData.date)
-
-    await db.collection(COLLECTIONS.PAYMENTS).add({
-      title, description: transferData.concept || '', amount,
-      categoryId: categoryId || '', isPaid: true, paidDate: paymentDate,
-      paymentType: 'one-time', userId,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      dueDate: paymentDate, recurrentId: null,
-      isWhatsapp: true, status: 'pending', source,
-      needsRevision, recipient, audioTranscription: null,
-    })
-
     // Get category name for display
     let categoryName = 'Otros'
     if (categoryId) {
@@ -596,10 +627,35 @@ export default class FinanzasHandler {
       if (catDoc.exists) categoryName = catDoc.data()!.name
     }
 
-    await sendMessage(phone, formatTransferConfirmation({
-      title, amount, categoryName,
-      recipientName: transferData.recipientName || undefined,
+    // Store pending and send confirmation request
+    this.pendingAIExpenses.set(phone, {
+      phone,
+      userId,
+      originalText: `[${source}] ${title}`,
+      type: 'transfer',
+      expense: {
+        amount,
+        title,
+        categoryId: categoryId || '',
+        categoryName,
+        description: transferData.concept || '',
+        isRecurrent: false,
+        frequency: null,
+      },
+      source,
+      paymentDate: parseDateOrNow(transferData.date),
+      recipient,
       needsRevision,
+      createdAt: new Date(),
+    })
+
+    await sendMessage(phone, buildConfirmationRequest({
+      mode: 'finanzas',
+      amount,
+      title,
+      categoryName,
+      recipientName: recipient.name || undefined,
+      isTransfer: true,
     }))
   }
 
@@ -659,6 +715,7 @@ export default class FinanzasHandler {
       phone,
       userId,
       originalText,
+      type: 'expense',
       expense: {
         amount: aiResult.amount,
         title: aiResult.title,
@@ -668,6 +725,7 @@ export default class FinanzasHandler {
         isRecurrent: aiResult.isRecurrent,
         frequency: aiResult.frequency,
       },
+      source: 'whatsapp-nlp',
       createdAt: new Date(),
     })
 
@@ -688,38 +746,53 @@ export default class FinanzasHandler {
     await sendMessage(phone, confirmMsg)
   }
 
-  private async saveConfirmedAIExpense(pending: PendingFinanzasExpense): Promise<void> {
+  private async saveConfirmedExpense(pending: PendingFinanzasExpense): Promise<void> {
+    const entityType = pending.type === 'transfer' ? 'transferencia' as const : 'gasto' as const
     try {
+      const paymentDate = pending.paymentDate || admin.firestore.FieldValue.serverTimestamp()
+
       await db.collection(COLLECTIONS.PAYMENTS).add({
         title: pending.expense.title,
         description: pending.expense.description,
         amount: pending.expense.amount,
         categoryId: pending.expense.categoryId,
         isPaid: true,
-        paidDate: admin.firestore.FieldValue.serverTimestamp(),
+        paidDate: paymentDate,
         paymentType: pending.expense.isRecurrent ? 'recurrent' : 'one-time',
         userId: pending.userId,
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        dueDate: admin.firestore.FieldValue.serverTimestamp(),
+        dueDate: paymentDate,
         recurrentId: null,
         isWhatsapp: true,
         status: 'pending',
-        source: 'whatsapp-nlp',
-        needsRevision: pending.expense.isRecurrent,
-        recipient: null,
-        audioTranscription: null,
+        source: pending.source,
+        needsRevision: pending.needsRevision || pending.expense.isRecurrent,
+        recipient: pending.recipient || null,
+        audioTranscription: pending.audioTranscription || null,
       })
 
-      await sendMessage(pending.phone, buildConfirmationSuccess({
-        mode: 'finanzas',
-        title: pending.expense.title,
-        amount: pending.expense.amount,
-        categoryName: pending.expense.categoryName,
-        description: pending.expense.description || undefined,
-      }))
+      if (pending.type === 'transfer') {
+        await sendMessage(pending.phone, formatTransferConfirmation({
+          title: pending.expense.title,
+          amount: pending.expense.amount,
+          categoryName: pending.expense.categoryName,
+          recipientName: pending.recipient?.name || undefined,
+          needsRevision: pending.needsRevision || false,
+        }))
+      } else {
+        let msg = buildConfirmationSuccess({
+          mode: 'finanzas',
+          title: pending.expense.title,
+          amount: pending.expense.amount,
+          categoryName: pending.expense.categoryName,
+          description: pending.expense.description || undefined,
+        })
+        if (pending.audioTranscription) msg += `\n_"${pending.audioTranscription}"_`
+        await sendMessage(pending.phone, msg)
+      }
     } catch (error) {
-      logError('Error saving AI expense:', error)
-      await sendMessage(pending.phone, formatSaveError('gasto'))
+      logError(`Error saving ${entityType}:`, error)
+      await sendMessage(pending.phone, formatSaveError(entityType))
     }
   }
 

@@ -60,6 +60,8 @@ export interface FinanzasConfirmationRequest {
   title: string
   categoryName: string
   description?: string
+  recipientName?: string
+  isTransfer?: boolean
 }
 
 export type ConfirmationRequestOptions = GruposConfirmationRequest | FinanzasConfirmationRequest
@@ -175,12 +177,15 @@ export function buildConfirmationRequest(options: ConfirmationRequestOptions): s
   }
 
   // finanzas
-  let msg = `🔍 ${bold('¿Guardar este gasto?')}\n\n`
+  const headerText = options.isTransfer ? '¿Guardar esta transferencia?' : '¿Guardar este gasto?'
+  const actionText = options.isTransfer ? 'Guardar transferencia' : 'Guardar gasto'
+  let msg = `🔍 ${bold(headerText)}\n\n`
   msg += `💵 ${formatAmountFull(options.amount)} ARS\n`
   msg += `📝 ${options.title}\n`
   msg += `🏷️ #${options.categoryName.toLowerCase()}\n`
   if (options.description) msg += `${italic(options.description)}\n`
-  msg += `\n━━━━━━━━━━━━━━━━━━━━━━\n\n⬇️ ${bold('RESPONDÉ PARA CONFIRMAR')} ⬇️\n\n✅  ${bold('si')}  → Guardar gasto\n❌  ${bold('no')}  → Cancelar`
+  if (options.recipientName) msg += `${italic(`Destinatario: ${options.recipientName}`)}\n`
+  msg += `\n━━━━━━━━━━━━━━━━━━━━━━\n\n⬇️ ${bold('RESPONDÉ PARA CONFIRMAR')} ⬇️\n\n✅  ${bold('si')}  → ${actionText}\n❌  ${bold('no')}  → Cancelar`
   return msg
 }
 
@@ -226,7 +231,7 @@ export function formatValidationError(error: string): string {
 }
 
 export function formatNotLinkedError(): string {
-  return `Este número no está vinculado a ninguna cuenta.\n\nPara vincular tu cuenta:\n1. Registrate en ${APP_URL}\n2. Andá a tu Perfil\n3. Tocá "Generar código" en la sección WhatsApp\n4. Enviá acá: VINCULAR <código>`
+  return `🔗 Este número no está vinculado a ninguna cuenta.\n\nPara vincular tu cuenta:\n1. Registrate en ${APP_URL}\n2. Andá a tu Perfil\n3. Tocá "Generar código" en la sección WhatsApp\n4. Enviá acá: *VINCULAR <código>*`
 }
 
 export function formatUnresolvedNamesError(names: string[], groupName: string): string {
