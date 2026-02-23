@@ -11,6 +11,13 @@ import admin from 'firebase-admin'
 import * as Sentry from '@sentry/node'
 import { db } from '../config/firebase.js'
 import { sendMessage, downloadMedia } from '../helpers/whatsapp.js'
+import {
+  formatAmount, formatNotLinkedError, formatHelpMessage,
+  formatParseError, formatSaveError, formatMediaError,
+  formatMonthlySummary, formatRecurringSummary,
+  buildConfirmationSuccess, formatTransferConfirmation,
+  type MonthlySummaryOptions,
+} from '../helpers/responseFormatter.js'
 import type GeminiHandler from './GeminiHandler.js'
 
 // ─── Constants ─────────────────────────────────────────────────────
@@ -24,7 +31,7 @@ const COLLECTIONS = {
 
 const FALLBACK_CATEGORIES = ['supermercado', 'salidas', 'transporte', 'servicios', 'suscripciones']
 
-const NOT_LINKED_MSG = 'Este número no está vinculado a ninguna cuenta.\n\nPara vincular tu cuenta:\n1. Registrate en https://textthecheck.app\n2. Andá a tu Perfil\n3. Tocá "Generar código" en la sección WhatsApp\n4. Enviá acá: VINCULAR <código>'
+const NOT_LINKED_MSG = formatNotLinkedError()
 
 // ─── Helpers ───────────────────────────────────────────────────────
 
@@ -37,14 +44,6 @@ function logError(message: string, error: unknown): void {
   console.error(`[ERROR] ${message} ${detail}`)
   if (error instanceof Error) Sentry.captureException(error)
   else Sentry.captureMessage(message, { level: 'error', extra: { detail: error } })
-}
-
-function formatAmount(amount: number): string {
-  return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(amount)
-}
-
-function formatAmountFull(amount: number): string {
-  return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(amount)
 }
 
 function capitalizeFirst(str: string): string {
@@ -121,9 +120,7 @@ export default class FinanzasHandler {
     const userId = await this.checkLinked(phone)
     if (userId) commonCats = await this.getUserCommonCategories(userId)
 
-    const catsFormatted = commonCats.map(c => `#${c}`).join('\n')
-
-    await sendMessage(phone, `*PayTrackr - Ayuda*\n\n*Formato:*\n\`\`\`\n$<monto> <titulo> #<cat>\n\`\`\`\n\n*Ejemplos:*\n\`$500 Super #supermercado\`\n\`$1500 Cena #salidas d:Cumple\`\n\`$2000 Uber\` (sin cat = Otros)\n\n*Tus categorias frecuentes:*\n${catsFormatted}\n\nPodes escribir parte del nombre:\n#super -> Supermercado\n#sal -> Salidas\n\n*Tambien podes enviar:*\n- Audio describiendo un gasto\n- Foto de comprobante de transferencia\n- PDF de comprobante de transferencia\n\n*Comandos:*\nRESUMEN - Tu mes actual\nFIJOS - Gastos fijos\nANALISIS - Feedback con IA\nCATEGORIAS - Ver todas\nAYUDA - Ver este mensaje`)
+    await sendMessage(phone, formatHelpMessage('finanzas', commonCats))
   }
 
   private async handleCategoriesCommand(phone: string): Promise<void> {
@@ -188,14 +185,13 @@ export default class FinanzasHandler {
         comparison = `vs mes anterior: ${diff >= 0 ? '+' : ''}${pct}% (${diff >= 0 ? '+' : ''}${formatAmount(diff)})`
       }
 
-      let topCatsText = ''
-      if (topCats.length > 0) {
-        topCatsText = '\n\n*Top categorias:*\n' + topCats.map(([name, amt]) => `#${name.toLowerCase()} ${formatAmount(amt as number)}`).join('\n')
+      const summaryOptions: MonthlySummaryOptions = {
+        monthName: monthNames[now.getMonth()], year: now.getFullYear(),
+        total: currentTotal, paymentCount: currentPayments.length, comparison,
+        topCategories: topCats.map(([name, amt]) => ({ name, amount: amt as number })),
+        pendingRecurrents: pendingSnap.size || undefined,
       }
-
-      const pendingText = pendingSnap.size > 0 ? `\n\nFijos pendientes: ${pendingSnap.size}` : ''
-
-      await sendMessage(phone, `*${monthNames[now.getMonth()]} ${now.getFullYear()}*\n\nGastaste: ${formatAmount(currentTotal)}\n${currentPayments.length} pagos registrados\n${comparison}${topCatsText}${pendingText}`)
+      await sendMessage(phone, formatMonthlySummary(summaryOptions))
     } catch (error) {
       logError('Error in RESUMEN command:', error)
       await sendMessage(phone, 'Error al obtener el resumen. Intenta nuevamente.')
@@ -241,24 +237,7 @@ export default class FinanzasHandler {
       pending.sort((a, b) => a.daysUntilDue - b.daysUntilDue)
       const total = recurrents.reduce((s, r) => s + (r.amount || 0), 0)
 
-      const formatDue = (d: number) => {
-        if (d < 0) return `vencido hace ${Math.abs(d)} dias`
-        if (d === 0) return 'vence hoy'
-        if (d === 1) return 'vence manana'
-        return `vence en ${d} dias`
-      }
-
-      let msg = `*Gastos fijos: ${formatAmount(total)}/mes*\n`
-      if (pending.length > 0) {
-        msg += `\n*Pendientes (${pending.length}):*\n`
-        pending.forEach(p => { msg += `${p.title} ${formatAmount(p.amount)}\n  _${formatDue(p.daysUntilDue)}_\n` })
-      }
-      if (paid.length > 0) {
-        msg += `\n*Pagados (${paid.length}):*\n`
-        paid.forEach(p => { msg += `${p.title} ${formatAmount(p.amount)}\n` })
-      }
-
-      await sendMessage(phone, msg.trim())
+      await sendMessage(phone, formatRecurringSummary({ totalMonthly: total, pending, paid }))
     } catch (error) {
       logError('Error in FIJOS command:', error)
       await sendMessage(phone, 'Error al obtener los gastos fijos. Intenta nuevamente.')
@@ -332,8 +311,7 @@ export default class FinanzasHandler {
     const parsed = this.parseExpenseMessage(text)
     if (!parsed) {
       const commonCats = await this.getUserCommonCategories(userId)
-      const catsFormatted = commonCats.slice(0, 3).map(c => `#${c}`).join(' ')
-      await sendMessage(phone, `No pude entender el mensaje.\n\n*Formato:*\n\`$<monto> <titulo> #<cat>\`\n\n*Ejemplos:*\n\`$500 Super #supermercado\`\n\`$1500 Cena #salidas\`\n\n*Categorias sugeridas:*\n${catsFormatted}\n\nEscribi AYUDA para mas info.`)
+      await sendMessage(phone, formatParseError('finanzas', commonCats))
       return
     }
 
@@ -359,12 +337,13 @@ export default class FinanzasHandler {
         audioTranscription: null,
       })
 
-      let msg = `Gasto registrado!\n\n*${parsed.title}*\n${formatAmountFull(parsed.amount)}\n#${categoryResult.name.toLowerCase()}`
-      if (parsed.description) msg += `\n_${parsed.description}_`
-      await sendMessage(phone, msg)
+      await sendMessage(phone, buildConfirmationSuccess({
+        mode: 'finanzas', title: parsed.title, amount: parsed.amount,
+        categoryName: categoryResult.name, description: parsed.description || undefined,
+      }))
     } catch (error) {
       logError('Error creating payment:', error)
-      await sendMessage(phone, 'Error al registrar el gasto. Intenta nuevamente.')
+      await sendMessage(phone, formatSaveError('gasto'))
     }
   }
 
@@ -380,14 +359,14 @@ export default class FinanzasHandler {
     }
 
     const media = await downloadMedia(audioId)
-    if (!media) { await sendMessage(from, 'Error al descargar. Intenta nuevamente.'); return }
+    if (!media) { await sendMessage(from, formatMediaError('descargar')); return }
 
     const catsSnap = await db.collection(COLLECTIONS.CATEGORIES).where('userId', '==', userId).get()
     const categoryNames = catsSnap.docs.map(d => d.data().name).filter(Boolean)
 
     await sendMessage(from, 'Procesando audio...')
     const transcription = await this.gemini.transcribeAudio(media.base64, media.mimeType, categoryNames)
-    if (!transcription) { await sendMessage(from, 'No pude procesar. Intenta de nuevo o registra manualmente.'); return }
+    if (!transcription) { await sendMessage(from, formatMediaError('procesar')); return }
 
     const amount = parseFloat(String(transcription.totalAmount)) || 0
     if (amount <= 0) {
@@ -420,7 +399,12 @@ export default class FinanzasHandler {
       audioTranscription: transcription.transcription || null,
     })
 
-    let msg = `Gasto registrado por audio!\n\n*${transcription.title || 'Gasto por audio'}*\n${formatAmountFull(amount)}\n#${categoryResult.name.toLowerCase()}`
+    const audioTitle = transcription.title || 'Gasto por audio'
+    let msg = buildConfirmationSuccess({
+      mode: 'finanzas', title: audioTitle, amount,
+      categoryName: categoryResult.name,
+    })
+    // Append transcription as extra context
     if (transcription.transcription) msg += `\n_"${transcription.transcription}"_`
     await sendMessage(from, msg)
   }
@@ -437,11 +421,11 @@ export default class FinanzasHandler {
     }
 
     const media = await downloadMedia(imageId)
-    if (!media) { await sendMessage(from, 'Error al descargar. Intenta nuevamente.'); return }
+    if (!media) { await sendMessage(from, formatMediaError('descargar')); return }
 
     await sendMessage(from, 'Procesando imagen...')
     const transferData = await this.gemini.parseTransferImage(media.base64, media.mimeType)
-    if (!transferData) { await sendMessage(from, 'No pude procesar. Intenta de nuevo o registra manualmente.'); return }
+    if (!transferData) { await sendMessage(from, formatMediaError('procesar')); return }
 
     await this.processTransferData(from, userId, transferData, caption, 'whatsapp-image')
   }
@@ -458,11 +442,11 @@ export default class FinanzasHandler {
     }
 
     const media = await downloadMedia(docId)
-    if (!media) { await sendMessage(from, 'Error al descargar. Intenta nuevamente.'); return }
+    if (!media) { await sendMessage(from, formatMediaError('descargar')); return }
 
     await sendMessage(from, 'Procesando PDF...')
     const transferData = await this.gemini.parseTransferPDF(media.base64, media.mimeType)
-    if (!transferData) { await sendMessage(from, 'No pude procesar. Intenta de nuevo o registra manualmente.'); return }
+    if (!transferData) { await sendMessage(from, formatMediaError('procesar')); return }
 
     await this.processTransferData(from, userId, transferData, caption, 'whatsapp-pdf')
   }
@@ -533,10 +517,11 @@ export default class FinanzasHandler {
       if (catDoc.exists) categoryName = catDoc.data()!.name
     }
 
-    let msg = `Transferencia registrada!\n\n*${title}*\n${formatAmountFull(amount)}\n#${categoryName.toLowerCase()}`
-    if (transferData.recipientName) msg += `\n_Destinatario: ${transferData.recipientName}_`
-    if (needsRevision) msg += '\n\n_Revisa el titulo y categoria desde la app._'
-    await sendMessage(phone, msg)
+    await sendMessage(phone, formatTransferConfirmation({
+      title, amount, categoryName,
+      recipientName: transferData.recipientName || undefined,
+      needsRevision,
+    }))
   }
 
   // ─── Category matching ─────────────────────────────────────────
