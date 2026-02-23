@@ -15,10 +15,13 @@ import {
   formatAmount, formatNotLinkedError, formatHelpMessage,
   formatParseError, formatSaveError, formatMediaError,
   formatMonthlySummary, formatRecurringSummary,
-  buildConfirmationSuccess, formatTransferConfirmation,
+  buildConfirmationRequest, buildConfirmationSuccess, buildConfirmationCancelled,
+  isAffirmativeResponse, isNegativeResponse,
+  formatTransferConfirmation,
   type MonthlySummaryOptions,
 } from '../helpers/responseFormatter.js'
 import type GeminiHandler from './GeminiHandler.js'
+import type { AIPersonalExpenseResult } from './GeminiHandler.js'
 
 // ─── Constants ─────────────────────────────────────────────────────
 
@@ -30,6 +33,22 @@ const COLLECTIONS = {
 }
 
 const FALLBACK_CATEGORIES = ['supermercado', 'salidas', 'transporte', 'servicios', 'suscripciones']
+
+interface PendingFinanzasExpense {
+  phone: string
+  userId: string
+  originalText: string
+  expense: {
+    amount: number
+    title: string
+    categoryId: string
+    categoryName: string
+    description: string
+    isRecurrent: boolean
+    frequency: 'monthly' | 'weekly' | 'biweekly' | 'yearly' | null
+  }
+  createdAt: Date
+}
 
 const NOT_LINKED_MSG = formatNotLinkedError()
 
@@ -61,9 +80,27 @@ function parseDateOrNow(dateStr: string | null | undefined): admin.firestore.Fie
 
 export default class FinanzasHandler {
   private gemini: GeminiHandler
+  private pendingAIExpenses = new Map<string, PendingFinanzasExpense>()
+  private readonly AI_EXPENSE_TIMEOUT = 5 * 60 * 1000
 
   constructor(gemini: GeminiHandler) {
     this.gemini = gemini
+    setInterval(() => this.cleanupPendingStates(), 60 * 1000)
+  }
+
+  private cleanupPendingStates(): void {
+    const cutoff = Date.now() - this.AI_EXPENSE_TIMEOUT
+    for (const [phone, p] of this.pendingAIExpenses.entries()) {
+      if (p.createdAt.getTime() < cutoff) this.pendingAIExpenses.delete(phone)
+    }
+  }
+
+  private hasPendingAIExpense(phone: string): boolean {
+    return this.pendingAIExpenses.has(phone)
+  }
+
+  private getPendingAIExpense(phone: string): PendingFinanzasExpense | undefined {
+    return this.pendingAIExpenses.get(phone)
   }
 
   // ─── Main entry point ──────────────────────────────────────────
@@ -94,6 +131,25 @@ export default class FinanzasHandler {
 
   private async processTextMessage(from: string, text: string, contactName: string): Promise<void> {
     const normalized = text.trim().toLowerCase()
+
+    // Pending AI expense confirmation (check before command routing)
+    if (this.hasPendingAIExpense(from)) {
+      if (isAffirmativeResponse(normalized)) {
+        const pending = this.getPendingAIExpense(from)
+        if (pending) {
+          await this.saveConfirmedAIExpense(pending)
+          this.pendingAIExpenses.delete(from)
+          return
+        }
+      }
+      if (isNegativeResponse(normalized)) {
+        this.pendingAIExpenses.delete(from)
+        await sendMessage(from, buildConfirmationCancelled())
+        return
+      }
+      // Something else — cancel pending, fall through to process new message
+      this.pendingAIExpenses.delete(from)
+    }
 
     if (normalized === 'ayuda' || normalized === 'help') { await this.sendHelpMessage(from); return }
     if (normalized === 'categorias') { await this.handleCategoriesCommand(from); return }
@@ -308,6 +364,29 @@ export default class FinanzasHandler {
     const userId = await this.checkLinked(phone)
     if (!userId) { await sendMessage(phone, NOT_LINKED_MSG); return }
 
+    // AI-first path: try NLP parsing when AI is enabled
+    if (this.gemini.isAIEnabled()) {
+      try {
+        const categoryNames = await this.getUserCategoryNames(userId)
+        const aiResult = await this.gemini.parsePersonalExpenseNL(text, categoryNames)
+
+        if (aiResult.type === 'personal_expense' && aiResult.confidence >= this.gemini.getConfidenceThreshold() && aiResult.amount > 0) {
+          await this.handleAIExpense(phone, userId, aiResult, text)
+          return
+        }
+
+        if (aiResult.type === 'unknown' && aiResult.suggestion && aiResult.confidence < 0.5) {
+          await sendMessage(phone, aiResult.suggestion)
+          return
+        }
+        // else: fall through to regex
+      } catch (error) {
+        console.error('[AI-FIN] AI parsing failed, falling back to regex:', error)
+        // fall through to regex
+      }
+    }
+
+    // Regex fallback path: direct save, no confirmation
     const parsed = this.parseExpenseMessage(text)
     if (!parsed) {
       const commonCats = await this.getUserCommonCategories(userId)
@@ -551,6 +630,108 @@ export default class FinanzasHandler {
       .where('userId', '==', userId).where('name', '==', 'Otros').limit(1).get()
     if (!snap.empty) return { id: snap.docs[0].id, name: 'Otros' }
     return { id: '', name: 'Otros' }
+  }
+
+  // ─── AI expense flow ─────────────────────────────────────────
+
+  private async handleAIExpense(phone: string, userId: string, aiResult: AIPersonalExpenseResult, originalText: string): Promise<void> {
+    // Match category from AI result
+    let categoryResult = await this.findCategoryId(userId, aiResult.category)
+
+    // If landed on "Otros" and we have a title, try AI categorization as backup
+    if (categoryResult.name === 'Otros' && aiResult.title) {
+      try {
+        const categoryNames = await this.getUserCategoryNames(userId)
+        if (categoryNames.length > 0) {
+          const aiCategory = await this.gemini.categorizeExpense(aiResult.title, aiResult.description, categoryNames)
+          if (aiCategory !== 'Otros') {
+            const betterMatch = await this.findCategoryId(userId, aiCategory)
+            if (betterMatch.name !== 'Otros') categoryResult = betterMatch
+          }
+        }
+      } catch {
+        // Keep "Otros" — not critical
+      }
+    }
+
+    // Store pending expense (keyed by phone)
+    this.pendingAIExpenses.set(phone, {
+      phone,
+      userId,
+      originalText,
+      expense: {
+        amount: aiResult.amount,
+        title: aiResult.title,
+        categoryId: categoryResult.id,
+        categoryName: categoryResult.name,
+        description: aiResult.description,
+        isRecurrent: aiResult.isRecurrent,
+        frequency: aiResult.frequency,
+      },
+      createdAt: new Date(),
+    })
+
+    // Build confirmation message
+    let confirmMsg = buildConfirmationRequest({
+      mode: 'finanzas',
+      amount: aiResult.amount,
+      title: aiResult.title,
+      categoryName: categoryResult.name,
+      description: aiResult.description || undefined,
+    })
+
+    // Append recurrent note if AI detected recurring pattern
+    if (aiResult.isRecurrent) {
+      confirmMsg += '\n\n_Parece un gasto fijo. Después de confirmar, podés configurarlo como "fijo" desde la app._'
+    }
+
+    await sendMessage(phone, confirmMsg)
+  }
+
+  private async saveConfirmedAIExpense(pending: PendingFinanzasExpense): Promise<void> {
+    try {
+      await db.collection(COLLECTIONS.PAYMENTS).add({
+        title: pending.expense.title,
+        description: pending.expense.description,
+        amount: pending.expense.amount,
+        categoryId: pending.expense.categoryId,
+        isPaid: true,
+        paidDate: admin.firestore.FieldValue.serverTimestamp(),
+        paymentType: pending.expense.isRecurrent ? 'recurrent' : 'one-time',
+        userId: pending.userId,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        dueDate: admin.firestore.FieldValue.serverTimestamp(),
+        recurrentId: null,
+        isWhatsapp: true,
+        status: 'pending',
+        source: 'whatsapp-nlp',
+        needsRevision: pending.expense.isRecurrent,
+        recipient: null,
+        audioTranscription: null,
+      })
+
+      await sendMessage(pending.phone, buildConfirmationSuccess({
+        mode: 'finanzas',
+        title: pending.expense.title,
+        amount: pending.expense.amount,
+        categoryName: pending.expense.categoryName,
+        description: pending.expense.description || undefined,
+      }))
+    } catch (error) {
+      logError('Error saving AI expense:', error)
+      await sendMessage(pending.phone, formatSaveError('gasto'))
+    }
+  }
+
+  /** Fetch ALL category names for the AI prompt (distinct from getUserCommonCategories which returns top 5) */
+  private async getUserCategoryNames(userId: string): Promise<string[]> {
+    try {
+      const snap = await db.collection(COLLECTIONS.CATEGORIES).where('userId', '==', userId).get()
+      return snap.docs.map(d => d.data().name).filter(Boolean)
+    } catch (error) {
+      logError('Error fetching category names:', error)
+      return []
+    }
   }
 
   // ─── Expense message parsing ───────────────────────────────────

@@ -79,6 +79,22 @@ export interface TransferResult {
   concept: string | null
 }
 
+// ─── Finanzas personal expense NLP types ──────────────────────────
+
+export interface AIPersonalExpenseResult {
+  type: 'personal_expense'
+  amount: number
+  currency: 'ARS' | 'USD' | 'EUR' | 'BRL'
+  title: string
+  category: string
+  description: string
+  isRecurrent: boolean
+  frequency: 'monthly' | 'weekly' | 'biweekly' | 'yearly' | null
+  confidence: number
+}
+
+export type AIPersonalParseResult = AIPersonalExpenseResult | AIUnknownResult | AIErrorResult
+
 // ─── Config ────────────────────────────────────────────────────────
 
 const AI_TIMEOUT_MS = parseInt(process.env.AI_TIMEOUT_MS || '5000', 10)
@@ -510,6 +526,230 @@ IMPORTANT:
 - Do not add explanations, only the JSON
 - The JSON must be valid and parseable
 - If in doubt, use low confidence and suggest clarification
+`
+  }
+
+  // ─── Finanzas NLP parsing ────────────────────────────────────
+
+  /**
+   * Parse a natural language message into structured personal expense data.
+   * Uses Gemini 2.5 Flash Lite via SDK with the personal finance prompt.
+   */
+  async parsePersonalExpenseNL(message: string, userCategories: string[]): Promise<AIPersonalParseResult> {
+    const startTime = Date.now()
+
+    try {
+      const model = this.getModel('gemini-2.5-flash-lite')
+      const systemPrompt = this.buildPersonalExpensePrompt(userCategories)
+
+      console.log('[AI-FIN] Input:', message)
+      console.log('[AI-FIN] User categories:', userCategories.join(', '))
+
+      const result = await Promise.race([
+        model.generateContent([
+          { text: systemPrompt },
+          { text: `Mensaje del usuario: "${message}"` },
+        ]),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('AI request timed out')), AI_TIMEOUT_MS)
+        ),
+      ])
+
+      const responseText = result.response.text().trim()
+      console.log('[AI-FIN] Raw response:', responseText)
+      console.log('[AI-FIN] Latency:', `${Date.now() - startTime}ms`)
+
+      const parsed = this.parsePersonalExpenseResponse(responseText)
+      console.log('[AI-FIN] Parsed result:', JSON.stringify(parsed))
+      return parsed
+    } catch (error) {
+      console.error('[AI-FIN] Error:', error)
+      console.log('[AI-FIN] Latency (error):', `${Date.now() - startTime}ms`)
+      return { type: 'error', error: error instanceof Error ? error.message : 'Unknown error' }
+    }
+  }
+
+  private parsePersonalExpenseResponse(responseText: string): AIPersonalParseResult {
+    try {
+      let jsonStr = responseText
+      const jsonMatch = responseText.match(/```(?:json)?\s*([\s\S]*?)```/)
+      if (jsonMatch) jsonStr = jsonMatch[1].trim()
+
+      const parsed = JSON.parse(jsonStr)
+      if (!parsed.type) throw new Error('Missing type in response')
+
+      if (parsed.type === 'personal_expense') return this.validatePersonalExpenseResult(parsed)
+      return this.validateUnknownResult(parsed)
+    } catch {
+      return { type: 'unknown', confidence: 0, suggestion: 'No pude entender el mensaje' }
+    }
+  }
+
+  private validatePersonalExpenseResult(p: Record<string, unknown>): AIPersonalExpenseResult {
+    return {
+      type: 'personal_expense',
+      amount: typeof p.amount === 'number' ? p.amount : parseFloat(String(p.amount)) || 0,
+      currency: this.validateCurrency(p.currency),
+      title: typeof p.title === 'string' ? p.title.slice(0, 30) : '',
+      category: typeof p.category === 'string' ? p.category : 'Otros',
+      description: typeof p.description === 'string' ? p.description : '',
+      isRecurrent: typeof p.isRecurrent === 'boolean' ? p.isRecurrent : false,
+      frequency: this.validateFrequency(p.frequency),
+      confidence: typeof p.confidence === 'number' ? Math.min(1, Math.max(0, p.confidence)) : 0.5,
+    }
+  }
+
+  private validateFrequency(freq: unknown): 'monthly' | 'weekly' | 'biweekly' | 'yearly' | null {
+    const valid = ['monthly', 'weekly', 'biweekly', 'yearly']
+    if (typeof freq === 'string' && valid.includes(freq)) return freq as any
+    return null
+  }
+
+  private buildPersonalExpensePrompt(userCategories: string[]): string {
+    const categoriesList = userCategories.length > 0
+      ? userCategories.join(', ')
+      : 'Supermercado, Salidas, Transporte, Servicios, Suscripciones, Otros'
+
+    return `You are an assistant that extracts personal expense information from messages in Argentine Spanish.
+
+TASK: Analyze the user's message and extract structured data for a personal finance tracker.
+
+MESSAGE TYPES:
+
+1. PERSONAL EXPENSE (personal_expense): User registers a personal expense
+   - Keywords: "gasté", "pagué", "compré", amount + description, "$amount title"
+   - Example: "Gasté 150 en pizza", "5 lucas el uber", "$1500 café #comida"
+
+2. UNKNOWN (unknown): Cannot determine what the user wants
+   - Ambiguous messages, greetings, questions
+
+USER'S CATEGORIES (match to the closest one):
+${categoriesList}
+
+ARGENTINE SPANISH DICTIONARY:
+
+| Term | Meaning |
+|------|---------|
+| lucas, luquitas | thousands (5 lucas = 5000) |
+| k | thousands (5k = 5000) |
+| mangos | Argentine pesos |
+| guita, plata | money |
+| morfi | food |
+| birra | beer |
+| bondi | bus |
+| super | supermercado |
+| facu | facultad / universidad |
+| depto | departamento / alquiler |
+| expensas | building maintenance fees |
+| prepaga | health insurance |
+| abono | monthly subscription / plan |
+| monotributo | tax regime payment |
+| afip | tax authority |
+| dólar blue | informal dollar |
+| dol, dólar, dolares, usd | US dollars |
+| euro, eur | euros |
+| real, reais, brl | Brazilian reais |
+| pe, pes | pesos (abbreviation) |
+
+CURRENCY RULES:
+- Default to ARS (Argentine pesos)
+- "dólares", "dol", "usd", "dolares" → USD
+- "euros", "eur" → EUR
+- "reales", "reais", "brl" → BRL
+- "pesos", "mangos", "pe" → ARS
+
+RECURRENT DETECTION RULES:
+- Keywords: "mensual", "semanal", "quincenal", "anual", "todos los meses", "cada mes", "por mes"
+- Service heuristics (auto-detect as monthly if title matches):
+  netflix, spotify, disney, hbo, amazon prime, youtube premium,
+  luz, gas, agua, internet, telefono, celular,
+  alquiler, expensas, gym, gimnasio, monotributo, prepaga, obra social, seguro, abono
+- frequency: "monthly" | "weekly" | "biweekly" | "yearly" | null
+
+TITLE RULES:
+- Short: max 30 characters
+- Capitalize first letter
+- Descriptive but concise
+- Example: "Café", "Uber al trabajo", "Netflix mensual"
+
+DESCRIPTION RULES:
+- Extract from "d:" prefix if present (e.g. "d:cumple de juan" → description: "cumple de juan")
+- Otherwise use any extra context from the message
+- Can be empty string
+
+CATEGORY MATCHING:
+- Match to the closest category from the user's list above
+- Use partial matching: "super" → "Supermercado", "sal" → "Salidas"
+- If no category is specified or matched, use "Otros"
+- If a #hashtag is present, use it as the category hint
+
+RESPONSE FORMAT (strict JSON):
+
+For PERSONAL EXPENSE:
+{
+  "type": "personal_expense",
+  "amount": <number>,
+  "currency": "ARS" | "USD" | "EUR" | "BRL",
+  "title": "<short expense title>",
+  "category": "<best matching category>",
+  "description": "<optional detail>",
+  "isRecurrent": true | false,
+  "frequency": "monthly" | "weekly" | "biweekly" | "yearly" | null,
+  "confidence": <0.0 to 1.0>
+}
+
+For UNKNOWN:
+{
+  "type": "unknown",
+  "confidence": <0.0 to 1.0>,
+  "suggestion": "<suggestion for user in Spanish>"
+}
+
+CONFIDENCE RULES:
+- 0.95-1.0: Very clear message, explicit amount and description
+- 0.8-0.94: Clear message but uses slang or abbreviations
+- 0.7-0.79: Understandable message but somewhat ambiguous
+- <0.7: Very ambiguous message, better to ask for clarification
+
+EXAMPLES:
+
+Message: "$1500 café #comida"
+{"type":"personal_expense","amount":1500,"currency":"ARS","title":"Café","category":"Comida","description":"","isRecurrent":false,"frequency":null,"confidence":0.98}
+
+Message: "gasté 2 lucas en uber"
+{"type":"personal_expense","amount":2000,"currency":"ARS","title":"Uber","category":"Transporte","description":"","isRecurrent":false,"frequency":null,"confidence":0.92}
+
+Message: "50 dólares la cena"
+{"type":"personal_expense","amount":50,"currency":"USD","title":"Cena","category":"Salidas","description":"","isRecurrent":false,"frequency":null,"confidence":0.9}
+
+Message: "pagué el netflix"
+{"type":"personal_expense","amount":0,"currency":"ARS","title":"Netflix","category":"Suscripciones","description":"","isRecurrent":true,"frequency":"monthly","confidence":0.6}
+
+Message: "5k super d:compra semanal"
+{"type":"personal_expense","amount":5000,"currency":"ARS","title":"Super","category":"Supermercado","description":"compra semanal","isRecurrent":false,"frequency":null,"confidence":0.92}
+
+Message: "alquiler mensual 350 lucas"
+{"type":"personal_expense","amount":350000,"currency":"ARS","title":"Alquiler","category":"Vivienda","description":"","isRecurrent":true,"frequency":"monthly","confidence":0.95}
+
+Message: "1200 birras con los pibes"
+{"type":"personal_expense","amount":1200,"currency":"ARS","title":"Birras","category":"Salidas","description":"con los pibes","isRecurrent":false,"frequency":null,"confidence":0.88}
+
+Message: "prepaga del mes 45k"
+{"type":"personal_expense","amount":45000,"currency":"ARS","title":"Prepaga","category":"Salud","description":"","isRecurrent":true,"frequency":"monthly","confidence":0.93}
+
+Message: "monotributo"
+{"type":"personal_expense","amount":0,"currency":"ARS","title":"Monotributo","category":"Impuestos","description":"","isRecurrent":true,"frequency":"monthly","confidence":0.5}
+
+Message: "hola"
+{"type":"unknown","confidence":0.1,"suggestion":"Hola! Para registrar un gasto, decime el monto y la descripción. Ej: $500 café #comida"}
+
+IMPORTANT:
+- Respond ONLY with the JSON, no additional text
+- Do not add explanations, only the JSON
+- The JSON must be valid and parseable
+- If in doubt, use low confidence and suggest clarification
+- For amounts with "lucas" or "k", multiply by 1000
+- If amount is 0 or unclear, set confidence below 0.7
 `
   }
 
