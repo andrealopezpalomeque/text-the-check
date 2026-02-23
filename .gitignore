@@ -1,10 +1,11 @@
 # Dependencies
 node_modules/
 
-# Nuxt build output
+# Build output
 client/.nuxt/
 client/.output/
 client/dist
+server/dist/
 
 # Environment files
 .env

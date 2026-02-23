@@ -458,8 +458,7 @@ export default class FinanzasHandler {
       }
 
       // AI couldn't parse — show our formatted parse error (not raw AI suggestion)
-      const commonCats = await this.getUserCommonCategories(userId)
-      await sendMessage(phone, formatParseError('finanzas', commonCats))
+      await sendMessage(phone, formatParseError('finanzas'))
     } catch (error) {
       logError('Error in AI expense parsing:', error)
       await sendMessage(phone, '⚠️ Ocurrió un error al procesar tu mensaje. Intentá de nuevo.')

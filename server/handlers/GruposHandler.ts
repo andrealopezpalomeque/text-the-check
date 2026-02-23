@@ -323,7 +323,7 @@ export default class GruposHandler {
           return
         } else if (aiResult.type === 'unknown') {
           // AI couldn't parse — show our formatted parse error (not raw AI suggestion)
-          await sendMessage(from, formatParseError('grupos'))
+          await sendMessage(from, formatParseError('grupos', { groupName: group?.name }))
           return
         }
         // Low confidence → fall through to regex
@@ -399,7 +399,7 @@ export default class GruposHandler {
     const originalCurrency = currencyInfo?.currency
 
     if (parsed.needsReview) {
-      await sendMessage(from, formatParseError('grupos'))
+      await sendMessage(from, formatParseError('grupos', { groupName }))
       return
     }
 

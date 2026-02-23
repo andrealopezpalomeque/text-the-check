@@ -231,13 +231,14 @@ export function buildConfirmationCancelled(): string {
 
 // ─── Error Messages ─────────────────────────────────────────────
 
-export function formatParseError(mode: AppMode, suggestedCategories?: string[]): string {
+export function formatParseError(mode: AppMode, context?: { groupName?: string }): string {
   if (mode === 'grupos') {
-    return `⚠️ ${bold('No pude entender el mensaje')}\n\nProbá decirlo de otra forma, por ejemplo:\n• "Puse 50 en el almuerzo"\n• "Pagué 1500 del taxi"\n• "Gasté 20 dólares en la cena con Juan"\n\n${italic('Escribí /ayuda para más info')}\n\n${appFooter('También podés cargar gastos en')}`
+    const groupLine = context?.groupName ? `\n📁 Grupo activo: ${bold(context.groupName)}\n` : ''
+    return `⚠️ ${bold('No pude entender el mensaje')}${groupLine}\n\nProbá decirlo de otra forma, por ejemplo:\n• "Puse 50 en el almuerzo"\n• "Pagué 1500 del taxi"\n• "Gasté 20 dólares en la cena con Juan"\n\n${italic('Escribí /ayuda para más info')}\n\n${appFooter('También podés cargar gastos en')}`
   }
 
   // finanzas
-  return `⚠️ ${bold('No pude entender el mensaje')}\n\nProbá decirlo de otra forma, por ejemplo:\n• "1500 café"\n• "Gasté 5 lucas en el super"\n• "50 dólares la cena"\n\n${italic('Escribí /ayuda para más info')}\n\n${appFooter('También podés cargar gastos en')}`
+  return `⚠️ ${bold('No pude entender el mensaje')}\n\n📊 Modo: ${bold('finanzas')}\n\nProbá decirlo de otra forma, por ejemplo:\n• "1500 café"\n• "Gasté 5 lucas en el super"\n• "50 dólares la cena"\n\n${italic('Escribí /ayuda para más info')}\n\n${appFooter('También podés cargar gastos en')}`
 }
 
 export function formatValidationError(error: string): string {
