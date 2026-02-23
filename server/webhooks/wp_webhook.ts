@@ -206,7 +206,13 @@ async function processMessage(message: any, contacts: any[]): Promise<void> {
       return
     }
 
-    // MODE switch
+    // /modo — switch between grupos/finanzas (replaces old "MODE GRUPOS"/"MODE FINANZAS")
+    if (textLower.startsWith('/modo')) {
+      await handleModo(from, textLower)
+      return
+    }
+
+    // Legacy MODE command (backward compat)
     if (textUpper === 'MODE GRUPOS' || textUpper === 'MODE FINANZAS') {
       const targetMode = textUpper === 'MODE GRUPOS' ? 'grupos' : 'finanzas'
       const switched = await setUserActiveMode(from, targetMode)
@@ -216,6 +222,16 @@ async function processMessage(message: any, contacts: any[]): Promise<void> {
         await sendMessage(from, `No encontré tu cuenta. Primero vinculá tu número:\n\n1. Registrate en https://textthecheck.app\n2. Andá a Configuración → WhatsApp\n3. Copiá el código y enviá acá: *VINCULAR <código>*`)
       }
       return
+    }
+
+    // /ayuda or /help — unified help for users without a mode
+    if (textLower === '/ayuda' || textLower === '/help') {
+      const { mode: userMode } = await determineUserMode(from)
+      if (!userMode) {
+        await sendMessage(from, `*text the check — Ayuda*\n\nEste bot tiene dos modos:\n\n*Grupos* — Dividir gastos con amigos\n*Finanzas* — Registrar gastos personales\n\nPara empezar, vinculá tu cuenta:\n1. Registrate en https://textthecheck.app\n2. Andá a tu Perfil → WhatsApp\n3. Enviá acá: *VINCULAR <código>*\n\nUna vez vinculado, usá */modo grupos* o */modo finanzas* para elegir.`)
+        return
+      }
+      // Has mode — let it pass through to the handler-specific help
     }
   }
 
@@ -315,6 +331,31 @@ async function handleDesvincular(phone: string): Promise<void> {
   } catch (error) {
     console.error('Error in DESVINCULAR:', error)
     await sendMessage(phone, 'Error al desvincular la cuenta. Intentá nuevamente.')
+  }
+}
+
+// ─── /modo command ───────────────────────────────────────────────
+
+async function handleModo(phone: string, textLower: string): Promise<void> {
+  const parts = textLower.split(/\s+/)
+  const arg = parts[1] || ''
+
+  if (arg === 'grupos' || arg === 'finanzas') {
+    const switched = await setUserActiveMode(phone, arg)
+    if (switched) {
+      await sendMessage(phone, `Modo cambiado a *${arg}*. Tus próximos mensajes se procesarán en este modo.`)
+    } else {
+      await sendMessage(phone, `No encontré tu cuenta. Primero vinculá tu número:\n\n1. Registrate en https://textthecheck.app\n2. Andá a Configuración → WhatsApp\n3. Copiá el código y enviá acá: *VINCULAR <código>*`)
+    }
+    return
+  }
+
+  // /modo with no valid arg — show current mode
+  const { mode } = await determineUserMode(phone)
+  if (mode) {
+    await sendMessage(phone, `Tu modo actual es *${mode}*.\n\nPara cambiar, escribí:\n*/modo grupos* — Dividir gastos con amigos\n*/modo finanzas* — Registrar gastos personales`)
+  } else {
+    await sendMessage(phone, `No tenés un modo activo.\n\nEscribí:\n*/modo grupos* — Dividir gastos con amigos\n*/modo finanzas* — Registrar gastos personales`)
   }
 }
 

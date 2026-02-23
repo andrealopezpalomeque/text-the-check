@@ -17,8 +17,8 @@ import {
   formatMonthlySummary, formatRecurringSummary,
   buildConfirmationRequest, buildConfirmationSuccess, buildConfirmationCancelled,
   isAffirmativeResponse, isNegativeResponse,
-  formatTransferConfirmation,
-  type MonthlySummaryOptions,
+  formatTransferConfirmation, formatExpenseList,
+  type MonthlySummaryOptions, type ExpenseListEntry,
 } from '../helpers/responseFormatter.js'
 import { generatePhoneCandidates } from '../helpers/phone.js'
 import type GeminiHandler from './GeminiHandler.js'
@@ -152,11 +152,12 @@ export default class FinanzasHandler {
       this.pendingAIExpenses.delete(from)
     }
 
-    if (normalized === 'ayuda' || normalized === 'help') { await this.sendHelpMessage(from); return }
-    if (normalized === 'categorias') { await this.handleCategoriesCommand(from); return }
-    if (normalized === 'resumen') { await this.handleResumenCommand(from); return }
-    if (normalized === 'fijos') { await this.handleFijosCommand(from); return }
-    if (normalized === 'analisis') { await this.handleAnalisisCommand(from); return }
+    if (normalized === 'ayuda' || normalized === 'help' || normalized === '/ayuda' || normalized === '/help') { await this.sendHelpMessage(from); return }
+    if (normalized === 'categorias' || normalized === '/categorias') { await this.handleCategoriesCommand(from); return }
+    if (normalized === 'resumen' || normalized === '/resumen' || normalized === '/balance') { await this.handleResumenCommand(from); return }
+    if (normalized === 'fijos' || normalized === '/fijos') { await this.handleFijosCommand(from); return }
+    if (normalized === 'analisis' || normalized === '/analisis') { await this.handleAnalisisCommand(from); return }
+    if (normalized === '/lista') { await this.handleListaCommand(from); return }
 
     await this.handleExpenseMessage(from, text)
   }
@@ -358,6 +359,36 @@ export default class FinanzasHandler {
     } catch (error) {
       logError('Error in ANALISIS command:', error)
       await sendMessage(phone, 'Error al analizar tus finanzas. Intenta nuevamente.')
+    }
+  }
+
+  private async handleListaCommand(phone: string): Promise<void> {
+    const userId = await this.checkLinked(phone)
+    if (!userId) { await sendMessage(phone, NOT_LINKED_MSG); return }
+
+    try {
+      const snap = await db.collection(COLLECTIONS.PAYMENTS)
+        .where('userId', '==', userId).orderBy('createdAt', 'desc').limit(10).get()
+
+      if (snap.empty) {
+        await sendMessage(phone, formatExpenseList([]))
+        return
+      }
+
+      const entries: ExpenseListEntry[] = snap.docs.map(d => {
+        const data = d.data()
+        return {
+          amount: data.amount || 0,
+          description: data.title || 'Sin título',
+          userName: 'Yo',
+          timestamp: data.createdAt?.toDate?.() || new Date(),
+        }
+      })
+
+      await sendMessage(phone, formatExpenseList(entries))
+    } catch (error) {
+      logError('Error in LISTA command:', error)
+      await sendMessage(phone, 'Error al obtener la lista. Intenta nuevamente.')
     }
   }
 
