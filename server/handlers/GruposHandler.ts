@@ -11,14 +11,14 @@ import Fuse from 'fuse.js'
 import axios from 'axios'
 import { FieldValue } from 'firebase-admin/firestore'
 import { db } from '../config/firebase.js'
-import { sendMessage } from '../helpers/whatsapp.js'
+import { sendMessage, downloadMedia } from '../helpers/whatsapp.js'
 import { normalizeForComparison, generatePhoneCandidates } from '../helpers/phone.js'
 import {
   appFooter,
   isAffirmativeResponse, isNegativeResponse,
   buildConfirmationRequest, buildConfirmationSuccess, buildConfirmationCancelled,
   formatParseError, formatValidationError, formatUnresolvedNamesError,
-  formatPaymentError, formatSaveError,
+  formatPaymentError, formatSaveError, formatMediaError,
   formatPaymentConfirmation, formatPaymentNotification,
   formatHelpMessage, formatBalance, formatExpenseList,
   type BalanceEntry, type ExpenseListEntry,
@@ -201,7 +201,20 @@ export default class GruposHandler {
 
   // ─── Main entry point ──────────────────────────────────────────
 
-  async handleMessage(from: string, text: string, messageId: string, user: User): Promise<void> {
+  async handleMessage(from: string, messageType: string, messageData: any, user: User, contactName: string): Promise<void> {
+    // Route non-text message types
+    if (messageType === 'audio') {
+      await this.processAudioMessage(from, messageData.audio?.id, user)
+      return
+    }
+    if (messageType === 'image') {
+      await this.processImageMessage(from, messageData.image?.id, messageData.image?.caption, user)
+      return
+    }
+    if (messageType !== 'text') return // Unsupported message type
+
+    const text = messageData.text?.body || ''
+
     // 1. Welcome message check
     if (!user.welcomedAt) {
       const userGroups = await this.getAllGroupsByUserId(user.id)
@@ -511,6 +524,109 @@ export default class GruposHandler {
       category: pending.expense.category, splitAmong: pending.expense.splitAmong,
       groupId: pending.groupId, timestamp: new Date(),
     })
+  }
+
+  // ─── Audio processing ──────────────────────────────────────────
+
+  private async processAudioMessage(from: string, audioId: string | undefined, user: User): Promise<void> {
+    if (!audioId) return
+
+    if (!this.gemini.isAIEnabled()) {
+      await sendMessage(from, 'Esta función no está disponible en este momento.')
+      return
+    }
+
+    const media = await downloadMedia(audioId)
+    if (!media) { await sendMessage(from, formatMediaError('descargar')); return }
+
+    const group = await this.getGroupByUserId(user.id)
+    const groupId = group?.id || null
+
+    await sendMessage(from, 'Procesando audio...')
+    const transcription = await this.gemini.transcribeAudio(media.base64, media.mimeType)
+    if (!transcription || !transcription.transcription) {
+      await sendMessage(from, formatMediaError('procesar'))
+      return
+    }
+
+    // Feed transcription into existing NLP pipeline
+    if (groupId) {
+      const groupMembers = await this.getGroupMembers(groupId)
+      const memberInfos: MemberInfo[] = groupMembers.map(m => ({ name: m.name, aliases: m.aliases || [] }))
+
+      // Try parsing the transcribed text
+      const textToParse = transcription.transcription
+      const aiResult = await this.gemini.parseExpenseNL(textToParse, memberInfos)
+      const threshold = this.gemini.getConfidenceThreshold()
+
+      if (aiResult.type === 'expense' && aiResult.confidence >= threshold && aiResult.amount > 0) {
+        await this.handleAIExpense(from, aiResult, user, groupId, group?.name || '', textToParse)
+        // Append transcription context to the pending expense
+        const pending = this.pendingAIExpenses.get(user.id)
+        if (pending) {
+          await sendMessage(from, `_"${transcription.transcription}"_`)
+        }
+        return
+      }
+
+      if (aiResult.type === 'payment' && aiResult.confidence >= threshold) {
+        await this.handleAIPayment(from, aiResult as AIPaymentResult, user, groupId, group?.name || '')
+        return
+      }
+    }
+
+    // Could not parse — show transcription and ask to retry
+    await sendMessage(from, `No pude determinar el gasto del audio.\n\n_"${transcription.transcription}"_\n\nProbá escribirlo directamente.`)
+  }
+
+  // ─── Image processing ──────────────────────────────────────────
+
+  private async processImageMessage(from: string, imageId: string | undefined, caption: string | undefined, user: User): Promise<void> {
+    if (!imageId) return
+
+    if (!this.gemini.isAIEnabled()) {
+      await sendMessage(from, 'Esta función no está disponible en este momento.')
+      return
+    }
+
+    const media = await downloadMedia(imageId)
+    if (!media) { await sendMessage(from, formatMediaError('descargar')); return }
+
+    const group = await this.getGroupByUserId(user.id)
+    const groupId = group?.id || null
+
+    if (!groupId) {
+      await sendMessage(from, '⚠️ No pertenecés a ningún grupo.')
+      return
+    }
+
+    await sendMessage(from, 'Procesando imagen...')
+    const transferData = await this.gemini.parseTransferImage(media.base64, media.mimeType)
+    if (!transferData) { await sendMessage(from, formatMediaError('procesar')); return }
+
+    const amount = parseFloat(String(transferData.amount)) || 0
+    if (amount <= 0) {
+      await sendMessage(from, 'No pude determinar el monto del comprobante.')
+      return
+    }
+
+    // Build description from transfer data or caption
+    const label = caption || transferData.recipientName || transferData.concept || 'Comprobante'
+    const description = typeof label === 'string' ? label : 'Comprobante'
+
+    // Create a pseudo-AI expense result and enter the confirmation flow
+    const pseudoExpense: AIExpenseResult = {
+      type: 'expense',
+      amount,
+      currency: 'ARS',
+      description,
+      splitAmong: [],
+      includesSender: true,
+      excludeFromSplit: [],
+      confidence: 0.9,
+    }
+
+    await this.handleAIExpense(from, pseudoExpense, user, groupId, group?.name || '', `[imagen] ${description}`)
   }
 
   // ─── AI payment handling ────────────────────────────────────────

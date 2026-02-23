@@ -230,10 +230,8 @@ async function processMessage(message: any, contacts: any[]): Promise<void> {
 
   // Route to handler
   if (mode === 'grupos') {
-    if (messageType !== 'text') return // Grupos only handles text
-    const text = message.text?.body || ''
     if (!user) return
-    await gruposHandler.handleMessage(from, text, messageId, user)
+    await gruposHandler.handleMessage(from, messageType, message, user, contactName)
   } else {
     await finanzasHandler.handleMessage(from, messageType, message, contactName)
   }
