@@ -398,65 +398,31 @@ export default class FinanzasHandler {
     const userId = await this.checkLinked(phone)
     if (!userId) { await sendMessage(phone, NOT_LINKED_MSG); return }
 
-    // AI-first path: try NLP parsing when AI is enabled
-    if (this.gemini.isAIEnabled()) {
-      try {
-        const categoryNames = await this.getUserCategoryNames(userId)
-        const aiResult = await this.gemini.parsePersonalExpenseNL(text, categoryNames)
-
-        if (aiResult.type === 'personal_expense' && aiResult.confidence >= this.gemini.getConfidenceThreshold() && aiResult.amount > 0) {
-          await this.handleAIExpense(phone, userId, aiResult, text)
-          return
-        }
-
-        if (aiResult.type === 'unknown' && aiResult.suggestion && aiResult.confidence < 0.5) {
-          await sendMessage(phone, aiResult.suggestion)
-          return
-        }
-        // else: fall through to regex
-      } catch (error) {
-        console.error('[AI-FIN] AI parsing failed, falling back to regex:', error)
-        // fall through to regex
-      }
-    }
-
-    // Regex fallback path: direct save, no confirmation
-    const parsed = this.parseExpenseMessage(text)
-    if (!parsed) {
-      const commonCats = await this.getUserCommonCategories(userId)
-      await sendMessage(phone, formatParseError('finanzas', commonCats))
+    if (!this.gemini.isAIEnabled()) {
+      await sendMessage(phone, '⚠️ El servicio no está disponible en este momento. Intentá de nuevo más tarde.')
       return
     }
 
     try {
-      const categoryResult = await this.findCategoryId(userId, parsed.category)
-      await db.collection(COLLECTIONS.PAYMENTS).add({
-        title: parsed.title,
-        description: parsed.description,
-        amount: parsed.amount,
-        categoryId: categoryResult.id,
-        isPaid: true,
-        paidDate: admin.firestore.FieldValue.serverTimestamp(),
-        paymentType: 'one-time',
-        userId,
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        dueDate: admin.firestore.FieldValue.serverTimestamp(),
-        recurrentId: null,
-        isWhatsapp: true,
-        status: 'pending',
-        source: 'whatsapp-text',
-        needsRevision: false,
-        recipient: null,
-        audioTranscription: null,
-      })
+      const categoryNames = await this.getUserCategoryNames(userId)
+      const aiResult = await this.gemini.parsePersonalExpenseNL(text, categoryNames)
 
-      await sendMessage(phone, buildConfirmationSuccess({
-        mode: 'finanzas', title: parsed.title, amount: parsed.amount,
-        categoryName: categoryResult.name, description: parsed.description || undefined,
-      }))
+      if (aiResult.type === 'personal_expense' && aiResult.confidence >= this.gemini.getConfidenceThreshold() && aiResult.amount > 0) {
+        await this.handleAIExpense(phone, userId, aiResult, text)
+        return
+      }
+
+      if (aiResult.type === 'unknown' && aiResult.suggestion) {
+        await sendMessage(phone, aiResult.suggestion)
+        return
+      }
+
+      // AI couldn't parse — show parse error with NLP examples
+      const commonCats = await this.getUserCommonCategories(userId)
+      await sendMessage(phone, formatParseError('finanzas', commonCats))
     } catch (error) {
-      logError('Error creating payment:', error)
-      await sendMessage(phone, formatSaveError('gasto'))
+      logError('Error in AI expense parsing:', error)
+      await sendMessage(phone, '⚠️ Ocurrió un error al procesar tu mensaje. Intentá de nuevo.')
     }
   }
 

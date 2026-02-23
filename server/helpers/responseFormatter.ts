@@ -197,8 +197,12 @@ export function buildConfirmationSuccess(options: ConfirmationSuccessOptions): s
   }
 
   // finanzas
-  let msg = `✅ Gasto registrado!\n\n${bold(options.title)}\n${formatAmountFull(options.amount)}\n#${options.categoryName.toLowerCase()}`
-  if (options.description) msg += `\n${italic(options.description)}`
+  let msg = `✅ ${bold('Gasto registrado')}\n\n`
+  msg += `💵 ${formatAmountFull(options.amount)} ARS\n`
+  msg += `📝 ${options.title}\n`
+  msg += `🏷️ #${options.categoryName.toLowerCase()}\n`
+  if (options.description) msg += `${italic(options.description)}\n`
+  msg += `\n${appFooter()}`
   return msg
 }
 
@@ -214,8 +218,7 @@ export function formatParseError(mode: AppMode, suggestedCategories?: string[]):
   }
 
   // finanzas
-  const catsFormatted = suggestedCategories?.slice(0, 3).map(c => `#${c}`).join(' ') || ''
-  return `No pude entender el mensaje.\n\n${bold('Formato:')}\n\`$<monto> <titulo> #<cat>\`\n\n${bold('Ejemplos:')}\n\`$500 Super #supermercado\`\n\`$1500 Cena #salidas\`\n\n${bold('Categorias sugeridas:')}\n${catsFormatted}\n\nEscribi AYUDA para mas info.`
+  return `⚠️ ${bold('No pude entender el mensaje')}\n\nProbá decirlo de otra forma, por ejemplo:\n• "1500 café"\n• "Gasté 5 lucas en el super"\n• "50 dólares la cena"\n\n${italic('Escribí /ayuda para más info')}\n\n${appFooter('También podés cargar gastos en')}`
 }
 
 export function formatValidationError(error: string): string {
@@ -251,8 +254,8 @@ export function formatSaveError(entityType: 'gasto' | 'pago' | 'transferencia'):
 }
 
 export function formatMediaError(action: 'descargar' | 'procesar'): string {
-  if (action === 'descargar') return 'Error al descargar. Intenta nuevamente.'
-  return 'No pude procesar. Intenta de nuevo o registra manualmente.'
+  if (action === 'descargar') return '⚠️ Error al descargar. Intentá nuevamente.'
+  return '⚠️ No pude procesar. Intentá de nuevo o registrá manualmente.'
 }
 
 // ─── Help Messages ──────────────────────────────────────────────
@@ -263,9 +266,7 @@ export function formatHelpMessage(mode: AppMode, categories?: string[]): string 
   }
 
   // finanzas
-  const catsFormatted = (categories || []).map(c => `#${c}`).join('\n')
-
-  return `${bold(`${BRAND_NAME} - Ayuda`)}\n\n${bold('Formato:')}\n\`\`\`\n$<monto> <titulo> #<cat>\n\`\`\`\n\n${bold('Ejemplos:')}\n\`$500 Super #supermercado\`\n\`$1500 Cena #salidas d:Cumple\`\n\`$2000 Uber\` (sin cat = Otros)\n\n${bold('Tus categorias frecuentes:')}\n${catsFormatted}\n\nPodes escribir parte del nombre:\n#super -> Supermercado\n#sal -> Salidas\n\n${bold('Tambien podes enviar:')}\n- Audio describiendo un gasto\n- Foto de comprobante de transferencia\n- PDF de comprobante de transferencia\n\n${bold('Comandos:')}\nRESUMEN - Tu mes actual\nFIJOS - Gastos fijos\nANALISIS - Feedback con IA\nCATEGORIAS - Ver todas\nAYUDA - Ver este mensaje`
+  return `📖 ${bold(`Cómo usar ${BRAND_NAME}`)}\n\n💬 ${bold('Contame qué pagaste:')}\n"1500 café"\n"Gasté 2 lucas en uber"\n"50 dólares la cena"\n\n🏷️ ${bold('Categorías:')} se detectan automáticamente\nTambién podés agregar: "1500 café #comida"\n\n🎤 ${bold('También podés enviar:')}\n- Audio describiendo tu gasto\n- Foto de comprobante\n- PDF de comprobante\n\n⚡ ${bold('Comandos:')}\n/balance - Resumen del mes\n/lista - Últimos gastos\n/fijos - Gastos fijos\n/categorias - Ver categorías\n/modo - Cambiar de modo\n\n━━━━━━━━━━━━━━━━━━━━━━\n\n${appFooter()}`
 }
 
 // ─── Balance & Summary ──────────────────────────────────────────
@@ -297,28 +298,31 @@ export function formatExpenseList(entries: ExpenseListEntry[]): string {
 }
 
 export function formatMonthlySummary(options: MonthlySummaryOptions): string {
-  let msg = `${bold(`${options.monthName} ${options.year}`)}\n\nGastaste: ${formatAmount(options.total)}\n${options.paymentCount} pagos registrados\n${options.comparison || ''}`
+  let msg = `📊 ${bold(`${options.monthName} ${options.year}`)}\n\n`
+  msg += `💵 Gastaste: ${formatAmount(options.total)}\n`
+  msg += `📋 ${options.paymentCount} pagos registrados\n`
+  if (options.comparison) msg += `📈 ${options.comparison}\n`
 
   if (options.topCategories && options.topCategories.length > 0) {
-    msg += `\n\n${bold('Top categorias:')}\n`
+    msg += `\n🏷️ ${bold('Top categorías:')}\n`
     msg += options.topCategories.map(c => `#${c.name.toLowerCase()} ${formatAmount(c.amount)}`).join('\n')
   }
 
   if (options.pendingRecurrents && options.pendingRecurrents > 0) {
-    msg += `\n\nFijos pendientes: ${options.pendingRecurrents}`
+    msg += `\n\n⏰ Fijos pendientes: ${options.pendingRecurrents}`
   }
 
   return msg
 }
 
 export function formatRecurringSummary(options: RecurringSummaryOptions): string {
-  let msg = `${bold(`Gastos fijos: ${formatAmount(options.totalMonthly)}/mes`)}\n`
+  let msg = `📌 ${bold(`Gastos fijos: ${formatAmount(options.totalMonthly)}/mes`)}\n`
   if (options.pending.length > 0) {
-    msg += `\n${bold(`Pendientes (${options.pending.length}):`)}\n`
+    msg += `\n⏰ ${bold(`Pendientes (${options.pending.length}):`)}\n`
     options.pending.forEach(p => { msg += `${p.title} ${formatAmount(p.amount)}\n  ${italic(formatDueDate(p.daysUntilDue))}\n` })
   }
   if (options.paid.length > 0) {
-    msg += `\n${bold(`Pagados (${options.paid.length}):`)}\n`
+    msg += `\n✅ ${bold(`Pagados (${options.paid.length}):`)}\n`
     options.paid.forEach(p => { msg += `${p.title} ${formatAmount(p.amount)}\n` })
   }
   return msg.trim()
@@ -340,8 +344,12 @@ export function formatPaymentNotification(amount: number, recorderName: string, 
 }
 
 export function formatTransferConfirmation(options: TransferConfirmationOptions): string {
-  let msg = `✅ Transferencia registrada!\n\n${bold(options.title)}\n${formatAmountFull(options.amount)}\n#${options.categoryName.toLowerCase()}`
-  if (options.recipientName) msg += `\n${italic(`Destinatario: ${options.recipientName}`)}`
-  if (options.needsRevision) msg += `\n\n${italic('Revisa el titulo y categoria desde la app.')}`
+  let msg = `✅ ${bold('Transferencia registrada')}\n\n`
+  msg += `💵 ${formatAmountFull(options.amount)} ARS\n`
+  msg += `📝 ${options.title}\n`
+  msg += `🏷️ #${options.categoryName.toLowerCase()}\n`
+  if (options.recipientName) msg += `${italic(`Destinatario: ${options.recipientName}`)}\n`
+  if (options.needsRevision) msg += `\n${italic('Revisá el título y categoría desde la app.')}\n`
+  msg += `\n${appFooter()}`
   return msg
 }
