@@ -1139,7 +1139,7 @@ export default class GruposHandler {
     }
   }
 
-  private async getAllGroupsByUserId(userId: string): Promise<Group[]> {
+  async getAllGroupsByUserId(userId: string): Promise<Group[]> {
     try {
       const snapshot = await db.collection('ttc_group').where('members', 'array-contains', userId).get()
       return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Group[]

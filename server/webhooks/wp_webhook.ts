@@ -352,13 +352,25 @@ async function handleModo(phone: string, textLower: string): Promise<void> {
 }
 
 async function handleModoSwitch(phone: string, targetMode: string): Promise<void> {
-  const switched = await setUserActiveMode(phone, targetMode)
-  if (switched) {
-    const emoji = targetMode === 'grupos' ? '👥' : '📊'
-    const desc = targetMode === 'grupos' ? 'Contame qué pagaste y lo divido.' : 'Contame qué pagaste o enviá un comprobante.'
-    await sendMessage(phone, `✅ Modo cambiado a *${targetMode}* ${emoji}\n\n${desc}\n\n_Escribí /ayuda para ver todas las opciones._`)
-  } else {
+  const user = await gruposHandler.getUserByPhone(phone)
+  if (!user) {
     await sendMessage(phone, `🔗 No encontré tu cuenta. Primero vinculá tu número:\n\n1. Registrate en https://textthecheck.app\n2. Andá a tu Perfil → WhatsApp\n3. Enviá acá: *VINCULAR <código>*`)
+    return
+  }
+
+  await setActiveMode(user.id, targetMode)
+
+  if (targetMode === 'grupos') {
+    const groups = await gruposHandler.getAllGroupsByUserId(user.id)
+    if (groups.length > 1) {
+      await sendMessage(phone, `✅ Modo cambiado a *grupos* 👥\n\nTenés ${groups.length} grupos. Cuando cargues un gasto, te voy a preguntar en cuál registrarlo.\n\n_Escribí /ayuda para ver todas las opciones._`)
+    } else if (groups.length === 1) {
+      await sendMessage(phone, `✅ Modo cambiado a *grupos* 👥\n\n📁 Grupo: *${groups[0].name}*\nContame qué pagaste y lo divido.\n\n_Escribí /ayuda para ver todas las opciones._`)
+    } else {
+      await sendMessage(phone, `✅ Modo cambiado a *grupos* 👥\n\nNo pertenecés a ningún grupo todavía. Creá uno desde la app.\n\n_Escribí /ayuda para ver todas las opciones._`)
+    }
+  } else {
+    await sendMessage(phone, `✅ Modo cambiado a *finanzas* 📊\n\nContame qué pagaste o enviá un comprobante.\n\n_Escribí /ayuda para ver todas las opciones._`)
   }
 }
 
@@ -411,16 +423,14 @@ async function determineUserMode(phone: string): Promise<UserWithMode> {
   return { mode: null, user: null }
 }
 
-async function setUserActiveMode(phone: string, mode: string): Promise<boolean> {
-  const user = await gruposHandler.getUserByPhone(phone)
-  if (!user) return false
-  await setActiveMode(user.id, mode)
-  return true
-}
 
 async function setActiveMode(userId: string, mode: string): Promise<void> {
   try {
-    await db.collection('ttc_user').doc(userId).update({ activeMode: mode })
+    const update: Record<string, any> = { activeMode: mode }
+    if (mode === 'grupos') {
+      update.activeGroupId = null  // Force fresh group selection for multi-group users
+    }
+    await db.collection('ttc_user').doc(userId).update(update)
   } catch (error) {
     console.error('Error setting active mode:', error)
   }
