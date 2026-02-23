@@ -271,18 +271,19 @@ async function handleVincular(phone: string, code: string, contactName: string):
     }
 
     const userId = codeData.userId // Auth UID = ttc_user doc ID
+    const canonicalPhone = normalizeForComparison(phone)
 
     // Delete pending code doc
     await db.collection('pt_whatsapp_link').doc(codeUpper).delete()
 
     // Set ttc_user.phone (enables Grupos)
-    await db.collection('ttc_user').doc(userId).update({ phone })
+    await db.collection('ttc_user').doc(userId).update({ phone: canonicalPhone })
 
     // Create linked doc in pt_whatsapp_link (enables Finanzas)
-    await db.collection('pt_whatsapp_link').doc(phone).set({
+    await db.collection('pt_whatsapp_link').doc(canonicalPhone).set({
       status: 'linked',
       userId,
-      phoneNumber: phone,
+      phoneNumber: canonicalPhone,
       contactName,
       linkedAt: admin.firestore.FieldValue.serverTimestamp(),
     })
