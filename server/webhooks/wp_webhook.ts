@@ -206,8 +206,8 @@ async function processMessage(message: any, contacts: any[]): Promise<void> {
       return
     }
 
-    // /modo — switch between grupos/finanzas (replaces old "MODE GRUPOS"/"MODE FINANZAS")
-    if (textLower.startsWith('/modo')) {
+    // /modo or /mode — switch between grupos/finanzas
+    if (textLower.startsWith('/modo') || textLower.startsWith('/mode')) {
       await handleModo(from, textLower)
       return
     }
@@ -215,12 +215,7 @@ async function processMessage(message: any, contacts: any[]): Promise<void> {
     // Legacy MODE command (backward compat)
     if (textUpper === 'MODE GRUPOS' || textUpper === 'MODE FINANZAS') {
       const targetMode = textUpper === 'MODE GRUPOS' ? 'grupos' : 'finanzas'
-      const switched = await setUserActiveMode(from, targetMode)
-      if (switched) {
-        await sendMessage(from, `Modo cambiado a *${targetMode}*. Tus próximos mensajes se procesarán en este modo.`)
-      } else {
-        await sendMessage(from, `No encontré tu cuenta. Primero vinculá tu número:\n\n1. Registrate en https://textthecheck.app\n2. Andá a Configuración → WhatsApp\n3. Copiá el código y enviá acá: *VINCULAR <código>*`)
-      }
+      await handleModoSwitch(from, targetMode)
       return
     }
 
@@ -228,7 +223,7 @@ async function processMessage(message: any, contacts: any[]): Promise<void> {
     if (textLower === '/ayuda' || textLower === '/help') {
       const { mode: userMode } = await determineUserMode(from)
       if (!userMode) {
-        await sendMessage(from, `*text the check — Ayuda*\n\nEste bot tiene dos modos:\n\n*Grupos* — Dividir gastos con amigos\n*Finanzas* — Registrar gastos personales\n\nPara empezar, vinculá tu cuenta:\n1. Registrate en https://textthecheck.app\n2. Andá a tu Perfil → WhatsApp\n3. Enviá acá: *VINCULAR <código>*\n\nUna vez vinculado, usá */modo grupos* o */modo finanzas* para elegir.`)
+        await sendMessage(from, `📖 *Cómo usar text the check*\n\nEste bot tiene dos modos:\n👥 *Grupos* — Dividir gastos con amigos\n📊 *Finanzas* — Registrar gastos personales\n\nPara empezar, vinculá tu cuenta:\n1. Registrate en https://textthecheck.app\n2. Andá a tu Perfil → WhatsApp\n3. Enviá acá: *VINCULAR <código>*\n\nUna vez vinculado, usá /modo grupos o /modo finanzas para elegir.`)
         return
       }
       // Has mode — let it pass through to the handler-specific help
@@ -240,7 +235,8 @@ async function processMessage(message: any, contacts: any[]): Promise<void> {
   const { mode, user } = await determineUserMode(from)
 
   if (!mode) {
-    await sendMessage(from, `¡Hola${contactName !== 'Usuario' ? ` ${contactName}` : ''}! No encontré tu cuenta.\n\nPara empezar:\n1. Registrate en https://textthecheck.app\n2. Andá a Configuración → WhatsApp\n3. Copiá el código de vinculación\n4. Enviá acá: *VINCULAR <código>*\n\nEsto te habilita tanto *Grupos* como *Finanzas*.`)
+    const name = contactName !== 'Usuario' ? ` ${contactName}` : ''
+    await sendMessage(from, `👋 ¡Hola${name}! Bienvenido a *text the check*\n\nPara empezar, vinculá tu cuenta:\n\n1. Registrate en https://textthecheck.app\n2. Andá a tu Perfil → WhatsApp\n3. Enviá acá: *VINCULAR <código>*\n\nEsto te habilita tanto *Grupos* 👥 como *Finanzas* 📊`)
     return
   }
 
@@ -257,7 +253,7 @@ async function processMessage(message: any, contacts: any[]): Promise<void> {
 
 async function handleVincular(phone: string, code: string, contactName: string): Promise<void> {
   if (!code) {
-    await sendMessage(phone, 'Formato incorrecto. Usá: VINCULAR <codigo>\n\nEjemplo: VINCULAR ABC123')
+    await sendMessage(phone, '⚠️ Formato incorrecto. Usá: *VINCULAR <código>*\n\nEjemplo: VINCULAR ABC123')
     return
   }
 
@@ -266,13 +262,13 @@ async function handleVincular(phone: string, code: string, contactName: string):
     const codeDoc = await db.collection('pt_whatsapp_link').doc(codeUpper).get()
 
     if (!codeDoc.exists) {
-      await sendMessage(phone, 'Código no encontrado o expirado. Generá un nuevo código desde tu Perfil en la app.')
+      await sendMessage(phone, '⚠️ Código no encontrado o expirado.\n\nGenerá un nuevo código desde tu Perfil en la app.')
       return
     }
 
     const codeData = codeDoc.data()!
     if (codeData.status !== 'pending') {
-      await sendMessage(phone, 'Código no válido. Generá un nuevo código desde tu Perfil en la app.')
+      await sendMessage(phone, '⚠️ Código no válido.\n\nGenerá un nuevo código desde tu Perfil en la app.')
       return
     }
 
@@ -280,7 +276,7 @@ async function handleVincular(phone: string, code: string, contactName: string):
     const createdAt = codeData.createdAt?.toDate() || new Date(0)
     if ((Date.now() - createdAt.getTime()) / (1000 * 60) > 10) {
       await db.collection('pt_whatsapp_link').doc(codeUpper).delete()
-      await sendMessage(phone, 'El código expiró. Generá un nuevo código desde tu Perfil en la app.')
+      await sendMessage(phone, '⚠️ El código expiró.\n\nGenerá un nuevo código desde tu Perfil en la app.')
       return
     }
 
@@ -302,10 +298,10 @@ async function handleVincular(phone: string, code: string, contactName: string):
       linkedAt: admin.firestore.FieldValue.serverTimestamp(),
     })
 
-    await sendMessage(phone, `¡Cuenta vinculada!\n\nAhora podés usar:\n• *Grupos* — dividir gastos con amigos\n• *Finanzas* — registrar gastos personales\n\nEscribí *MODE GRUPOS* o *MODE FINANZAS* para elegir modo.\nO simplemente mandá un mensaje y te guío.`)
+    await sendMessage(phone, `✅ *¡Cuenta vinculada!*\n\nAhora podés usar:\n👥 *Grupos* — Dividir gastos con amigos\n📊 *Finanzas* — Registrar gastos personales\n\nEscribí /modo grupos o /modo finanzas para elegir.\nO simplemente mandá un mensaje y te guío.`)
   } catch (error) {
     console.error('Error in VINCULAR:', error)
-    await sendMessage(phone, 'Error al vincular la cuenta. Intentá nuevamente.')
+    await sendMessage(phone, '⚠️ Error al vincular la cuenta. Intentá nuevamente.')
   }
 }
 
@@ -313,7 +309,7 @@ async function handleDesvincular(phone: string): Promise<void> {
   try {
     const linkDoc = await db.collection('pt_whatsapp_link').doc(phone).get()
     if (!linkDoc.exists || linkDoc.data()?.status !== 'linked') {
-      await sendMessage(phone, 'Este número no está vinculado a ninguna cuenta.')
+      await sendMessage(phone, '⚠️ Este número no está vinculado a ninguna cuenta.\n\nPara vincular, generá un código desde tu Perfil en la app.')
       return
     }
 
@@ -327,10 +323,10 @@ async function handleDesvincular(phone: string): Promise<void> {
     // Delete linked doc
     await db.collection('pt_whatsapp_link').doc(phone).delete()
 
-    await sendMessage(phone, 'Cuenta desvinculada. Para volver a vincular, generá un nuevo código desde tu Perfil en la app.')
+    await sendMessage(phone, '✅ *Cuenta desvinculada*\n\nPara volver a vincular, generá un nuevo código desde tu Perfil en la app.')
   } catch (error) {
     console.error('Error in DESVINCULAR:', error)
-    await sendMessage(phone, 'Error al desvincular la cuenta. Intentá nuevamente.')
+    await sendMessage(phone, '⚠️ Error al desvincular la cuenta. Intentá nuevamente.')
   }
 }
 
@@ -341,21 +337,28 @@ async function handleModo(phone: string, textLower: string): Promise<void> {
   const arg = parts[1] || ''
 
   if (arg === 'grupos' || arg === 'finanzas') {
-    const switched = await setUserActiveMode(phone, arg)
-    if (switched) {
-      await sendMessage(phone, `Modo cambiado a *${arg}*. Tus próximos mensajes se procesarán en este modo.`)
-    } else {
-      await sendMessage(phone, `No encontré tu cuenta. Primero vinculá tu número:\n\n1. Registrate en https://textthecheck.app\n2. Andá a Configuración → WhatsApp\n3. Copiá el código y enviá acá: *VINCULAR <código>*`)
-    }
+    await handleModoSwitch(phone, arg)
     return
   }
 
   // /modo with no valid arg — show current mode
   const { mode } = await determineUserMode(phone)
+  const modeEmoji = mode === 'grupos' ? '👥' : mode === 'finanzas' ? '📊' : ''
   if (mode) {
-    await sendMessage(phone, `Tu modo actual es *${mode}*.\n\nPara cambiar, escribí:\n*/modo grupos* — Dividir gastos con amigos\n*/modo finanzas* — Registrar gastos personales`)
+    await sendMessage(phone, `🔄 Modo actual: *${mode}* ${modeEmoji}\n\nPara cambiar, escribí:\n/modo grupos — Dividir gastos con amigos 👥\n/modo finanzas — Registrar gastos personales 📊`)
   } else {
-    await sendMessage(phone, `No tenés un modo activo.\n\nEscribí:\n*/modo grupos* — Dividir gastos con amigos\n*/modo finanzas* — Registrar gastos personales`)
+    await sendMessage(phone, `🔄 No tenés un modo activo.\n\nEscribí:\n/modo grupos — Dividir gastos con amigos 👥\n/modo finanzas — Registrar gastos personales 📊`)
+  }
+}
+
+async function handleModoSwitch(phone: string, targetMode: string): Promise<void> {
+  const switched = await setUserActiveMode(phone, targetMode)
+  if (switched) {
+    const emoji = targetMode === 'grupos' ? '👥' : '📊'
+    const desc = targetMode === 'grupos' ? 'Contame qué pagaste y lo divido.' : 'Contame qué pagaste o enviá un comprobante.'
+    await sendMessage(phone, `✅ Modo cambiado a *${targetMode}* ${emoji}\n\n${desc}\n\n_Escribí /ayuda para ver todas las opciones._`)
+  } else {
+    await sendMessage(phone, `🔗 No encontré tu cuenta. Primero vinculá tu número:\n\n1. Registrate en https://textthecheck.app\n2. Andá a tu Perfil → WhatsApp\n3. Enviá acá: *VINCULAR <código>*`)
   }
 }
 
@@ -389,7 +392,7 @@ async function determineUserMode(phone: string): Promise<UserWithMode> {
   if (isLinked && hasGroups) {
     // Both — need explicit mode selection
     // For now, default to the one they used most recently, or prompt
-    await sendMessage(phone, `Estás registrado en ambos modos.\n\nEscribí *MODE GRUPOS* o *MODE FINANZAS* para elegir cómo procesar tus mensajes.`)
+    await sendMessage(phone, `🔄 Estás registrado en ambos modos.\n\nEscribí:\n/modo grupos — Dividir gastos con amigos 👥\n/modo finanzas — Registrar gastos personales 📊`)
     return { mode: null, user }
   }
 

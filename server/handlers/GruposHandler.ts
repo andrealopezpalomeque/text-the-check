@@ -540,7 +540,7 @@ export default class GruposHandler {
     if (!audioId) return
 
     if (!this.gemini.isAIEnabled()) {
-      await sendMessage(from, 'Esta función no está disponible en este momento.')
+      await sendMessage(from, '⚠️ Esta función no está disponible en este momento.')
       return
     }
 
@@ -550,7 +550,7 @@ export default class GruposHandler {
     const group = await this.getGroupByUserId(user.id)
     const groupId = group?.id || null
 
-    await sendMessage(from, 'Procesando audio...')
+    await sendMessage(from, '🎤 Procesando audio...')
     const transcription = await this.gemini.transcribeAudio(media.base64, media.mimeType)
     if (!transcription || !transcription.transcription) {
       await sendMessage(from, formatMediaError('procesar'))
@@ -584,7 +584,7 @@ export default class GruposHandler {
     }
 
     // Could not parse — show transcription and ask to retry
-    await sendMessage(from, `No pude determinar el gasto del audio.\n\n_"${transcription.transcription}"_\n\nProbá escribirlo directamente.`)
+    await sendMessage(from, `⚠️ No pude determinar el gasto del audio.\n\n_"${transcription.transcription}"_\n\nProbá escribirlo directamente.`)
   }
 
   // ─── Image processing ──────────────────────────────────────────
@@ -593,7 +593,7 @@ export default class GruposHandler {
     if (!imageId) return
 
     if (!this.gemini.isAIEnabled()) {
-      await sendMessage(from, 'Esta función no está disponible en este momento.')
+      await sendMessage(from, '⚠️ Esta función no está disponible en este momento.')
       return
     }
 
@@ -608,13 +608,13 @@ export default class GruposHandler {
       return
     }
 
-    await sendMessage(from, 'Procesando imagen...')
+    await sendMessage(from, '📷 Procesando imagen...')
     const transferData = await this.gemini.parseTransferImage(media.base64, media.mimeType)
     if (!transferData) { await sendMessage(from, formatMediaError('procesar')); return }
 
     const amount = parseFloat(String(transferData.amount)) || 0
     if (amount <= 0) {
-      await sendMessage(from, 'No pude determinar el monto del comprobante.')
+      await sendMessage(from, '⚠️ No pude determinar el monto del comprobante.')
       return
     }
 

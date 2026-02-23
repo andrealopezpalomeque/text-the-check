@@ -233,8 +233,8 @@ export function buildConfirmationCancelled(): string {
 
 export function formatParseError(mode: AppMode, context?: { groupName?: string }): string {
   if (mode === 'grupos') {
-    const groupLine = context?.groupName ? `\n📁 Grupo activo: ${bold(context.groupName)}\n` : ''
-    return `⚠️ ${bold('No pude entender el mensaje')}${groupLine}\n\nProbá decirlo de otra forma, por ejemplo:\n• "Puse 50 en el almuerzo"\n• "Pagué 1500 del taxi"\n• "Gasté 20 dólares en la cena con Juan"\n\n${italic('Escribí /ayuda para más info')}\n\n${appFooter('También podés cargar gastos en')}`
+    const groupLine = context?.groupName ? `📁 Grupo activo: ${bold(context.groupName)}\n` : ''
+    return `⚠️ ${bold('No pude entender el mensaje')}\n\n${groupLine}Probá decirlo de otra forma, por ejemplo:\n• "Puse 50 en el almuerzo"\n• "Pagué 1500 del taxi"\n• "Gasté 20 dólares en la cena con Juan"\n\n${italic('Escribí /ayuda para más info')}\n\n${appFooter('También podés cargar gastos en')}`
   }
 
   // finanzas
@@ -282,7 +282,7 @@ export function formatMediaError(action: 'descargar' | 'procesar'): string {
 
 export function formatHelpMessage(mode: AppMode, categories?: string[]): string {
   if (mode === 'grupos') {
-    return `📖 ${bold(`Cómo usar ${BRAND_NAME}`)}\n\n💬 ${bold('Contame qué pagaste:')}\n"Puse 150 en la pizza"\n"Pagué 50 dólares la cena"\n"Gasté 5 lucas en el taxi"\n\nPor defecto se divide entre todos.\nSi mencionás personas, se divide solo entre ellas.\n\n💸 ${bold('Registrar pagos:')}\n"Le pagué 5000 a María"\n"Recibí 3000 de Juan"\n\n💱 ${bold('Monedas:')} USD, EUR, BRL → se convierten a ARS\n\n⚡ ${bold('Comandos:')}\n/balance - Ver quién debe a quién\n/lista - Ver últimos gastos\n/grupo - Cambiar de grupo\n\n━━━━━━━━━━━━━━━━━━━━━━\n\n${appFooter('Agregar, editar o eliminar gastos:')}`
+    return `📖 ${bold(`Cómo usar ${BRAND_NAME}`)}\n\n💬 ${bold('Contame qué pagaste:')}\n"Puse 150 en la pizza"\n"Pagué 50 dólares la cena"\n"Gasté 5 lucas en el taxi"\n\nPor defecto se divide entre todos.\nSi mencionás personas, se divide solo entre ellas.\n\n💸 ${bold('Registrar pagos:')}\n"Le pagué 5000 a María"\n"Recibí 3000 de Juan"\n\n💱 ${bold('Monedas:')} USD, EUR, BRL → se convierten a ARS\n\n⚡ ${bold('Comandos:')}\n/balance - Ver quién debe a quién\n/lista - Ver últimos gastos\n/grupo - Cambiar de grupo\n/modo - Cambiar de modo\n\n━━━━━━━━━━━━━━━━━━━━━━\n\n${appFooter('Agregar, editar o eliminar gastos:')}`
   }
 
   // finanzas
