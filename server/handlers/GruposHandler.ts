@@ -312,7 +312,8 @@ export default class GruposHandler {
     if (isGreeting(text.trim().toLowerCase())) {
       const group = await this.getGroupByUserId(user.id)
       if (group) {
-        await sendMessage(from, formatGreetingResponse('grupos', { groupName: group.name }))
+        const allGroups = await this.getAllGroupsByUserId(user.id)
+        await sendMessage(from, formatGreetingResponse('grupos', { groupName: group.name, groupCount: allGroups.length }))
         return
       }
       // Multi-group user with no active group — greeting + group selection

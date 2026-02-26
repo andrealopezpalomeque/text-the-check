@@ -170,10 +170,11 @@ export function isGreeting(text: string): boolean {
   return GREETING_WORDS.includes(text.trim().toLowerCase())
 }
 
-export function formatGreetingResponse(mode: AppMode, context?: { groupName?: string }): string {
+export function formatGreetingResponse(mode: AppMode, context?: { groupName?: string; groupCount?: number }): string {
   if (mode === 'grupos') {
     const groupLine = context?.groupName ? `\n📁 Grupo activo: ${bold(context.groupName)}` : ''
-    return `👋 *¡Hola!*\n\nEstás en modo ${bold('grupos')} 👥${groupLine}\nContame qué pagaste y lo divido.\n\n${italic('Escribí /ayuda para ver todas las opciones.')}`
+    const switchLine = (context?.groupCount ?? 0) > 1 ? `\n\nTenés ${context!.groupCount} grupos. Escribí /grupo para cambiar.` : ''
+    return `👋 *¡Hola!*\n\nEstás en modo ${bold('grupos')} 👥${groupLine}\nContame qué pagaste y lo divido.${switchLine}\n\n${italic('Escribí /ayuda para ver todas las opciones.')}`
   }
 
   return `👋 *¡Hola!*\n\nEstás en modo ${bold('finanzas')} 📊\nContame qué pagaste o enviá un comprobante.\n\n${italic('Escribí /ayuda para ver todas las opciones.')}`
