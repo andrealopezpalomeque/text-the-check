@@ -134,7 +134,7 @@
                     </svg>
                   </div>
                   <div>
-                    <p class="font-nunito text-xs font-bold text-ttc-text leading-tight">Text the Check</p>
+                    <p class="font-nunito text-xs font-bold text-ttc-text leading-tight">text <span class="text-ttc-primary">the</span> check</p>
                     <p class="font-body text-[10px] text-ttc-accent leading-tight">en linea</p>
                   </div>
                 </div>
