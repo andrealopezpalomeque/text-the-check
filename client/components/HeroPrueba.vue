@@ -122,9 +122,10 @@
 
             <!-- Phone mockup -->
             <div class="phone-frame">
-              <div class="phone-island" />
-
               <div class="phone-screen">
+                <!-- Dynamic Island -->
+                <div class="phone-island" />
+
                 <!-- WhatsApp header -->
                 <div class="flex items-center gap-2.5 px-4 py-3 border-b border-ttc-border">
                   <div class="w-8 h-8 rounded-full bg-[#4A90D9]/15 flex items-center justify-center flex-shrink-0">
@@ -320,15 +321,11 @@ const scrollToComoFunciona = () => {
 }
 
 .phone-island {
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
   width: 80px;
   height: 22px;
+  margin: 10px auto 0;
   background: var(--color-bg);
   border-radius: 20px;
-  z-index: 10;
   border: 1px solid var(--color-border);
 }
 
