@@ -282,12 +282,14 @@ export function formatMediaError(action: 'descargar' | 'procesar'): string {
 // ─── Help Messages ──────────────────────────────────────────────
 
 export function formatHelpMessage(mode: AppMode, categories?: string[]): string {
+  const modeSection = `\n━━━━━━━━━━━━━━━━━━━━━━\n\n🔄 ${bold(`${BRAND_NAME} tiene 2 modos:`)}\n👥 ${bold('grupos')} — Dividir gastos con amigos\n📊 ${bold('finanzas')} — Registrar gastos personales\n\nEscribí /modo para cambiar.\n\n${appFooter()}`
+
   if (mode === 'grupos') {
-    return `📖 ${bold(`Cómo usar ${BRAND_NAME}`)}\n\n💬 ${bold('Contame qué pagaste:')}\n"Puse 150 en la pizza"\n"Pagué 50 dólares la cena"\n"Gasté 5 lucas en el taxi"\n\nPor defecto se divide entre todos.\nSi mencionás personas, se divide solo entre ellas.\n\n💸 ${bold('Registrar pagos:')}\n"Le pagué 5000 a María"\n"Recibí 3000 de Juan"\n\n💱 ${bold('Monedas:')} USD, EUR, BRL → se convierten a ARS\n\n⚡ ${bold('Comandos:')}\n/balance - Ver quién debe a quién\n/lista - Ver últimos gastos\n/grupo - Cambiar de grupo\n/modo - Cambiar de modo\n\n━━━━━━━━━━━━━━━━━━━━━━\n\n${appFooter('Agregar, editar o eliminar gastos:')}`
+    return `📖 ${bold(`Cómo usar ${BRAND_NAME}`)}\n\n👥 Modo actual: ${bold('grupos')}\n\n💬 ${bold('Contame qué pagaste:')}\n"Puse 150 en la pizza"\n"Pagué 50 dólares la cena"\n"Gasté 5 lucas en el taxi"\n\nPor defecto se divide entre todos.\nSi mencionás personas, se divide solo entre ellas.\n\n💸 ${bold('Registrar pagos:')}\n"Le pagué 5000 a María"\n"Recibí 3000 de Juan"\n\n💱 ${bold('Monedas:')} USD, EUR, BRL → se convierten a ARS\n\n⚡ ${bold('Comandos:')}\n/balance - Ver quién debe a quién\n/lista - Ver últimos gastos\n/grupo - Cambiar de grupo${modeSection}`
   }
 
   // finanzas
-  return `📖 ${bold(`Cómo usar ${BRAND_NAME}`)}\n\n💬 ${bold('Contame qué pagaste:')}\n"1500 café"\n"Gasté 2 lucas en uber"\n"50 dólares la cena"\n\n🏷️ ${bold('Categorías:')} se detectan automáticamente\nTambién podés agregar: "1500 café #comida"\n\n🎤 ${bold('También podés enviar:')}\n- Audio describiendo tu gasto\n- Foto de comprobante\n- PDF de comprobante\n\n⚡ ${bold('Comandos:')}\n/resumen - Resumen del mes\n/lista - Últimos gastos\n/fijos - Gastos fijos\n/categorias - Ver categorías\n/modo - Cambiar de modo\n\n━━━━━━━━━━━━━━━━━━━━━━\n\n${appFooter()}`
+  return `📖 ${bold(`Cómo usar ${BRAND_NAME}`)}\n\n📊 Modo actual: ${bold('finanzas')}\n\n💬 ${bold('Contame qué pagaste:')}\n"1500 café"\n"Gasté 2 lucas en uber"\n"50 dólares la cena"\n\n🏷️ ${bold('Categorías:')} se detectan automáticamente\nTambién podés agregar: "1500 café #comida"\n\n🎤 ${bold('También podés enviar:')}\n- Audio describiendo tu gasto\n- Foto de comprobante\n- PDF de comprobante\n\n⚡ ${bold('Comandos:')}\n/resumen - Resumen del mes\n/lista - Últimos gastos\n/fijos - Gastos fijos\n/categorias - Ver categorías${modeSection}`
 }
 
 // ─── Balance & Summary ──────────────────────────────────────────
