@@ -158,7 +158,7 @@ export default class FinanzasHandler {
       const userId = await this.checkLinked(from)
 
       if (messageType === 'text') {
-        const text = messageData.text?.body || messageData
+        const text = messageData.text?.body ?? messageData
         await this.processTextMessage(from, typeof text === 'string' ? text : String(text), contactName, userId)
       } else if (messageType === 'audio') {
         await this.processAudioMessage(from, messageData.audio.id, contactName, userId)

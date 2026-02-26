@@ -9,7 +9,8 @@
     "typecheck": "tsc --noEmit",
     "reminders:morning": "tsx scripts/send-reminders.ts --mode morning",
     "reminders:evening": "tsx scripts/send-reminders.ts --mode evening",
-    "weekly-summary": "tsx scripts/send-weekly-summary.ts"
+    "weekly-summary": "tsx scripts/send-weekly-summary.ts",
+    "test:harmonization": "npx tsx --import ./scripts/test-setup.ts scripts/test-harmonization.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
