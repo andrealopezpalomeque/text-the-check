@@ -1,4 +1,4 @@
-const publicRoutes = ['/', '/login', '/setup', '/join', '/privacy']
+const publicRoutes = ['/', '/login', '/setup', '/join', '/privacy', '/landing-prueba']
 
 export default defineNuxtRouteMiddleware((to) => {
   // Skip middleware on server - Firebase auth only works on client
