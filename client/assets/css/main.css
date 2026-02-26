@@ -48,6 +48,25 @@
   --color-toggle-accent: #D1F0E4;
 }
 
+/* Global cursor: default everywhere, pointer/text only where appropriate */
+@layer base {
+  *, *::before, *::after {
+    @apply cursor-default;
+  }
+  a, button, [role="button"], label[for], select, summary,
+  input[type="checkbox"], input[type="radio"], input[type="submit"],
+  input[type="reset"], input[type="button"], input[type="file"],
+  .cursor-pointer {
+    @apply cursor-pointer;
+  }
+  input[type="text"], input[type="email"], input[type="password"],
+  input[type="search"], input[type="tel"], input[type="url"],
+  input[type="number"], input[type="date"], input[type="time"],
+  input[type="datetime-local"], textarea, [contenteditable="true"] {
+    @apply cursor-text;
+  }
+}
+
 /* Base styles */
 body {
   font-family: 'DM Sans', sans-serif;
