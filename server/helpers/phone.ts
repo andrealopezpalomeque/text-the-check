@@ -57,7 +57,8 @@ export function comparePhones(a: string, b: string): boolean {
 
 /**
  * Generate multiple format variants for Firestore lookup.
- * Covers: raw, digits-only, +digits, stripped spaces/dashes.
+ * Covers: raw, digits-only, +digits, stripped spaces/dashes,
+ * and Argentine 549↔54 variants (with/without mobile "9" prefix).
  */
 export function generatePhoneCandidates(phone: string): string[] {
   const digitsOnly = normalizeForComparison(phone)
@@ -65,7 +66,16 @@ export function generatePhoneCandidates(phone: string): string[] {
     phone.replace(/[\s-]/g, ''),
     digitsOnly,
     `+${digitsOnly}`,
-  ].filter(Boolean)
+  ]
 
-  return [...new Set(candidates)]
+  // Argentine mobile: 549XXXXXXXXX (13 digits) ↔ 54XXXXXXXXX (12 digits)
+  if (digitsOnly.startsWith('549') && digitsOnly.length === 13) {
+    const without9 = '54' + digitsOnly.slice(3)
+    candidates.push(without9, `+${without9}`)
+  } else if (digitsOnly.startsWith('54') && !digitsOnly.startsWith('549') && digitsOnly.length === 12) {
+    const with9 = '549' + digitsOnly.slice(2)
+    candidates.push(with9, `+${with9}`)
+  }
+
+  return [...new Set(candidates.filter(Boolean))]
 }

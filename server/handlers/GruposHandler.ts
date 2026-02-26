@@ -11,8 +11,18 @@ import Fuse from 'fuse.js'
 import axios from 'axios'
 import { FieldValue } from 'firebase-admin/firestore'
 import { db } from '../config/firebase.js'
-import { sendMessage } from '../helpers/whatsapp.js'
+import { sendMessage, downloadMedia } from '../helpers/whatsapp.js'
 import { normalizeForComparison, generatePhoneCandidates } from '../helpers/phone.js'
+import {
+  appFooter,
+  isAffirmativeResponse, isNegativeResponse, isGreeting, formatGreetingResponse,
+  buildConfirmationRequest, buildConfirmationSuccess, buildConfirmationCancelled,
+  formatParseError, formatValidationError, formatUnresolvedNamesError,
+  formatPaymentError, formatSaveError, formatMediaError,
+  formatPaymentConfirmation, formatPaymentNotification,
+  formatHelpMessage, formatBalance, formatExpenseList,
+  type BalanceEntry, type ExpenseListEntry,
+} from '../helpers/responseFormatter.js'
 import type GeminiHandler from './GeminiHandler.js'
 import type { AIExpenseResult, AIPaymentResult, MemberInfo } from './GeminiHandler.js'
 
@@ -191,7 +201,20 @@ export default class GruposHandler {
 
   // ─── Main entry point ──────────────────────────────────────────
 
-  async handleMessage(from: string, text: string, messageId: string, user: User): Promise<void> {
+  async handleMessage(from: string, messageType: string, messageData: any, user: User, contactName: string): Promise<void> {
+    // Route non-text message types
+    if (messageType === 'audio') {
+      await this.processAudioMessage(from, messageData.audio?.id, user)
+      return
+    }
+    if (messageType === 'image') {
+      await this.processImageMessage(from, messageData.image?.id, messageData.image?.caption, user)
+      return
+    }
+    if (messageType !== 'text') return // Unsupported message type
+
+    const text = messageData.text?.body || ''
+
     // 1. Welcome message check
     if (!user.welcomedAt) {
       const userGroups = await this.getAllGroupsByUserId(user.id)
@@ -202,21 +225,23 @@ export default class GruposHandler {
 
     // 3. Pending AI expense confirmation
     if (this.hasPendingAIExpense(user.id)) {
-      if (this.isAffirmativeResponse(text)) {
+      if (isAffirmativeResponse(text)) {
         const pending = this.getPendingAIExpense(user.id)
         if (pending) {
           await this.saveConfirmedAIExpense(pending)
           this.pendingAIExpenses.delete(user.id)
-          await sendMessage(from, this.formatExpenseConfirmation(
-            pending.expense.amount, pending.expense.originalAmount, pending.expense.originalCurrency,
-            pending.expense.description, pending.expense.category, pending.expense.displayNames, pending.groupName
-          ))
+          await sendMessage(from, buildConfirmationSuccess({
+            mode: 'grupos', amount: pending.expense.amount,
+            originalAmount: pending.expense.originalAmount, originalCurrency: pending.expense.originalCurrency,
+            description: pending.expense.description, category: pending.expense.category,
+            displayNames: pending.expense.displayNames, groupName: pending.groupName,
+          }))
           return
         }
       }
-      if (this.isNegativeResponse(text)) {
+      if (isNegativeResponse(text)) {
         this.pendingAIExpenses.delete(user.id)
-        await sendMessage(from, this.formatExpenseCancelledMessage())
+        await sendMessage(from, buildConfirmationCancelled())
         return
       }
       // Something else — cancel pending, continue processing
@@ -260,7 +285,14 @@ export default class GruposHandler {
       return
     }
 
-    // 7. Multi-group user without activeGroupId
+    // 7. Greeting detection — respond with mode + group context, don't send to AI
+    if (isGreeting(text.trim().toLowerCase())) {
+      const group = await this.getGroupByUserId(user.id)
+      await sendMessage(from, formatGreetingResponse('grupos', { groupName: group?.name }))
+      return
+    }
+
+    // 8. Multi-group user without activeGroupId
     const allGroups = await this.getAllGroupsByUserId(user.id)
     if (allGroups.length > 1 && !user.activeGroupId) {
       this.pendingExpenses.set(user.id, {
@@ -289,8 +321,9 @@ export default class GruposHandler {
         } else if (aiResult.type === 'payment' && aiResult.confidence >= threshold) {
           await this.handleAIPayment(from, aiResult, user, groupId, group?.name || '')
           return
-        } else if (aiResult.type === 'unknown' && aiResult.suggestion && aiResult.confidence < 0.5) {
-          await sendMessage(from, `🤔 ${aiResult.suggestion}`)
+        } else if (aiResult.type === 'unknown') {
+          // AI couldn't parse — show our formatted parse error (not raw AI suggestion)
+          await sendMessage(from, formatParseError('grupos', { groupName: group?.name }))
           return
         }
         // Low confidence → fall through to regex
@@ -318,7 +351,7 @@ export default class GruposHandler {
     switch (parsed.command) {
       case '/ayuda':
       case '/help':
-        await sendMessage(from, this.getHelpMessage())
+        await sendMessage(from, formatHelpMessage('grupos'))
         break
 
       case '/grupo':
@@ -347,11 +380,11 @@ export default class GruposHandler {
 
       case '/borrar':
       case '/delete':
-        await sendMessage(from, '✏️ Para agregar, editar o eliminar gastos manualmente, usá el dashboard:\n\nhttps://textthecheck.app')
+        await sendMessage(from, `✏️ Para agregar, editar o eliminar gastos manualmente, usá el dashboard:\n\n${appFooter()}`)
         break
 
       default:
-        await sendMessage(from, `❓ Comando no reconocido: ${parsed.command}\n\nEscribí /ayuda para ver los comandos disponibles.\n\n📊 O visitá https://textthecheck.app`)
+        await sendMessage(from, `❓ Comando no reconocido: ${parsed.command}\n\nEscribí /ayuda para ver los comandos disponibles.\n\n${appFooter('O visitá')}`)
         break
     }
   }
@@ -366,14 +399,14 @@ export default class GruposHandler {
     const originalCurrency = currencyInfo?.currency
 
     if (parsed.needsReview) {
-      await sendMessage(from, this.formatParseErrorMessage())
+      await sendMessage(from, formatParseError('grupos', { groupName }))
       return
     }
 
     const cleanDescription = this.stripCurrencyFromDescription(parsed.description)
     const validation = this.validateExpenseInput(finalAmount, cleanDescription)
     if (!validation.valid) {
-      await sendMessage(from, this.formatValidationErrorMessage(validation.error!))
+      await sendMessage(from, formatValidationError(validation.error!))
       return
     }
 
@@ -395,13 +428,13 @@ export default class GruposHandler {
         timestamp: new Date(),
       })
 
-      await sendMessage(from, this.formatExpenseConfirmation(
-        finalAmount, originalAmount, originalCurrency,
-        cleanDescription, parsed.category || 'general', displayNames, groupName
-      ))
+      await sendMessage(from, buildConfirmationSuccess({
+        mode: 'grupos', amount: finalAmount, originalAmount, originalCurrency,
+        description: cleanDescription, category: parsed.category || 'general', displayNames, groupName,
+      }))
     } catch (error) {
       console.error('Error creating expense:', error)
-      await sendMessage(from, '❌ *Error al guardar el gasto*\n\nOcurrió un error al procesar tu mensaje. Por favor intentá de nuevo.\n\n📊 También podés cargarlo desde https://textthecheck.app')
+      await sendMessage(from, formatSaveError('gasto'))
     }
   }
 
@@ -420,7 +453,7 @@ export default class GruposHandler {
 
     const validation = this.validateExpenseInput(finalAmount, aiResult.description)
     if (!validation.valid) {
-      await sendMessage(from, this.formatValidationErrorMessage(validation.error!))
+      await sendMessage(from, formatValidationError(validation.error!))
       return
     }
 
@@ -436,7 +469,7 @@ export default class GruposHandler {
       const excludeResolution = this.resolveMentionsWithTracking(aiResult.excludeFromSplit, groupMembers)
 
       if (excludeResolution.unresolvedNames.length > 0) {
-        await sendMessage(from, this.formatUnresolvedNamesError(excludeResolution.unresolvedNames, groupName))
+        await sendMessage(from, formatUnresolvedNamesError(excludeResolution.unresolvedNames, groupName))
         return
       }
 
@@ -465,7 +498,7 @@ export default class GruposHandler {
     }
 
     if (unresolvedNames.length > 0) {
-      await sendMessage(from, this.formatUnresolvedNamesError(unresolvedNames, groupName))
+      await sendMessage(from, formatUnresolvedNamesError(unresolvedNames, groupName))
       return
     }
 
@@ -484,10 +517,10 @@ export default class GruposHandler {
       groupId, groupName, createdAt: new Date(),
     })
 
-    await sendMessage(from, this.formatExpenseConfirmationRequest(
-      finalAmount, originalAmount, originalCurrency,
-      aiResult.description, category, groupName, displayNames
-    ))
+    await sendMessage(from, buildConfirmationRequest({
+      mode: 'grupos', amount: finalAmount, originalAmount, originalCurrency,
+      description: aiResult.description, category, groupName, displayNames,
+    }))
   }
 
   private async saveConfirmedAIExpense(pending: PendingAIExpense): Promise<void> {
@@ -501,11 +534,114 @@ export default class GruposHandler {
     })
   }
 
+  // ─── Audio processing ──────────────────────────────────────────
+
+  private async processAudioMessage(from: string, audioId: string | undefined, user: User): Promise<void> {
+    if (!audioId) return
+
+    if (!this.gemini.isAIEnabled()) {
+      await sendMessage(from, '⚠️ Esta función no está disponible en este momento.')
+      return
+    }
+
+    const media = await downloadMedia(audioId)
+    if (!media) { await sendMessage(from, formatMediaError('descargar')); return }
+
+    const group = await this.getGroupByUserId(user.id)
+    const groupId = group?.id || null
+
+    await sendMessage(from, '🎤 Procesando audio...')
+    const transcription = await this.gemini.transcribeAudio(media.base64, media.mimeType)
+    if (!transcription || !transcription.transcription) {
+      await sendMessage(from, formatMediaError('procesar'))
+      return
+    }
+
+    // Feed transcription into existing NLP pipeline
+    if (groupId) {
+      const groupMembers = await this.getGroupMembers(groupId)
+      const memberInfos: MemberInfo[] = groupMembers.map(m => ({ name: m.name, aliases: m.aliases || [] }))
+
+      // Try parsing the transcribed text
+      const textToParse = transcription.transcription
+      const aiResult = await this.gemini.parseExpenseNL(textToParse, memberInfos)
+      const threshold = this.gemini.getConfidenceThreshold()
+
+      if (aiResult.type === 'expense' && aiResult.confidence >= threshold && aiResult.amount > 0) {
+        await this.handleAIExpense(from, aiResult, user, groupId, group?.name || '', textToParse)
+        // Append transcription context to the pending expense
+        const pending = this.pendingAIExpenses.get(user.id)
+        if (pending) {
+          await sendMessage(from, `_"${transcription.transcription}"_`)
+        }
+        return
+      }
+
+      if (aiResult.type === 'payment' && aiResult.confidence >= threshold) {
+        await this.handleAIPayment(from, aiResult as AIPaymentResult, user, groupId, group?.name || '')
+        return
+      }
+    }
+
+    // Could not parse — show transcription and ask to retry
+    await sendMessage(from, `⚠️ No pude determinar el gasto del audio.\n\n_"${transcription.transcription}"_\n\nProbá escribirlo directamente.`)
+  }
+
+  // ─── Image processing ──────────────────────────────────────────
+
+  private async processImageMessage(from: string, imageId: string | undefined, caption: string | undefined, user: User): Promise<void> {
+    if (!imageId) return
+
+    if (!this.gemini.isAIEnabled()) {
+      await sendMessage(from, '⚠️ Esta función no está disponible en este momento.')
+      return
+    }
+
+    const media = await downloadMedia(imageId)
+    if (!media) { await sendMessage(from, formatMediaError('descargar')); return }
+
+    const group = await this.getGroupByUserId(user.id)
+    const groupId = group?.id || null
+
+    if (!groupId) {
+      await sendMessage(from, '⚠️ No pertenecés a ningún grupo.')
+      return
+    }
+
+    await sendMessage(from, '📷 Procesando imagen...')
+    const transferData = await this.gemini.parseTransferImage(media.base64, media.mimeType)
+    if (!transferData) { await sendMessage(from, formatMediaError('procesar')); return }
+
+    const amount = parseFloat(String(transferData.amount)) || 0
+    if (amount <= 0) {
+      await sendMessage(from, '⚠️ No pude determinar el monto del comprobante.')
+      return
+    }
+
+    // Build description from transfer data or caption
+    const label = caption || transferData.recipientName || transferData.concept || 'Comprobante'
+    const description = typeof label === 'string' ? label : 'Comprobante'
+
+    // Create a pseudo-AI expense result and enter the confirmation flow
+    const pseudoExpense: AIExpenseResult = {
+      type: 'expense',
+      amount,
+      currency: 'ARS',
+      description,
+      splitAmong: [],
+      includesSender: true,
+      excludeFromSplit: [],
+      confidence: 0.9,
+    }
+
+    await this.handleAIExpense(from, pseudoExpense, user, groupId, group?.name || '', `[imagen] ${description}`)
+  }
+
   // ─── AI payment handling ────────────────────────────────────────
 
   private async handleAIPayment(from: string, aiResult: AIPaymentResult, user: User, groupId: string, groupName: string): Promise<void> {
     if (aiResult.amount <= 0) {
-      await sendMessage(from, this.formatPaymentErrorMessage('invalid_amount'))
+      await sendMessage(from, formatPaymentError('invalid_amount'))
       return
     }
 
@@ -513,11 +649,11 @@ export default class GruposHandler {
     const mentionedUser = this.matchMention(aiResult.person, groupMembers)
 
     if (!mentionedUser) {
-      await sendMessage(from, this.formatPaymentErrorMessage('invalid_mention'))
+      await sendMessage(from, formatPaymentError('invalid_mention'))
       return
     }
     if (mentionedUser.id === user.id) {
-      await sendMessage(from, this.formatPaymentErrorMessage('self_payment'))
+      await sendMessage(from, formatPaymentError('self_payment'))
       return
     }
 
@@ -532,15 +668,15 @@ export default class GruposHandler {
 
     try {
       await this.createPayment({ groupId, fromUserId, toUserId, amount, recordedBy: user.id, createdAt: new Date() })
-      await sendMessage(from, this.formatPaymentConfirmation(amount, mentionedUser.name, groupName, confirmDir))
+      await sendMessage(from, formatPaymentConfirmation(amount, mentionedUser.name, groupName, confirmDir))
 
       const otherUser = await this.getUserById(mentionedUser.id)
       if (otherUser?.phone) {
-        await sendMessage(otherUser.phone, this.formatPaymentNotification(amount, user.name, groupName, notifyDir))
+        await sendMessage(otherUser.phone, formatPaymentNotification(amount, user.name, groupName, notifyDir))
       }
     } catch (error) {
       console.error('Error creating AI payment:', error)
-      await sendMessage(from, '❌ *Error al registrar el pago*\n\nOcurrió un error al procesar tu mensaje. Por favor intentá de nuevo.\n\n📊 También podés registrarlo desde https://textthecheck.app')
+      await sendMessage(from, formatSaveError('pago'))
     }
   }
 
@@ -554,7 +690,7 @@ export default class GruposHandler {
 
     const parsed = this.parsePaymentMessage(text)
     if (!parsed || parsed.amount <= 0) {
-      await sendMessage(from, this.formatPaymentErrorMessage('invalid_amount'))
+      await sendMessage(from, formatPaymentError('invalid_amount'))
       return
     }
 
@@ -562,11 +698,11 @@ export default class GruposHandler {
     const mentionedUser = this.matchMention(parsed.mention, groupMembers)
 
     if (!mentionedUser) {
-      await sendMessage(from, this.formatPaymentErrorMessage('invalid_mention'))
+      await sendMessage(from, formatPaymentError('invalid_mention'))
       return
     }
     if (mentionedUser.id === user.id) {
-      await sendMessage(from, this.formatPaymentErrorMessage('self_payment'))
+      await sendMessage(from, formatPaymentError('self_payment'))
       return
     }
 
@@ -576,15 +712,15 @@ export default class GruposHandler {
 
     try {
       await this.createPayment({ groupId, fromUserId, toUserId, amount: parsed.amount, recordedBy: user.id, createdAt: new Date() })
-      await sendMessage(from, this.formatPaymentConfirmation(parsed.amount, mentionedUser.name, groupName || '', confirmDir))
+      await sendMessage(from, formatPaymentConfirmation(parsed.amount, mentionedUser.name, groupName || '', confirmDir))
 
       const otherUser = await this.getUserById(mentionedUser.id)
       if (otherUser?.phone) {
-        await sendMessage(otherUser.phone, this.formatPaymentNotification(parsed.amount, user.name, groupName || '', notifyDir))
+        await sendMessage(otherUser.phone, formatPaymentNotification(parsed.amount, user.name, groupName || '', notifyDir))
       }
     } catch (error) {
       console.error('Error creating payment:', error)
-      await sendMessage(from, '❌ *Error al registrar el pago*\n\nOcurrió un error al procesar tu mensaje. Por favor intentá de nuevo.\n\n📊 También podés registrarlo desde https://textthecheck.app')
+      await sendMessage(from, formatSaveError('pago'))
     }
   }
 
@@ -650,7 +786,7 @@ export default class GruposHandler {
     const selectedGroup = pending.groups[number - 1]
     await this.updateUserActiveGroup(userId, selectedGroup.id)
     this.pendingGroupSelections.delete(userId)
-    return `✅ Grupo activo cambiado a: *${selectedGroup.name}*\n\nTus próximos gastos se registrarán en este grupo.\n\n📊 Ver detalles en https://textthecheck.app`
+    return `✅ Grupo activo cambiado a: *${selectedGroup.name}*\n\nTus próximos gastos se registrarán en este grupo.\n\n${appFooter()}`
   }
 
   // ─── Mention matching (Fuse.js) ────────────────────────────────
@@ -840,14 +976,6 @@ export default class GruposHandler {
 
   isCommand(text: string): boolean { return text.trim().startsWith('/') }
 
-  isAffirmativeResponse(text: string): boolean {
-    return ['si', 'sí', 'yes', 's', 'ok', 'dale', 'va', 'bueno', 'listo', 'confirmo'].includes(text.trim().toLowerCase())
-  }
-
-  isNegativeResponse(text: string): boolean {
-    return ['no', 'n', 'cancelar', 'cancel', 'nope', 'na', 'nel'].includes(text.trim().toLowerCase())
-  }
-
   private parseCommand(text: string): { command: string; args: string } | null {
     const trimmed = text.trim()
     if (!trimmed.startsWith('/')) return null
@@ -855,110 +983,6 @@ export default class GruposHandler {
     return { command: parts[0].toLowerCase(), args: parts.slice(1).join(' ') }
   }
 
-
-  // ─── Message formatting ─────────────────────────────────────────
-
-  private formatARS(amount: number): string {
-    return amount.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-  }
-
-  private formatInternational(amount: number): string {
-    return amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-  }
-
-  private formatCurrency(amount: number): string {
-    return `$${amount.toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
-  }
-
-  private getCategoryEmoji(category: string): string {
-    return ({ food: '🍽️', transport: '🚗', accommodation: '🏨', entertainment: '🎉', general: '📌' } as Record<string, string>)[category] || '📌'
-  }
-
-  private formatRelativeDate(date: Date): string {
-    const diffDays = Math.floor((Date.now() - date.getTime()) / (1000 * 60 * 60 * 24))
-    if (diffDays === 0) return 'hoy'
-    if (diffDays === 1) return 'ayer'
-    if (diffDays < 7) return `hace ${diffDays} días`
-    if (diffDays < 30) { const w = Math.floor(diffDays / 7); return `hace ${w} semana${w > 1 ? 's' : ''}` }
-    const m = Math.floor(diffDays / 30); return `hace ${m} mes${m > 1 ? 'es' : ''}`
-  }
-
-  private formatExpenseConfirmation(amount: number, originalAmount: number | undefined, originalCurrency: string | undefined, description: string, category: string, splitAmong: string[], groupName?: string): string {
-    let msg = '✅ *Gasto registrado*'
-    if (groupName) msg += ` en *${groupName}*`
-    msg += '\n\n'
-    if (originalCurrency && originalCurrency !== 'ARS') {
-      msg += `💰 ${originalCurrency} ${this.formatInternational(originalAmount || 0)} → $${this.formatARS(amount)} ARS\n`
-    } else {
-      msg += `💰 $${this.formatARS(amount)} ARS\n`
-    }
-    msg += `📝 ${description}\n🏷️ ${this.getCategoryEmoji(category)} ${category}\n`
-    msg += splitAmong.length > 0 ? `👥 Dividido entre: ${splitAmong.join(', ')}\n` : '👥 Dividido entre todos\n'
-    msg += '\n📊 Ver detalles en https://textthecheck.app'
-    return msg
-  }
-
-  private formatExpenseConfirmationRequest(amount: number, originalAmount: number | undefined, originalCurrency: string | undefined, description: string, category: string, groupName: string, displayNames: string[]): string {
-    let msg = `🔍 *¿Guardar este gasto?*\n\n📁 *Grupo: ${groupName}*\n\n`
-    if (originalCurrency && originalCurrency !== 'ARS') {
-      msg += `💵 ${originalCurrency} ${this.formatInternational(originalAmount || 0)} → $${this.formatARS(amount)} ARS\n`
-    } else {
-      msg += `💵 $${this.formatARS(amount)} ARS\n`
-    }
-    msg += `📝 ${description}\n`
-    if (category) msg += `🏷️ ${this.getCategoryEmoji(category)} ${category}\n`
-    msg += displayNames.length > 0 ? `👥 Dividido entre: ${displayNames.join(', ')}\n` : '👥 Dividido entre: Todo el grupo\n'
-    msg += '\n━━━━━━━━━━━━━━━━━━━━━━\n\n⬇️ *RESPONDÉ PARA CONFIRMAR* ⬇️\n\n✅  *si*  → Guardar gasto\n❌  *no*  → Cancelar'
-    return msg
-  }
-
-  private formatExpenseCancelledMessage(): string {
-    return '❌ Gasto cancelado.\n\nPodés intentar de nuevo o cargarlo desde https://textthecheck.app'
-  }
-
-  private formatParseErrorMessage(): string {
-    return '⚠️ *No pude entender el mensaje*\n\nProbá decirlo de otra forma, por ejemplo:\n• "Puse 50 en el almuerzo"\n• "Pagué 1500 del taxi"\n• "Gasté 20 dólares en la cena con Juan"\n\n_Escribí /ayuda para más info_\n\n📊 También podés cargar gastos en https://textthecheck.app'
-  }
-
-  private formatValidationErrorMessage(error: string): string {
-    return `⚠️ *${error}*\n\nProbá de nuevo o agregá el gasto desde el dashboard:\nhttps://textthecheck.app`
-  }
-
-  private formatPaymentConfirmation(amount: number, otherName: string, groupName: string, direction: 'to' | 'from'): string {
-    const dir = direction === 'to' ? 'Para' : 'De'
-    return `✅ *Pago registrado*\n\nMonto: $${this.formatARS(amount)}\n${dir}: ${otherName}\nGrupo: ${groupName}\n\nTu balance con ${otherName.split(' ')[0]} se actualizó.\n\n📊 Ver detalles en https://textthecheck.app`
-  }
-
-  private formatPaymentNotification(amount: number, recorderName: string, groupName: string, direction: 'paid_to_you' | 'received_from_you'): string {
-    const firstName = recorderName.split(' ')[0]
-    const msg = direction === 'paid_to_you'
-      ? `${firstName} registró un pago de $${this.formatARS(amount)} hacia vos.`
-      : `${firstName} registró que recibió $${this.formatARS(amount)} de vos.`
-    return `💸 *Pago registrado*\n\n${msg}\nGrupo: ${groupName}\n\n📊 Ver detalles en https://textthecheck.app`
-  }
-
-  private formatPaymentErrorMessage(errorType: string): string {
-    const messages: Record<string, string> = {
-      no_mention: "⚠️ Indicá a quién le pagaste. Ejemplo: pagué 5000 @Maria",
-      invalid_mention: "⚠️ No encontré a esa persona en este grupo",
-      multiple_mentions: "⚠️ Solo podés registrar un pago a una persona por vez",
-      invalid_amount: "⚠️ El monto debe ser un número positivo",
-      self_payment: "⚠️ No podés registrar un pago a vos mismo",
-    }
-    return `${messages[errorType] || '⚠️ Error al procesar el pago'}\n\n📊 También podés registrar pagos en https://textthecheck.app`
-  }
-
-  private formatUnresolvedNamesError(names: string[], groupName: string): string {
-    const isSingular = names.length === 1
-    let msg = isSingular ? '⚠️ *No pude encontrar a esta persona en el grupo:*\n' : '⚠️ *No pude encontrar a estas personas en el grupo:*\n'
-    for (const name of names) msg += `• ${name}\n`
-    msg += `\n📁 Grupo actual: *${groupName}*\n\n💡 *¿Qué podés hacer?*\n• Revisá que el nombre esté bien escrito\n• Usá /grupo para cambiar de grupo\n• Volvé a enviar el gasto con los nombres correctos\n\n📊 O cargalo desde https://textthecheck.app`
-    return msg
-  }
-
-  private getHelpMessage(): string {
-    return `📖 *Cómo usar Text The Check*\n\n💬 *Contame qué pagaste:*\n"Puse 150 en la pizza"\n"Pagué 50 dólares la cena"\n"Gasté 5 lucas en el taxi"\n\nPor defecto se divide entre todos.\nSi mencionás personas, se divide solo entre ellas.\n\n💸 *Registrar pagos:*\n"Le pagué 5000 a María"\n"Recibí 3000 de Juan"\n\n💱 *Monedas:* USD, EUR, BRL → se convierten a ARS\n\n⚡ *Comandos:*\n/balance - Ver quién debe a quién\n/lista - Ver últimos gastos\n/grupo - Cambiar de grupo\n\n━━━━━━━━━━━━━━━━━━━━━━\n\n📊 Agregar, editar o eliminar gastos:\nhttps://textthecheck.app`
-  }
 
   private getWelcomeMessage(userName: string, groups: Group[] = []): string {
     const firstName = userName?.split(' ')[0] || 'Hola'
@@ -1024,37 +1048,26 @@ export default class GruposHandler {
     }
 
     const hasExpenses = [...balances.values()].some(b => b.paid > 0 || b.share > 0)
-    if (!hasExpenses) return '💰 *Balances del grupo*\n\nNo hay gastos registrados todavía.'
+    if (!hasExpenses) return formatBalance([])
 
-    let msg = '💰 *Balances del grupo*\n\n'
-    const sorted = members.map(u => {
+    const entries: BalanceEntry[] = members.map(u => {
       const d = balances.get(u.id)!
       return { name: u.name, net: d.paid - d.share + d.paymentAdj }
     }).sort((a, b) => b.net - a.net)
 
-    for (const b of sorted) {
-      const firstName = b.name.split(' ')[0]
-      const netAbs = Math.abs(b.net)
-      if (b.net > 0) msg += `${firstName}: +${this.formatCurrency(netAbs)} (le deben)\n`
-      else if (b.net < 0) msg += `${firstName}: -${this.formatCurrency(netAbs)} (debe)\n`
-      else msg += `${firstName}: $0 (al día)\n`
-    }
-
-    msg += '\n\n📊 Ver detalles en https://textthecheck.app'
-    return msg.trim()
+    return formatBalance(entries)
   }
 
   private async getExpenseListMessage(groupId: string): Promise<string> {
     const expenses = await this.getExpensesByGroup(groupId, 10)
-    if (expenses.length === 0) return '📋 *Últimos gastos*\n\nNo hay gastos registrados todavía.'
+    if (expenses.length === 0) return formatExpenseList([])
 
     this.recentExpenseCache.set(groupId, expenses.map(e => e.id!))
-    let msg = '📋 *Últimos gastos*\n\n'
-    expenses.forEach((e, i) => {
-      msg += `${i + 1}. ${this.formatCurrency(e.amount)} ${e.description} - ${e.userName.split(' ')[0]} (${this.formatRelativeDate(e.timestamp)})\n`
-    })
-    msg += '\n\n📊 Ver historial completo en https://textthecheck.app'
-    return msg.trim()
+    const entries: ExpenseListEntry[] = expenses.map(e => ({
+      amount: e.amount, description: e.description,
+      userName: e.userName, timestamp: e.timestamp,
+    }))
+    return formatExpenseList(entries)
   }
 
   // ─── Firestore operations ──────────────────────────────────────
@@ -1126,7 +1139,7 @@ export default class GruposHandler {
     }
   }
 
-  private async getAllGroupsByUserId(userId: string): Promise<Group[]> {
+  async getAllGroupsByUserId(userId: string): Promise<Group[]> {
     try {
       const snapshot = await db.collection('ttc_group').where('members', 'array-contains', userId).get()
       return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Group[]
