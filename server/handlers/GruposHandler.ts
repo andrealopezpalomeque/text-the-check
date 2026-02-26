@@ -299,6 +299,8 @@ export default class GruposHandler {
         await sendMessage(from, result)
         return
       }
+      // Non-numeric input — selection cancelled, notify and continue processing the message
+      await sendMessage(from, '💬 _Selección de grupo cancelada._')
     }
 
     // 6. Command check
