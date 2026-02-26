@@ -21,6 +21,7 @@ import * as Sentry from '@sentry/node'
 import { db, admin } from '../config/firebase.js'
 import { normalizeForComparison, generatePhoneCandidates } from '../helpers/phone.js'
 import { sendMessage } from '../helpers/whatsapp.js'
+import { formatModeSwitchPendingCleared } from '../helpers/responseFormatter.js'
 import GeminiHandler from '../handlers/GeminiHandler.js'
 import GruposHandler from '../handlers/GruposHandler.js'
 import FinanzasHandler from '../handlers/FinanzasHandler.js'
@@ -206,9 +207,9 @@ async function processMessage(message: any, contacts: any[]): Promise<void> {
       return
     }
 
-    // /modo or /mode — switch between grupos/finanzas
-    if (textLower.startsWith('/modo') || textLower.startsWith('/mode')) {
-      await handleModo(from, textLower)
+    // /modo or /mode — switch between grupos/finanzas (with or without /)
+    if (textLower.startsWith('/modo') || textLower.startsWith('/mode') || textLower.startsWith('modo ') || textLower === 'modo') {
+      await handleModo(from, textLower.replace(/^\//, ''))
       return
     }
 
@@ -219,8 +220,8 @@ async function processMessage(message: any, contacts: any[]): Promise<void> {
       return
     }
 
-    // /ayuda or /help — unified help for users without a mode
-    if (textLower === '/ayuda' || textLower === '/help') {
+    // /ayuda or /help — unified help for users without a mode (with or without /)
+    if (textLower === '/ayuda' || textLower === '/help' || textLower === 'ayuda' || textLower === 'help') {
       const { mode: userMode } = await determineUserMode(from)
       if (!userMode) {
         await sendMessage(from, `📖 *Cómo usar text the check*\n\nEste bot tiene dos modos:\n👥 *Grupos* — Dividir gastos con amigos\n📊 *Finanzas* — Registrar gastos personales\n\nPara empezar, vinculá tu cuenta:\n1. Registrate en https://textthecheck.app\n2. Andá a tu Perfil → WhatsApp\n3. Enviá acá: *VINCULAR <código>*\n\nUna vez vinculado, usá /modo grupos o /modo finanzas para elegir.`)
@@ -356,6 +357,13 @@ async function handleModoSwitch(phone: string, targetMode: string): Promise<void
   if (!user) {
     await sendMessage(phone, `🔗 No encontré tu cuenta. Primero vinculá tu número:\n\n1. Registrate en https://textthecheck.app\n2. Andá a tu Perfil → WhatsApp\n3. Enviá acá: *VINCULAR <código>*`)
     return
+  }
+
+  // Clear pending states in BOTH handlers before switching
+  const gruposHadPending = gruposHandler.clearPendingStates(user.id)
+  const finanzasHadPending = finanzasHandler.clearPendingStates(user.id)
+  if (gruposHadPending || finanzasHadPending) {
+    await sendMessage(phone, formatModeSwitchPendingCleared())
   }
 
   await setActiveMode(user.id, targetMode)

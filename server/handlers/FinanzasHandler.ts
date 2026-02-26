@@ -18,6 +18,11 @@ import {
   buildConfirmationRequest, buildConfirmationSuccess, buildConfirmationCancelled,
   isAffirmativeResponse, isNegativeResponse, isGreeting, formatGreetingResponse,
   formatTransferConfirmation, formatExpenseList,
+  formatWelcomeMessage, formatServiceUnavailable, formatGenericError,
+  formatFetchError, formatProcessingStatus, formatAudioParseError,
+  formatReceiptParseError, formatUnsupportedMessageType,
+  formatCategoryList, formatEmptyState, formatUnsupportedDocument,
+  formatUnknownCommand,
   type MonthlySummaryOptions, type ExpenseListEntry,
 } from '../helpers/responseFormatter.js'
 import { generatePhoneCandidates } from '../helpers/phone.js'
@@ -117,7 +122,7 @@ export default class FinanzasHandler {
         this.welcomedPhones.add(phone)
         if (!linkDoc.data()?.finanzasWelcomedAt) {
           const firstName = contactName?.split(' ')[0] || ''
-          await sendMessage(phone, this.getWelcomeMessage(firstName))
+          await sendMessage(phone, formatWelcomeMessage('finanzas', { userName: firstName }))
           await db.collection(COLLECTIONS.WHATSAPP_LINKS).doc(candidate).update({ finanzasWelcomedAt: new Date() })
           return true
         }
@@ -127,17 +132,19 @@ export default class FinanzasHandler {
     return false
   }
 
-  private getWelcomeMessage(firstName: string): string {
-    const greeting = firstName ? `¡Hola ${firstName}! 👋` : '¡Hola! 👋'
-    return `${greeting} Bienvenido a *text the check*\n\nSoy tu bot para registrar gastos personales.\n\n💬 *Simplemente contame qué pagaste:*\n"1500 café"\n"Gasté 2 lucas en uber"\n"50 dólares la cena"\n\nLa IA entiende lo que escribas y te pide confirmar antes de guardar.\n\n🎤 *También podés enviar:*\n- Audio describiendo tu gasto\n- Foto de comprobante\n- PDF de comprobante\n\n⚡ *Comandos:*\n/balance → resumen del mes\n/lista → últimos gastos\n/ayuda → más opciones\n\n━━━━━━━━━━━━━━━━━━━━━━\n\n📊 Desde el dashboard podés ver y editar tus gastos:\nhttps://textthecheck.app\n\n¡Empezá a cargar gastos! 🎉`
+  private hasPendingAIExpense(userId: string): boolean {
+    return this.pendingAIExpenses.has(userId)
   }
 
-  private hasPendingAIExpense(phone: string): boolean {
-    return this.pendingAIExpenses.has(phone)
+  private getPendingAIExpense(userId: string): PendingFinanzasExpense | undefined {
+    return this.pendingAIExpenses.get(userId)
   }
 
-  private getPendingAIExpense(phone: string): PendingFinanzasExpense | undefined {
-    return this.pendingAIExpenses.get(phone)
+  /** Clear all pending states for a user (called on mode switch). Returns true if any pending was cleared. */
+  clearPendingStates(userId: string): boolean {
+    const hadPending = this.pendingAIExpenses.has(userId)
+    this.pendingAIExpenses.delete(userId)
+    return hadPending
   }
 
   // ─── Main entry point ──────────────────────────────────────────
@@ -147,64 +154,93 @@ export default class FinanzasHandler {
       // Welcome message on first interaction
       if (await this.checkAndSendWelcome(from, contactName)) return
 
+      // Resolve userId once — used for pending state keying and all DB ops
+      const userId = await this.checkLinked(from)
+
       if (messageType === 'text') {
         const text = messageData.text?.body || messageData
-        await this.processTextMessage(from, typeof text === 'string' ? text : String(text), contactName)
+        await this.processTextMessage(from, typeof text === 'string' ? text : String(text), contactName, userId)
       } else if (messageType === 'audio') {
-        await this.processAudioMessage(from, messageData.audio.id, contactName)
+        await this.processAudioMessage(from, messageData.audio.id, contactName, userId)
       } else if (messageType === 'image') {
-        await this.processImageMessage(from, messageData.image.id, messageData.image?.caption, contactName)
+        await this.processImageMessage(from, messageData.image.id, messageData.image?.caption, contactName, userId)
       } else if (messageType === 'document') {
         const mimeType = messageData.document?.mime_type || ''
         if (mimeType === 'application/pdf') {
-          await this.processPDFMessage(from, messageData.document.id, messageData.document?.caption, contactName)
+          await this.processPDFMessage(from, messageData.document.id, messageData.document?.caption, contactName, userId)
         } else {
-          await sendMessage(from, '⚠️ Solo se aceptan documentos PDF.')
+          await sendMessage(from, formatUnsupportedDocument())
         }
+      } else {
+        await sendMessage(from, formatUnsupportedMessageType())
       }
     } catch (error) {
       logError('Error in FinanzasHandler:', error)
     }
   }
 
+  private static readonly KNOWN_COMMANDS = ['ayuda', 'help', 'categorias', 'resumen', 'balance', 'fijos', 'analisis', 'lista']
+
   // ─── Text message routing ──────────────────────────────────────
 
-  private async processTextMessage(from: string, text: string, contactName: string): Promise<void> {
+  private async processTextMessage(from: string, text: string, contactName: string, userId: string | null): Promise<void> {
     const normalized = text.trim().toLowerCase()
 
-    // Pending AI expense confirmation (check before command routing)
-    if (this.hasPendingAIExpense(from)) {
+    // 0. Empty message guard
+    if (!normalized) {
+      await sendMessage(from, formatParseError('finanzas'))
+      return
+    }
+
+    // 1. Pending AI expense confirmation (check before command routing)
+    if (userId && this.hasPendingAIExpense(userId)) {
       if (isAffirmativeResponse(normalized)) {
-        const pending = this.getPendingAIExpense(from)
+        const pending = this.getPendingAIExpense(userId)
         if (pending) {
           await this.saveConfirmedExpense(pending)
-          this.pendingAIExpenses.delete(from)
+          this.pendingAIExpenses.delete(userId)
           return
         }
       }
       if (isNegativeResponse(normalized)) {
-        this.pendingAIExpenses.delete(from)
+        this.pendingAIExpenses.delete(userId)
         await sendMessage(from, buildConfirmationCancelled())
         return
       }
       // Something else — cancel pending, fall through to process new message
-      this.pendingAIExpenses.delete(from)
+      this.pendingAIExpenses.delete(userId)
     }
 
-    if (normalized === 'ayuda' || normalized === 'help' || normalized === '/ayuda' || normalized === '/help') { await this.sendHelpMessage(from); return }
-    if (normalized === 'categorias' || normalized === '/categorias') { await this.handleCategoriesCommand(from); return }
-    if (normalized === 'resumen' || normalized === '/resumen' || normalized === '/balance') { await this.handleResumenCommand(from); return }
-    if (normalized === 'fijos' || normalized === '/fijos') { await this.handleFijosCommand(from); return }
-    if (normalized === 'analisis' || normalized === '/analisis') { await this.handleAnalisisCommand(from); return }
-    if (normalized === '/lista') { await this.handleListaCommand(from); return }
+    // 2. Command routing (accept both /command and bare single-word command)
+    const isSlash = normalized.startsWith('/')
+    const cmdWord = isSlash ? normalized.slice(1).split(/\s+/)[0] : null
+    const isBareCommand = !isSlash && FinanzasHandler.KNOWN_COMMANDS.includes(normalized)
 
-    // Greeting detection — respond with mode context, don't send to AI
+    const cmd = cmdWord || (isBareCommand ? normalized : null)
+    if (cmd) {
+      if (cmd === 'ayuda' || cmd === 'help') { await this.sendHelpMessage(from, userId); return }
+      if (cmd === 'categorias') { await this.handleCategoriesCommand(from, userId); return }
+      if (cmd === 'resumen') { await this.handleResumenCommand(from, userId); return }
+      if (cmd === 'balance') { await this.handleResumenCommand(from, userId, true); return }
+      if (cmd === 'fijos') { await this.handleFijosCommand(from, userId); return }
+      if (cmd === 'analisis') { await this.handleAnalisisCommand(from, userId); return }
+      if (cmd === 'lista') { await this.handleListaCommand(from, userId); return }
+
+      // Unknown slash command
+      if (isSlash) {
+        await sendMessage(from, formatUnknownCommand(`/${cmd}`))
+        return
+      }
+    }
+
+    // 3. Greeting detection — respond with mode context, don't send to AI
     if (isGreeting(normalized)) {
       await sendMessage(from, formatGreetingResponse('finanzas'))
       return
     }
 
-    await this.handleExpenseMessage(from, text)
+    // 4. Expense parsing
+    await this.handleExpenseMessage(from, text, userId)
   }
 
   /** Check if phone is linked. Tries multiple format candidates. Returns userId (Firebase Auth UID) or null. */
@@ -220,37 +256,32 @@ export default class FinanzasHandler {
 
   // ─── Commands ──────────────────────────────────────────────────
 
-  private async sendHelpMessage(phone: string): Promise<void> {
+  private async sendHelpMessage(phone: string, userId: string | null): Promise<void> {
     let commonCats = FALLBACK_CATEGORIES
-    const userId = await this.checkLinked(phone)
     if (userId) commonCats = await this.getUserCommonCategories(userId)
 
     await sendMessage(phone, formatHelpMessage('finanzas', commonCats))
   }
 
-  private async handleCategoriesCommand(phone: string): Promise<void> {
-    const userId = await this.checkLinked(phone)
+  private async handleCategoriesCommand(phone: string, userId: string | null): Promise<void> {
     if (!userId) { await sendMessage(phone, NOT_LINKED_MSG); return }
 
     try {
       const snapshot = await db.collection(COLLECTIONS.CATEGORIES).where('userId', '==', userId).get()
       if (snapshot.empty) {
-        await sendMessage(phone, '📋 No tenés categorías configuradas en tu cuenta.\n\nPodés crearlas desde la app.')
+        await sendMessage(phone, formatEmptyState('categories'))
         return
       }
 
       const names = snapshot.docs.map(d => d.data().name).filter(Boolean).sort()
-      const formatted = names.map(n => `#${n.toLowerCase()}`).join('\n')
-
-      await sendMessage(phone, `🏷️ *Tus categorías:*\n\n${formatted}\n\n💡 *Tip:* Podés escribir solo parte del nombre y se detecta automáticamente.\n\nEjemplos:\n#super → Supermercado\n#sal → Salidas\n#trans → Transporte`)
+      await sendMessage(phone, formatCategoryList(names))
     } catch (error) {
       logError('Error fetching categories:', error)
-      await sendMessage(phone, '⚠️ Error al obtener las categorías. Intentá nuevamente.')
+      await sendMessage(phone, formatFetchError('las categorías'))
     }
   }
 
-  private async handleResumenCommand(phone: string): Promise<void> {
-    const userId = await this.checkLinked(phone)
+  private async handleResumenCommand(phone: string, userId: string | null, fromBalanceAlias = false): Promise<void> {
     if (!userId) { await sendMessage(phone, NOT_LINKED_MSG); return }
 
     try {
@@ -296,21 +327,22 @@ export default class FinanzasHandler {
         topCategories: topCats.map(([name, amt]) => ({ name, amount: amt as number })),
         pendingRecurrents: pendingSnap.size || undefined,
       }
-      await sendMessage(phone, formatMonthlySummary(summaryOptions))
+      let msg = formatMonthlySummary(summaryOptions)
+      if (fromBalanceAlias) msg += '\n\n_Tip: en Finanzas, este comando se llama /resumen_'
+      await sendMessage(phone, msg)
     } catch (error) {
       logError('Error in RESUMEN command:', error)
-      await sendMessage(phone, '⚠️ Error al obtener el resumen. Intentá nuevamente.')
+      await sendMessage(phone, formatFetchError('el resumen'))
     }
   }
 
-  private async handleFijosCommand(phone: string): Promise<void> {
-    const userId = await this.checkLinked(phone)
+  private async handleFijosCommand(phone: string, userId: string | null): Promise<void> {
     if (!userId) { await sendMessage(phone, NOT_LINKED_MSG); return }
 
     try {
       const recurrentSnap = await db.collection(COLLECTIONS.RECURRENTS).where('userId', '==', userId).get()
       if (recurrentSnap.empty) {
-        await sendMessage(phone, '📌 No tenés gastos fijos configurados.\n\nPodés agregarlos desde la app en la sección "Fijos".')
+        await sendMessage(phone, formatEmptyState('recurrents'))
         return
       }
 
@@ -345,21 +377,20 @@ export default class FinanzasHandler {
       await sendMessage(phone, formatRecurringSummary({ totalMonthly: total, pending, paid }))
     } catch (error) {
       logError('Error in FIJOS command:', error)
-      await sendMessage(phone, '⚠️ Error al obtener los gastos fijos. Intentá nuevamente.')
+      await sendMessage(phone, formatFetchError('los gastos fijos'))
     }
   }
 
-  private async handleAnalisisCommand(phone: string): Promise<void> {
-    const userId = await this.checkLinked(phone)
+  private async handleAnalisisCommand(phone: string, userId: string | null): Promise<void> {
     if (!userId) { await sendMessage(phone, NOT_LINKED_MSG); return }
 
     if (!this.gemini.isAIEnabled()) {
-      await sendMessage(phone, '⚠️ El análisis con IA no está disponible en este momento.')
+      await sendMessage(phone, formatServiceUnavailable())
       return
     }
 
     try {
-      await sendMessage(phone, '🤖 Analizando tus finanzas...')
+      await sendMessage(phone, formatProcessingStatus('analisis'))
 
       const now = new Date()
       const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 3, 1)
@@ -403,12 +434,11 @@ export default class FinanzasHandler {
       await sendMessage(phone, analysis)
     } catch (error) {
       logError('Error in ANALISIS command:', error)
-      await sendMessage(phone, '⚠️ Error al analizar tus finanzas. Intentá nuevamente.')
+      await sendMessage(phone, formatFetchError('el análisis'))
     }
   }
 
-  private async handleListaCommand(phone: string): Promise<void> {
-    const userId = await this.checkLinked(phone)
+  private async handleListaCommand(phone: string, userId: string | null): Promise<void> {
     if (!userId) { await sendMessage(phone, NOT_LINKED_MSG); return }
 
     try {
@@ -433,18 +463,17 @@ export default class FinanzasHandler {
       await sendMessage(phone, formatExpenseList(entries))
     } catch (error) {
       logError('Error in LISTA command:', error)
-      await sendMessage(phone, '⚠️ Error al obtener la lista. Intentá nuevamente.')
+      await sendMessage(phone, formatFetchError('la lista'))
     }
   }
 
   // ─── Expense message parsing ───────────────────────────────────
 
-  private async handleExpenseMessage(phone: string, text: string): Promise<void> {
-    const userId = await this.checkLinked(phone)
+  private async handleExpenseMessage(phone: string, text: string, userId: string | null): Promise<void> {
     if (!userId) { await sendMessage(phone, NOT_LINKED_MSG); return }
 
     if (!this.gemini.isAIEnabled()) {
-      await sendMessage(phone, '⚠️ El servicio no está disponible en este momento. Intentá de nuevo más tarde.')
+      await sendMessage(phone, formatServiceUnavailable())
       return
     }
 
@@ -457,22 +486,38 @@ export default class FinanzasHandler {
         return
       }
 
-      // AI couldn't parse — show our formatted parse error (not raw AI suggestion)
+      // AI low confidence or couldn't parse — try regex fallback
+      const regexResult = this.parseExpenseMessage(text)
+      if (regexResult && regexResult.amount > 0) {
+        const categoryResult = await this.findCategoryId(userId, regexResult.category)
+        await this.handleAIExpense(phone, userId, {
+          type: 'personal_expense',
+          amount: regexResult.amount,
+          currency: 'ARS',
+          title: regexResult.title,
+          category: categoryResult.name,
+          description: regexResult.description,
+          isRecurrent: false,
+          frequency: null,
+          confidence: 0.8,
+        }, text)
+        return
+      }
+
       await sendMessage(phone, formatParseError('finanzas'))
     } catch (error) {
       logError('Error in AI expense parsing:', error)
-      await sendMessage(phone, '⚠️ Ocurrió un error al procesar tu mensaje. Intentá de nuevo.')
+      await sendMessage(phone, formatGenericError())
     }
   }
 
   // ─── Audio processing ──────────────────────────────────────────
 
-  private async processAudioMessage(from: string, audioId: string, _contactName: string): Promise<void> {
-    const userId = await this.checkLinked(from)
+  private async processAudioMessage(from: string, audioId: string, _contactName: string, userId: string | null): Promise<void> {
     if (!userId) { await sendMessage(from, NOT_LINKED_MSG); return }
 
     if (!this.gemini.isAIEnabled()) {
-      await sendMessage(from, '⚠️ Esta función no está disponible en este momento.')
+      await sendMessage(from, formatServiceUnavailable())
       return
     }
 
@@ -482,23 +527,21 @@ export default class FinanzasHandler {
     const catsSnap = await db.collection(COLLECTIONS.CATEGORIES).where('userId', '==', userId).get()
     const categoryNames = catsSnap.docs.map(d => d.data().name).filter(Boolean)
 
-    await sendMessage(from, '🎤 Procesando audio...')
+    await sendMessage(from, formatProcessingStatus('audio'))
     const transcription = await this.gemini.transcribeAudio(media.base64, media.mimeType, categoryNames)
     if (!transcription) { await sendMessage(from, formatMediaError('procesar')); return }
 
     const amount = parseFloat(String(transcription.totalAmount)) || 0
     if (amount <= 0) {
-      let msg = '⚠️ No pude determinar el gasto del audio.'
-      if (transcription.transcription) msg = `_"${transcription.transcription}"_\n\n${msg}`
-      await sendMessage(from, msg)
+      await sendMessage(from, formatAudioParseError(transcription.transcription || undefined))
       return
     }
 
     const categoryResult = await this.findCategoryId(userId, transcription.category)
     const audioTitle = transcription.title || 'Gasto por audio'
 
-    // Store pending and send confirmation request
-    this.pendingAIExpenses.set(from, {
+    // Store pending and send confirmation request (keyed by userId)
+    this.pendingAIExpenses.set(userId, {
       phone: from,
       userId,
       originalText: `[audio] ${transcription.transcription || ''}`,
@@ -533,19 +576,18 @@ export default class FinanzasHandler {
 
   // ─── Image processing ──────────────────────────────────────────
 
-  private async processImageMessage(from: string, imageId: string, caption: string | undefined, _contactName: string): Promise<void> {
-    const userId = await this.checkLinked(from)
+  private async processImageMessage(from: string, imageId: string, caption: string | undefined, _contactName: string, userId: string | null): Promise<void> {
     if (!userId) { await sendMessage(from, NOT_LINKED_MSG); return }
 
     if (!this.gemini.isAIEnabled()) {
-      await sendMessage(from, '⚠️ Esta función no está disponible en este momento.')
+      await sendMessage(from, formatServiceUnavailable())
       return
     }
 
     const media = await downloadMedia(imageId)
     if (!media) { await sendMessage(from, formatMediaError('descargar')); return }
 
-    await sendMessage(from, '📷 Procesando imagen...')
+    await sendMessage(from, formatProcessingStatus('image'))
     const transferData = await this.gemini.parseTransferImage(media.base64, media.mimeType)
     if (!transferData) { await sendMessage(from, formatMediaError('procesar')); return }
 
@@ -554,19 +596,18 @@ export default class FinanzasHandler {
 
   // ─── PDF processing ────────────────────────────────────────────
 
-  private async processPDFMessage(from: string, docId: string, caption: string | undefined, _contactName: string): Promise<void> {
-    const userId = await this.checkLinked(from)
+  private async processPDFMessage(from: string, docId: string, caption: string | undefined, _contactName: string, userId: string | null): Promise<void> {
     if (!userId) { await sendMessage(from, NOT_LINKED_MSG); return }
 
     if (!this.gemini.isAIEnabled()) {
-      await sendMessage(from, '⚠️ Esta función no está disponible en este momento.')
+      await sendMessage(from, formatServiceUnavailable())
       return
     }
 
     const media = await downloadMedia(docId)
     if (!media) { await sendMessage(from, formatMediaError('descargar')); return }
 
-    await sendMessage(from, '📄 Procesando PDF...')
+    await sendMessage(from, formatProcessingStatus('pdf'))
     const transferData = await this.gemini.parseTransferPDF(media.base64, media.mimeType)
     if (!transferData) { await sendMessage(from, formatMediaError('procesar')); return }
 
@@ -578,7 +619,7 @@ export default class FinanzasHandler {
   private async processTransferData(phone: string, userId: string, transferData: any, caption: string | undefined, source: string): Promise<void> {
     const amount = parseFloat(transferData.amount) || 0
     if (amount <= 0) {
-      await sendMessage(phone, '⚠️ No pude determinar el monto del comprobante.')
+      await sendMessage(phone, formatReceiptParseError())
       return
     }
 
@@ -627,8 +668,8 @@ export default class FinanzasHandler {
       if (catDoc.exists) categoryName = catDoc.data()!.name
     }
 
-    // Store pending and send confirmation request
-    this.pendingAIExpenses.set(phone, {
+    // Store pending and send confirmation request (keyed by userId)
+    this.pendingAIExpenses.set(userId, {
       phone,
       userId,
       originalText: `[${source}] ${title}`,
@@ -710,8 +751,8 @@ export default class FinanzasHandler {
       }
     }
 
-    // Store pending expense (keyed by phone)
-    this.pendingAIExpenses.set(phone, {
+    // Store pending expense (keyed by userId)
+    this.pendingAIExpenses.set(userId, {
       phone,
       userId,
       originalText,

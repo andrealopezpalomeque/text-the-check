@@ -286,7 +286,7 @@ export function formatHelpMessage(mode: AppMode, categories?: string[]): string 
   }
 
   // finanzas
-  return `📖 ${bold(`Cómo usar ${BRAND_NAME}`)}\n\n💬 ${bold('Contame qué pagaste:')}\n"1500 café"\n"Gasté 2 lucas en uber"\n"50 dólares la cena"\n\n🏷️ ${bold('Categorías:')} se detectan automáticamente\nTambién podés agregar: "1500 café #comida"\n\n🎤 ${bold('También podés enviar:')}\n- Audio describiendo tu gasto\n- Foto de comprobante\n- PDF de comprobante\n\n⚡ ${bold('Comandos:')}\n/balance - Resumen del mes\n/lista - Últimos gastos\n/fijos - Gastos fijos\n/categorias - Ver categorías\n/modo - Cambiar de modo\n\n━━━━━━━━━━━━━━━━━━━━━━\n\n${appFooter()}`
+  return `📖 ${bold(`Cómo usar ${BRAND_NAME}`)}\n\n💬 ${bold('Contame qué pagaste:')}\n"1500 café"\n"Gasté 2 lucas en uber"\n"50 dólares la cena"\n\n🏷️ ${bold('Categorías:')} se detectan automáticamente\nTambién podés agregar: "1500 café #comida"\n\n🎤 ${bold('También podés enviar:')}\n- Audio describiendo tu gasto\n- Foto de comprobante\n- PDF de comprobante\n\n⚡ ${bold('Comandos:')}\n/resumen - Resumen del mes\n/lista - Últimos gastos\n/fijos - Gastos fijos\n/categorias - Ver categorías\n/modo - Cambiar de modo\n\n━━━━━━━━━━━━━━━━━━━━━━\n\n${appFooter()}`
 }
 
 // ─── Balance & Summary ──────────────────────────────────────────
@@ -372,4 +372,103 @@ export function formatTransferConfirmation(options: TransferConfirmationOptions)
   if (options.needsRevision) msg += `\n${italic('Revisá el título y categoría desde la app.')}\n`
   msg += `\n${appFooter()}`
   return msg
+}
+
+// ─── Welcome Messages ───────────────────────────────────────────
+
+export function formatWelcomeMessage(mode: AppMode, context?: { userName?: string; groups?: Array<{ name: string }> }): string {
+  const firstName = context?.userName?.split(' ')[0] || ''
+  const greeting = firstName ? `¡Hola ${firstName}! 👋` : '¡Hola! 👋'
+
+  if (mode === 'grupos') {
+    let groupInfo = ''
+    if (context?.groups?.length === 1) groupInfo = `\n📍 Estás en el grupo: ${bold(context.groups[0].name)}\n`
+    else if (context?.groups && context.groups.length > 1) groupInfo = `\n📍 Estás en los grupos: ${bold(context.groups.map(g => g.name).join(', '))}\nUsá /grupo para cambiar entre ellos.\n`
+
+    return `${greeting} Bienvenido a ${bold(BRAND_NAME)}\n\nSoy tu bot para dividir gastos entre amigos.${groupInfo}\n\n💬 ${bold('Simplemente contame qué pagaste:')}\n"Puse 5 lucas en el súper"\n"Pagué la cena, 12000"\n"Gasté 50 dólares en nafta con Juan"\n\nLa IA entiende lo que escribas y te pide confirmar antes de guardar.\n\n💸 ${bold('Para registrar pagos entre ustedes:')}\n"Le pagué 5000 a María"\n"Recibí 3000 de Juan"\n\n⚡ ${bold('Comandos:')}\n/balance → quién debe a quién\n/lista → ver últimos gastos\n/ayuda → más opciones\n\n━━━━━━━━━━━━━━━━━━━━━━\n\n📊 Desde el dashboard podés agregar, editar y eliminar gastos:\n${APP_URL}\n\n¡Empezá a cargar gastos! 🎉`
+  }
+
+  // finanzas
+  return `${greeting} Bienvenido a ${bold(BRAND_NAME)}\n\nSoy tu bot para registrar gastos personales.\n\n💬 ${bold('Simplemente contame qué pagaste:')}\n"1500 café"\n"Gasté 2 lucas en uber"\n"50 dólares la cena"\n\nLa IA entiende lo que escribas y te pide confirmar antes de guardar.\n\n🎤 ${bold('También podés enviar:')}\n- Audio describiendo tu gasto\n- Foto de comprobante\n- PDF de comprobante\n\n⚡ ${bold('Comandos:')}\n/resumen → resumen del mes\n/lista → últimos gastos\n/ayuda → más opciones\n\n━━━━━━━━━━━━━━━━━━━━━━\n\n📊 Desde el dashboard podés ver y editar tus gastos:\n${APP_URL}\n\n¡Empezá a cargar gastos! 🎉`
+}
+
+// ─── Shared Inline Replacements ─────────────────────────────────
+
+export function formatServiceUnavailable(): string {
+  return '⚠️ Esta función no está disponible en este momento.'
+}
+
+export function formatGenericError(): string {
+  return '⚠️ Ocurrió un error. Intentá de nuevo.'
+}
+
+export function formatFetchError(entity: string): string {
+  return `⚠️ Error al obtener ${entity}. Intentá nuevamente.`
+}
+
+export function formatProcessingStatus(type: 'audio' | 'image' | 'pdf' | 'analisis'): string {
+  const labels: Record<string, string> = {
+    audio: '🎤 Procesando audio...',
+    image: '📷 Procesando imagen...',
+    pdf: '📄 Procesando PDF...',
+    analisis: '🤖 Analizando tus finanzas...',
+  }
+  return labels[type]
+}
+
+export function formatAudioParseError(transcription?: string): string {
+  let msg = '⚠️ No pude determinar el gasto del audio.'
+  if (transcription) msg = `${italic(`"${transcription}"`)}\n\n${msg}`
+  msg += '\n\nProbá escribirlo directamente.'
+  return msg
+}
+
+export function formatReceiptParseError(): string {
+  return '⚠️ No pude determinar el monto del comprobante.'
+}
+
+export function formatUnsupportedMessageType(): string {
+  return '⚠️ Solo acepto texto, audio, fotos y PDFs.'
+}
+
+export function formatNoGroupError(): string {
+  return `⚠️ No pertenecés a ningún grupo.\n\nCreá uno desde la app: ${APP_URL}`
+}
+
+export function formatUnknownCommand(command: string): string {
+  return `❓ Comando no reconocido: ${command}\n\nEscribí /ayuda para ver los comandos disponibles.\n\n${appFooter('O visitá')}`
+}
+
+export function formatGroupSwitched(groupName: string): string {
+  return `✅ Grupo activo cambiado a: ${bold(groupName)}\n\nTus próximos gastos se registrarán en este grupo.\n\n${appFooter()}`
+}
+
+export function formatCategoryList(categories: string[]): string {
+  const formatted = categories.map(n => `#${n.toLowerCase()}`).join('\n')
+  return `🏷️ ${bold('Tus categorías:')}\n\n${formatted}\n\n💡 ${bold('Tip:')} Podés escribir solo parte del nombre y se detecta automáticamente.\n\nEjemplos:\n#super → Supermercado\n#sal → Salidas\n#trans → Transporte`
+}
+
+export function formatEmptyState(entity: 'categories' | 'recurrents'): string {
+  if (entity === 'categories') return `📋 No tenés categorías configuradas en tu cuenta.\n\nPodés crearlas desde la app: ${APP_URL}`
+  return `📌 No tenés gastos fijos configurados.\n\nPodés agregarlos desde la app en la sección "Fijos": ${APP_URL}`
+}
+
+export function formatUnsupportedDocument(): string {
+  return '⚠️ Solo se aceptan documentos PDF.'
+}
+
+export function formatExcludeAllError(): string {
+  return '⚠️ No podés excluir a todo el grupo. Tiene que haber al menos una persona para dividir el gasto.'
+}
+
+export function formatInvalidNumberSelection(max: number): string {
+  return `⚠️ Número inválido. Elegí un número entre 1 y ${max}.`
+}
+
+export function formatDashboardRedirect(): string {
+  return `✏️ Para agregar, editar o eliminar gastos manualmente, usá el dashboard:\n\n${appFooter()}`
+}
+
+export function formatModeSwitchPendingCleared(): string {
+  return '⚠️ Tenías un gasto pendiente de confirmar que fue descartado al cambiar de modo.'
 }
