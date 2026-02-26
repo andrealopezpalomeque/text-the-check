@@ -2,9 +2,9 @@
 
 Registrá gastos, dividí cuentas con amigos y recibí resumenes inteligentes. Todo con un simple mensaje.
 
-## What is Text the Check?
+## What is text the check?
 
-Text the Check is a WhatsApp-first financial companion built for Argentina and Latin America. It has two modes under one brand:
+text the check is a WhatsApp-first financial companion built for Argentina and Latin America. It has two modes under one brand:
 
 - **Viajes / Grupos** — Split expenses with friends during trips. Track who owes whom.
 - **Mis Finanzas** — Track personal bills, recurring payments, and daily spending with AI insights.
