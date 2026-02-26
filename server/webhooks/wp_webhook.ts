@@ -434,11 +434,7 @@ async function determineUserMode(phone: string): Promise<UserWithMode> {
 
 async function setActiveMode(userId: string, mode: string): Promise<void> {
   try {
-    const update: Record<string, any> = { activeMode: mode }
-    if (mode === 'grupos') {
-      update.activeGroupId = null  // Force fresh group selection for multi-group users
-    }
-    await db.collection('ttc_user').doc(userId).update(update)
+    await db.collection('ttc_user').doc(userId).update({ activeMode: mode })
   } catch (error) {
     console.error('Error setting active mode:', error)
   }

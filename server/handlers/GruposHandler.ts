@@ -265,8 +265,9 @@ export default class GruposHandler {
         await sendMessage(from, buildConfirmationCancelled())
         return
       }
-      // Something else — cancel pending, continue processing
+      // Something else — cancel pending, notify user, continue processing
       this.pendingAIExpenses.delete(user.id)
+      await sendMessage(from, '💬 _Gasto anterior descartado._')
     }
 
     // 4. Pending expense group selection
@@ -288,6 +289,7 @@ export default class GruposHandler {
         }
       }
       this.pendingExpenses.delete(user.id)
+      await sendMessage(from, '💬 _Gasto anterior descartado._')
     }
 
     // 5. Pending group selection (from /grupo command)
@@ -309,7 +311,15 @@ export default class GruposHandler {
     // 7. Greeting detection — respond with mode + group context, don't send to AI
     if (isGreeting(text.trim().toLowerCase())) {
       const group = await this.getGroupByUserId(user.id)
-      await sendMessage(from, formatGreetingResponse('grupos', { groupName: group?.name }))
+      if (group) {
+        await sendMessage(from, formatGreetingResponse('grupos', { groupName: group.name }))
+        return
+      }
+      // Multi-group user with no active group — greeting + group selection
+      const prompted = await this.promptGroupSelectionIfNeeded(from, user.id, '👋 *¡Hola!*\n\nEstás en modo *grupos* 👥\n\n📍 *¿Qué grupo querés usar?*')
+      if (prompted) return
+      // 0 groups — greeting with no group context
+      await sendMessage(from, formatGreetingResponse('grupos'))
       return
     }
 
@@ -389,13 +399,19 @@ export default class GruposHandler {
 
       case '/balance':
       case '/saldo':
-        if (!groupId) { await sendMessage(from, formatNoGroupError()); return }
+        if (!groupId) {
+          if (await this.promptGroupSelectionIfNeeded(from, user.id)) return
+          await sendMessage(from, formatNoGroupError()); return
+        }
         await sendMessage(from, await this.getBalanceMessage(groupId))
         break
 
       case '/lista':
       case '/list':
-        if (!groupId) { await sendMessage(from, formatNoGroupError()); return }
+        if (!groupId) {
+          if (await this.promptGroupSelectionIfNeeded(from, user.id)) return
+          await sendMessage(from, formatNoGroupError()); return
+        }
         await sendMessage(from, await this.getExpenseListMessage(groupId))
         break
 
@@ -571,6 +587,11 @@ export default class GruposHandler {
     const group = await this.getGroupByUserId(user.id)
     const groupId = group?.id || null
 
+    if (!groupId) {
+      if (await this.promptGroupSelectionIfNeeded(from, user.id)) return
+      await sendMessage(from, formatNoGroupError()); return
+    }
+
     await sendMessage(from, formatProcessingStatus('audio'))
     const transcription = await this.gemini.transcribeAudio(media.base64, media.mimeType)
     if (!transcription || !transcription.transcription) {
@@ -625,6 +646,7 @@ export default class GruposHandler {
     const groupId = group?.id || null
 
     if (!groupId) {
+      if (await this.promptGroupSelectionIfNeeded(from, user.id)) return
       await sendMessage(from, formatNoGroupError())
       return
     }
@@ -1032,6 +1054,26 @@ export default class GruposHandler {
     return msg
   }
 
+  /**
+   * For multi-group users with no activeGroupId: show group list and set up
+   * pendingGroupSelections. Returns true if prompt was shown (caller should return).
+   * Returns false if user has 0-1 groups (caller should handle normally).
+   */
+  private async promptGroupSelectionIfNeeded(from: string, userId: string, header?: string): Promise<boolean> {
+    const allGroups = await this.getAllGroupsByUserId(userId)
+    if (allGroups.length <= 1) return false
+
+    let msg = header || '📍 *Primero elegí un grupo:*'
+    msg += '\n\n'
+    allGroups.forEach((g, i) => { msg += `${i + 1}. ${g.name}\n` })
+    msg += '\n_Respondé con el número del grupo._'
+    await sendMessage(from, msg)
+    this.pendingGroupSelections.set(userId, {
+      groups: allGroups, expiresAt: Date.now() + this.GROUP_SELECTION_TIMEOUT,
+    })
+    return true
+  }
+
   // ─── Balance calculation ────────────────────────────────────────
 
   private async getBalanceMessage(groupId: string): Promise<string> {
@@ -1147,12 +1189,23 @@ export default class GruposHandler {
           const group = { id: doc.id, ...doc.data() } as Group
           if (group.members.includes(userId)) return group
         }
+        // activeGroupId is stale (group deleted or user removed) — clear it
         await this.updateUserActiveGroup(userId, null)
       }
 
-      const snapshot = await db.collection('ttc_group').where('members', 'array-contains', userId).limit(1).get()
-      if (snapshot.empty) return null
-      return { id: snapshot.docs[0].id, ...snapshot.docs[0].data() } as Group
+      // No activeGroupId — check how many groups user belongs to
+      const allGroups = await db.collection('ttc_group').where('members', 'array-contains', userId).get()
+      if (allGroups.empty) return null
+
+      if (allGroups.size === 1) {
+        // Single-group user: auto-persist and return
+        const group = { id: allGroups.docs[0].id, ...allGroups.docs[0].data() } as Group
+        await this.updateUserActiveGroup(userId, group.id)
+        return group
+      }
+
+      // Multi-group user without activeGroupId: return null (caller must handle)
+      return null
     } catch (error) {
       console.error('Error getting group by user ID:', error)
       return null
