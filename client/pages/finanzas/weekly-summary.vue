@@ -24,19 +24,19 @@
 
     <!-- Loading Skeleton -->
     <div v-if="isLoading" class="grid grid-cols-1 lg:grid-cols-2 gap-6 p-3 skeleton-shimmer">
-      <div class="bg-base rounded-xl border border-gray-600 p-4">
+      <div class="bg-ttc-surface rounded-xl border border-gray-600 p-4">
         <div class="h-6 w-40 bg-gray-700 rounded mb-4"></div>
         <div class="space-y-3">
           <div v-for="i in 3" :key="i" class="h-14 bg-gray-700/50 rounded-lg"></div>
         </div>
       </div>
-      <div class="bg-base rounded-xl border border-gray-600 p-4">
+      <div class="bg-ttc-surface rounded-xl border border-gray-600 p-4">
         <div class="h-6 w-48 bg-gray-700 rounded mb-4"></div>
         <div class="space-y-3">
           <div v-for="i in 3" :key="i" class="h-14 bg-gray-700/50 rounded-lg"></div>
         </div>
       </div>
-      <div class="lg:col-span-2 bg-base rounded-xl border border-gray-600 p-4">
+      <div class="lg:col-span-2 bg-ttc-surface rounded-xl border border-gray-600 p-4">
         <div class="h-6 w-44 bg-gray-700 rounded mb-4"></div>
         <div class="h-8 bg-gray-700/50 rounded-full"></div>
       </div>
@@ -45,7 +45,7 @@
     <!-- Content -->
     <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-6 p-3">
       <!-- Card 1: Semana Pasada -->
-      <div class="bg-base rounded-xl border border-gray-600 shadow-sm shadow-white/5 p-4">
+      <div class="bg-ttc-surface rounded-xl border border-gray-600 shadow-sm shadow-white/5 p-4">
         <h2 class="text-lg font-semibold mb-3 flex items-center">
           <MdiCalendarWeek class="mr-2 text-primary" />
           Semana Pasada
@@ -102,7 +102,7 @@
       </div>
 
       <!-- Card 2: Semana Entrante -->
-      <div class="bg-base rounded-xl border border-gray-600 shadow-sm shadow-white/5 p-4">
+      <div class="bg-ttc-surface rounded-xl border border-gray-600 shadow-sm shadow-white/5 p-4">
         <h2 class="text-lg font-semibold mb-3 flex items-center">
           <MdiCreditCardClock class="mr-2 text-primary" />
           Semana Entrante
@@ -159,7 +159,7 @@
       </div>
 
       <!-- Card 3: Total Pendiente -->
-      <div class="lg:col-span-2 bg-base rounded-xl border border-gray-600 shadow-sm shadow-white/5 p-4">
+      <div class="lg:col-span-2 bg-ttc-surface rounded-xl border border-gray-600 shadow-sm shadow-white/5 p-4">
         <h2 class="text-lg font-semibold mb-2 flex items-center">
           <MdiCashClock class="mr-2 text-primary" />
           Total Pendiente
@@ -171,7 +171,7 @@
       </div>
 
       <!-- Card 4: Mes Actual -->
-      <div class="lg:col-span-2 bg-base rounded-xl border border-gray-600 shadow-sm shadow-white/5 p-4">
+      <div class="lg:col-span-2 bg-ttc-surface rounded-xl border border-gray-600 shadow-sm shadow-white/5 p-4">
         <h2 class="text-lg font-semibold mb-4 flex items-center">
           <MdiCalendarMonth class="mr-2 text-primary" />
           Mes Actual
@@ -201,7 +201,7 @@
       </div>
 
       <!-- Card 5: AI Insight -->
-      <div v-if="weeklySummaryStore.getAiInsight" class="lg:col-span-2 bg-base rounded-xl border border-gray-600 shadow-sm shadow-white/5 p-4">
+      <div v-if="weeklySummaryStore.getAiInsight" class="lg:col-span-2 bg-ttc-surface rounded-xl border border-gray-600 shadow-sm shadow-white/5 p-4">
         <h2 class="text-lg font-semibold mb-2 flex items-center">
           <MdiLightbulbOn class="mr-2 text-primary" />
           Resumen IA
@@ -210,7 +210,7 @@
       </div>
 
       <!-- Card 6: Progreso del Mes -->
-      <div class="lg:col-span-2 bg-base rounded-xl border border-gray-600 shadow-sm shadow-white/5 p-4">
+      <div class="lg:col-span-2 bg-ttc-surface rounded-xl border border-gray-600 shadow-sm shadow-white/5 p-4">
         <h2 class="text-lg font-semibold mb-2 flex items-center">
           <MdiProgressCheck class="mr-2 text-primary" />
           Progreso del Mes

@@ -28,8 +28,6 @@ module.exports = {
         'ttc-bubble-bot': 'var(--color-bubble-bot)',
         'ttc-toggle-primary': 'var(--color-toggle-primary)',
         'ttc-toggle-accent': 'var(--color-toggle-accent)',
-        // Surface alias used by finanzas components
-        'base': 'var(--color-surface)',
         // App colors (used by grupos & finanzas components with dark: variant)
         positive: {
           50: '#f0fdf4',

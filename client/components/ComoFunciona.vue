@@ -1,7 +1,7 @@
 <template>
   <section id="como-funciona" class="relative py-20 md:py-28 px-5 overflow-hidden">
     <!-- Subtle accent glow -->
-    <div class="absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[400px] rounded-full bg-ttc-accent/[0.025] pointer-events-none" style="filter: blur(100px);" />
+    <div class="absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[400px] rounded-full bg-ttc-accent opacity-[0.025] pointer-events-none" style="filter: blur(100px);" />
 
     <div class="relative z-10 max-w-5xl mx-auto">
       <!-- Section header -->
@@ -30,7 +30,7 @@
           <!-- Step 1: Send a message -->
           <div class="flex flex-col items-center text-center group">
             <div class="relative mb-6">
-              <div class="w-40 h-40 rounded-2xl bg-ttc-card border border-ttc-border flex items-center justify-center transition-all duration-300 group-hover:border-ttc-primary/40 group-hover:shadow-[0_0_30px_-8px_var(--color-primary)]">
+              <div class="w-40 h-40 rounded-2xl bg-ttc-card border border-ttc-border flex items-center justify-center transition-all duration-300 group-hover:border-[#4A90D9]/40 group-hover:shadow-[0_0_30px_-8px_var(--color-primary)]">
                 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" class="text-ttc-primary">
                   <rect x="16" y="8" width="32" height="48" rx="6" stroke="currentColor" stroke-width="2" />
                   <rect x="19" y="14" width="26" height="36" rx="2" fill="currentColor" opacity="0.06" />
@@ -54,7 +54,7 @@
           <div class="flex flex-col items-center text-center group">
             <div class="relative mb-6">
               <div
-                class="w-40 h-40 rounded-2xl bg-ttc-card border border-ttc-border flex items-center justify-center transition-all duration-300 overflow-hidden cursor-pointer group-hover:border-ttc-accent/40 group-hover:shadow-[0_0_30px_-8px_var(--color-accent)]"
+                class="w-40 h-40 rounded-2xl bg-ttc-card border border-ttc-border flex items-center justify-center transition-all duration-300 overflow-hidden cursor-pointer group-hover:border-[#34D399]/40 group-hover:shadow-[0_0_30px_-8px_var(--color-accent)]"
                 @mouseenter="step2Hover = true"
                 @mouseleave="step2Hover = false"
               >
@@ -116,7 +116,7 @@
           <!-- Step 3: Everything tracked -->
           <div class="flex flex-col items-center text-center group">
             <div class="relative mb-6">
-              <div class="w-40 h-40 rounded-2xl bg-ttc-card border border-ttc-border flex items-center justify-center transition-all duration-300 group-hover:border-ttc-primary/40 group-hover:shadow-[0_0_30px_-8px_var(--color-primary)]">
+              <div class="w-40 h-40 rounded-2xl bg-ttc-card border border-ttc-border flex items-center justify-center transition-all duration-300 group-hover:border-[#4A90D9]/40 group-hover:shadow-[0_0_30px_-8px_var(--color-primary)]">
                 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" class="text-ttc-primary">
                   <path d="M 12,10 l 2,-2 2,2 2,-2 2,2 2,-2 2,2 2,-2 2,2 2,-2 2,2 2,-2 2,2 2,-2 2,2 2,-2 2,2 2,-2 2,2 2,-2 2,2 L 52,10 L 52,54 l -2,2 -2,-2 -2,2 -2,-2 -2,2 -2,-2 -2,2 -2,-2 -2,2 -2,-2 -2,2 -2,-2 -2,2 -2,-2 -2,2 -2,-2 -2,2 -2,-2 -2,2 -2,-2 L 12,54 Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="currentColor" fill-opacity="0.05" />
                   <rect x="18" y="32" width="5" height="14" rx="1.5" fill="currentColor" opacity="0.3" />
