@@ -21,6 +21,13 @@ import * as Sentry from '@sentry/node'
 import { db, admin } from '../config/firebase.js'
 import { normalizeForComparison, generatePhoneCandidates } from '../helpers/phone.js'
 import { sendMessage } from '../helpers/whatsapp.js'
+import {
+  formatOnboardingWelcome,
+  formatOnboardingGruposAskName,
+  formatOnboardingGruposCreated,
+  formatOnboardingFinanzasReady,
+  formatOnboardingReprompt,
+} from '../helpers/responseFormatter.js'
 import GeminiHandler from '../handlers/GeminiHandler.js'
 import GruposHandler from '../handlers/GruposHandler.js'
 import FinanzasHandler from '../handlers/FinanzasHandler.js'
@@ -61,6 +68,166 @@ function isDuplicate(messageId: string): boolean {
   if (processedMessageIds.has(messageId)) return true
   processedMessageIds.set(messageId, Date.now())
   return false
+}
+
+// ─── Onboarding state machine ─────────────────────────────────
+
+interface OnboardingState {
+  phone: string
+  contactName: string
+  userId: string
+  step: 'mode_selection' | 'grupos_name' | 'finanzas_ready'
+  createdAt: number
+}
+
+const pendingOnboarding = new Map<string, OnboardingState>()
+
+// Auto-cleanup: 5 min timeout (same pattern as dedup cleanup)
+setInterval(() => {
+  const fiveMinAgo = Date.now() - 5 * 60 * 1000
+  for (const [phone, state] of pendingOnboarding.entries()) {
+    if (state.createdAt < fiveMinAgo) pendingOnboarding.delete(phone)
+  }
+}, 60 * 1000)
+
+const DEFAULT_CATEGORIES = [
+  { name: 'Vivienda y Alquiler', color: '#4682B4' },
+  { name: 'Servicios', color: '#0072DF' },
+  { name: 'Supermercado', color: '#1D9A38' },
+  { name: 'Salidas', color: '#FF6347' },
+  { name: 'Transporte', color: '#E6AE2C' },
+  { name: 'Entretenimiento', color: '#6158FF' },
+  { name: 'Salud', color: '#E84A8A' },
+  { name: 'Fitness y Deportes', color: '#FF4500' },
+  { name: 'Cuidado Personal', color: '#DDA0DD' },
+  { name: 'Mascotas', color: '#3CAEA3' },
+  { name: 'Ropa', color: '#800020' },
+  { name: 'Viajes', color: '#FF8C00' },
+  { name: 'Educación', color: '#9370DB' },
+  { name: 'Suscripciones', color: '#20B2AA' },
+  { name: 'Regalos', color: '#FF1493' },
+  { name: 'Impuestos y Gobierno', color: '#8B4513' },
+  { name: 'Otros', color: '#808080' },
+]
+
+async function startOnboarding(phone: string, contactName: string): Promise<void> {
+  try {
+    const userId = crypto.randomUUID()
+    const canonicalPhone = normalizeForComparison(phone)
+
+    // Create ttc_user doc
+    await db.collection('ttc_user').doc(userId).set({
+      id: userId,
+      name: contactName !== 'Usuario' ? contactName : '',
+      phone: canonicalPhone,
+      email: null,
+      aliases: [],
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    })
+
+    // Create pt_whatsapp_link doc (enables finanzas flow)
+    await db.collection('pt_whatsapp_link').doc(canonicalPhone).set({
+      status: 'linked',
+      userId,
+      phoneNumber: canonicalPhone,
+      contactName,
+      linkedAt: admin.firestore.FieldValue.serverTimestamp(),
+    })
+
+    pendingOnboarding.set(phone, {
+      phone,
+      contactName,
+      userId,
+      step: 'mode_selection',
+      createdAt: Date.now(),
+    })
+
+    await sendMessage(phone, formatOnboardingWelcome(contactName))
+    console.log(`[ONBOARDING] New user created: ${userId} (${contactName}, ${phone})`)
+  } catch (error) {
+    console.error('[ONBOARDING] Error starting onboarding:', error)
+    await sendMessage(phone, '⚠️ Hubo un error. Intentá de nuevo en unos minutos.')
+  }
+}
+
+async function handleOnboardingStep(phone: string, message: any): Promise<void> {
+  const state = pendingOnboarding.get(phone)
+  if (!state) return
+
+  const text = (message.type === 'text' ? message.text?.body?.trim() : '') || ''
+  const textLower = text.toLowerCase()
+
+  try {
+    switch (state.step) {
+      case 'mode_selection': {
+        const isGrupos = textLower === '1' || textLower.includes('dividir') || textLower.includes('grupo') || textLower.includes('amigo')
+        const isFinanzas = textLower === '2' || textLower.includes('finanza') || textLower.includes('personal')
+
+        if (isGrupos) {
+          state.step = 'grupos_name'
+          state.createdAt = Date.now() // Reset timeout
+          await sendMessage(phone, formatOnboardingGruposAskName())
+        } else if (isFinanzas) {
+          // Seed categories and finish
+          await seedDefaultCategories(state.userId)
+          await setActiveMode(state.userId, 'finanzas')
+          pendingOnboarding.delete(phone)
+          await sendMessage(phone, formatOnboardingFinanzasReady())
+          console.log(`[ONBOARDING] ${state.contactName} completed → finanzas`)
+        } else {
+          await sendMessage(phone, formatOnboardingReprompt())
+        }
+        break
+      }
+
+      case 'grupos_name': {
+        if (!text || text.length < 2) {
+          await sendMessage(phone, 'Escribi un nombre para tu grupo (ej: "Viaje a Bariloche")')
+          return
+        }
+
+        // Create group
+        const groupRef = db.collection('ttc_group').doc()
+        await groupRef.set({
+          id: groupRef.id,
+          name: text,
+          members: [state.userId],
+          createdBy: state.userId,
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        })
+
+        await setActiveMode(state.userId, 'grupos')
+        pendingOnboarding.delete(phone)
+
+        const inviteLink = `https://textthecheck.app/join?group=${groupRef.id}`
+        await sendMessage(phone, formatOnboardingGruposCreated(text, inviteLink))
+        console.log(`[ONBOARDING] ${state.contactName} completed → grupos (group: ${text})`)
+        break
+      }
+
+      // finanzas_ready is a terminal state — shouldn't reach here
+      default:
+        pendingOnboarding.delete(phone)
+        break
+    }
+  } catch (error) {
+    console.error('[ONBOARDING] Error in step:', error)
+    await sendMessage(phone, '⚠️ Hubo un error. Intentá de nuevo.')
+  }
+}
+
+async function seedDefaultCategories(userId: string): Promise<void> {
+  const batch = db.batch()
+  for (const cat of DEFAULT_CATEGORIES) {
+    const ref = db.collection('pt_expense_category').doc()
+    batch.set(ref, {
+      ...cat,
+      userId,
+      deletedAt: null,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    })
+  }
+  await batch.commit()
 }
 
 // ─── Security middleware ───────────────────────────────────────────
@@ -223,7 +390,7 @@ async function processMessage(message: any, contacts: any[]): Promise<void> {
     if (textLower === '/ayuda' || textLower === '/help') {
       const { mode: userMode } = await determineUserMode(from)
       if (!userMode) {
-        await sendMessage(from, `📖 *Cómo usar text the check*\n\nEste bot tiene dos modos:\n👥 *Grupos* — Dividir gastos con amigos\n📊 *Finanzas* — Registrar gastos personales\n\nPara empezar, vinculá tu cuenta:\n1. Registrate en https://textthecheck.app\n2. Andá a tu Perfil → WhatsApp\n3. Enviá acá: *VINCULAR <código>*\n\nUna vez vinculado, usá /modo grupos o /modo finanzas para elegir.`)
+        await sendMessage(from, `📖 *Cómo usar text the check*\n\nEste bot tiene dos modos:\n👥 *Grupos* — Dividir gastos con amigos\n📊 *Finanzas* — Registrar gastos personales\n\nMandá cualquier mensaje para empezar!\n\nUna vez configurado, usá /modo grupos o /modo finanzas para cambiar.`)
         return
       }
       // Has mode — let it pass through to the handler-specific help
@@ -235,8 +402,14 @@ async function processMessage(message: any, contacts: any[]): Promise<void> {
   const { mode, user } = await determineUserMode(from)
 
   if (!mode) {
-    const name = contactName !== 'Usuario' ? ` ${contactName}` : ''
-    await sendMessage(from, `👋 ¡Hola${name}! Bienvenido a *text the check*\n\nPara empezar, vinculá tu cuenta:\n\n1. Registrate en https://textthecheck.app\n2. Andá a tu Perfil → WhatsApp\n3. Enviá acá: *VINCULAR <código>*\n\nEsto te habilita tanto *Grupos* 👥 como *Finanzas* 📊`)
+    // Check if user is mid-onboarding
+    if (pendingOnboarding.has(from)) {
+      await handleOnboardingStep(from, message)
+      return
+    }
+
+    // New user — auto-create account and start onboarding
+    await startOnboarding(from, contactName)
     return
   }
 
@@ -354,7 +527,7 @@ async function handleModo(phone: string, textLower: string): Promise<void> {
 async function handleModoSwitch(phone: string, targetMode: string): Promise<void> {
   const user = await gruposHandler.getUserByPhone(phone)
   if (!user) {
-    await sendMessage(phone, `🔗 No encontré tu cuenta. Primero vinculá tu número:\n\n1. Registrate en https://textthecheck.app\n2. Andá a tu Perfil → WhatsApp\n3. Enviá acá: *VINCULAR <código>*`)
+    await sendMessage(phone, `🔗 No encontré tu cuenta. Mandá cualquier mensaje para crear tu cuenta y empezar.`)
     return
   }
 

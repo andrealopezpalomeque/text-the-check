@@ -363,6 +363,31 @@ export function formatPaymentNotification(amount: number, recorderName: string, 
   return `💸 ${bold('Pago registrado')}\n\n${msg}\nGrupo: ${groupName}\n\n${appFooter()}`
 }
 
+// ─── Onboarding Messages ─────────────────────────────────────────
+
+export function formatOnboardingWelcome(name: string): string {
+  const greeting = name && name !== 'Usuario' ? `Hola ${name}!` : 'Hola!'
+  return `👋 ${bold(greeting)} Bienvenido a ${bold(BRAND_NAME)}\n\nQue queres hacer?\n\n1️⃣ Dividir gastos con amigos\n2️⃣ Mis finanzas personales`
+}
+
+export function formatOnboardingGruposAskName(): string {
+  return `👥 ${bold('Genial! Vamos a crear tu primer grupo.')}\n\nComo se llama? (ej: "Viaje a Bariloche", "Depto")`
+}
+
+export function formatOnboardingGruposCreated(groupName: string, inviteLink: string): string {
+  return `✅ ${bold(`Grupo "${groupName}" creado!`)}\n\nInvita a tus amigos con este link:\n${inviteLink}\n\nYa podes registrar gastos. Ej: "Pague 5000 la cena"`
+}
+
+export function formatOnboardingFinanzasReady(): string {
+  return `✅ ${bold('Listo! Ya estas configurado.')}\n\nConta tu primer gasto. Ej:\n"Gaste 2500 en el super"\n"5000 nafta"\n"Pague 1200 cafe"`
+}
+
+export function formatOnboardingReprompt(): string {
+  return `No entendi. Responde con:\n\n1️⃣ Dividir gastos con amigos\n2️⃣ Mis finanzas personales`
+}
+
+// ─── Payment Messages ───────────────────────────────────────────
+
 export function formatTransferConfirmation(options: TransferConfirmationOptions): string {
   let msg = `✅ ${bold('Transferencia registrada')}\n\n`
   msg += `💵 ${formatAmountFull(options.amount)} ARS\n`

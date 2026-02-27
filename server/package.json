@@ -5,11 +5,13 @@
   "type": "module",
   "scripts": {
     "start": "node --import ./dist/instrument.js dist/webhooks/wp_webhook.js",
+    "start:webhook": "node --import ./dist/instrument.js dist/webhooks/wp_webhook.js",
+    "start:api": "node --import ./dist/instrument.js dist/index.js",
     "build": "tsc",
     "typecheck": "tsc --noEmit",
-    "reminders:morning": "tsx scripts/send-reminders.ts --mode morning",
-    "reminders:evening": "tsx scripts/send-reminders.ts --mode evening",
-    "weekly-summary": "tsx scripts/send-weekly-summary.ts"
+    "reminders:morning": "tsx src/scripts/send-reminders.ts --mode morning",
+    "reminders:evening": "tsx src/scripts/send-reminders.ts --mode evening",
+    "weekly-summary": "tsx src/scripts/send-weekly-summary.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

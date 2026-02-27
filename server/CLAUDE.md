@@ -2,12 +2,12 @@
 
 ## Overview
 
-Express.js + TypeScript server for Text the Check. One WhatsApp phone number, one webhook endpoint, two domain handlers (Grupos + Finanzas). Firebase Admin SDK for Firestore. Gemini AI for natural language parsing.
+Express.js + TypeScript server for Text the Check. Multi-server architecture: WhatsApp webhook + Auth API, each deployed as its own service. Two domain handlers (Grupos + Finanzas). Firebase Admin SDK for Firestore. Gemini AI for natural language parsing.
 
 ## Architecture Principles
 
 ### Webhooks Are HTTP, Handlers Are Business Logic
-Each file in `/webhooks` is a standalone Express server that owns one webhook endpoint. It handles HTTP concerns: setup, verification, security, request parsing. It does NOT contain domain/business logic — that lives in handlers.
+Each file in `src/webhooks/` is a standalone Express server that owns one webhook endpoint. It handles HTTP concerns: setup, verification, security, request parsing. It does NOT contain domain/business logic — that lives in handlers.
 
 ### Handlers vs Helpers
 - **Handler** = has agency, makes decisions, orchestrates flows, contains business logic. It "handles" something (a message type, an AI interaction). Class-based — may hold config or shared state.
@@ -21,45 +21,42 @@ A file should contain ONE coherent story. Split only when a file contains two UN
 GruposHandler contains all grupos logic (commands, expenses, splits, balances, mentions). FinanzasHandler contains all finanzas logic (commands, expenses, transfers, linking, analysis). Each is one coherent domain story.
 
 ### Extract Only What's Genuinely Shared
-Code moves to `/helpers` ONLY when 2+ files actually use it. If only FinanzasHandler does image parsing, it stays in FinanzasHandler. If a future handler also needs it, extract it then. Never pre-extract for "cleanliness."
+Code moves to `src/helpers/` ONLY when 2+ files actually use it. If only FinanzasHandler does image parsing, it stays in FinanzasHandler. If a future handler also needs it, extract it then. Never pre-extract for "cleanliness."
 
 ### AI-Context-Friendly Design
 The file structure is optimized for feeding to AI assistants. To understand grupos: read `wp_webhook.ts` + `GruposHandler.ts` + `GeminiHandler.ts`. Three files, full picture. Fewer files with more context each beats many files with fragmented context.
 
-### New Webhook = One New File in `/webhooks`
-Adding a webhook means adding one file in `webhooks/` — a standalone Express server. Copy the pattern from `wp_webhook.ts`, adapt. No framework, no plugin system, no message bus.
+### Multi-Server Architecture
+- `src/index.ts` = Auth API server (OTP login, client-facing endpoints). Port 3002.
+- `src/webhooks/wp_webhook.ts` = WhatsApp webhook server (receives Meta callbacks). Port 3001.
+- Each is deployed as its own Render service with its own `PORT` env var.
+- Adding a webhook means adding one file in `src/webhooks/` — a standalone Express server. Copy the pattern from `wp_webhook.ts`, adapt. No framework, no plugin system, no message bus.
 
 ## Structure
 
 ```
 server/
-├── config/
-│   └── firebase.ts                 # Firebase Admin SDK init (shared)
-├── webhooks/
-│   └── wp_webhook.ts               # Express server + WhatsApp webhook
-│                                    #   signature verify, dedup, rate limit
-│                                    #   user lookup, mode routing
-│                                    #   → GruposHandler or FinanzasHandler
-├── handlers/
-│   ├── GruposHandler.ts            # Class: all grupos message processing
-│   │                               #   commands, expenses, payments, splits,
-│   │                               #   balance calc, mentions (Fuse.js),
-│   │                               #   exchange rates, multi-group flow
-│   ├── FinanzasHandler.ts          # Class: all finanzas message processing
-│   │                               #   commands, expenses, transfers, linking,
-│   │                               #   categories, audio, image/PDF, analysis
-│   └── GeminiHandler.ts            # Class: all AI operations
-│                                    #   NL parsing, audio transcription,
-│                                    #   image/PDF receipt, categorization,
-│                                    #   financial analysis, weekly insight,
-│                                    #   all prompts defined here
-├── helpers/
-│   ├── whatsapp.ts                 # sendMessage(), downloadMedia(), replyMessage()
-│   └── phone.ts                    # normalization, format, comparison
-├── scripts/
-│   ├── send-reminders.ts           # Cron: payment reminders (morning/evening)
-│   └── send-weekly-summary.ts      # Cron: weekly digest + AI insight
-├── instrument.ts                   # Sentry init (imported first by all entry points)
+├── src/
+│   ├── index.ts                    # Auth API server (OTP login, port 3002)
+│   ├── instrument.ts               # Sentry init (imported first by all entry points)
+│   ├── config/
+│   │   └── firebase.ts             # Firebase Admin SDK init (shared)
+│   ├── webhooks/
+│   │   └── wp_webhook.ts           # Express server + WhatsApp webhook (port 3001)
+│   │                               #   signature verify, dedup, rate limit
+│   │                               #   user lookup, mode routing
+│   │                               #   → GruposHandler or FinanzasHandler
+│   ├── handlers/
+│   │   ├── GruposHandler.ts        # Class: all grupos message processing
+│   │   ├── FinanzasHandler.ts      # Class: all finanzas message processing
+│   │   └── GeminiHandler.ts        # Class: all AI operations
+│   ├── helpers/
+│   │   ├── whatsapp.ts             # sendMessage(), downloadMedia(), replyMessage()
+│   │   ├── phone.ts                # normalization, format, comparison
+│   │   └── responseFormatter.ts    # WhatsApp message formatting
+│   └── scripts/
+│       ├── send-reminders.ts       # Cron: payment reminders (morning/evening)
+│       └── send-weekly-summary.ts  # Cron: weekly digest + AI insight
 ├── package.json
 └── tsconfig.json
 ```
@@ -213,6 +210,7 @@ SENTRY_DSN=
 ## Firestore Collections
 
 Shared: `ttc_user`
+Auth: `ttc_otp` (OTP codes, keyed by normalized phone, 5-min expiry checked at read time)
 Grupos: `ttc_group`, `ttc_expense`, `ttc_payment`
 Finanzas: `ttc_finanzas_payment`, `ttc_finanzas_recurring`, `ttc_finanzas_category`, `ttc_finanzas_template`, `pt_whatsapp_link`
 

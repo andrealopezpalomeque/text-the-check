@@ -25,27 +25,37 @@
       </p>
 
       <!-- Buttons -->
-      <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-up" style="animation-delay: 0.3s;">
-        <a
-          href="/login"
-          class="inline-flex items-center gap-2 bg-ttc-primary text-white rounded-xl px-7 py-3 font-body text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer"
-        >
-          Empezar ahora
-          <ArrowRight :size="16" :stroke-width="2" />
+      <div class="mt-10 flex flex-col items-center gap-4 animate-fade-up" style="animation-delay: 0.3s;">
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a
+            :href="whatsappUrl"
+            target="_blank"
+            class="inline-flex items-center gap-2 bg-[#25D366] text-white rounded-xl px-7 py-3 font-body text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer"
+          >
+            Empezá a chatear
+            <MessageCircle :size="16" :stroke-width="2" />
+          </a>
+          <button
+            @click="scrollToModes"
+            class="inline-flex items-center gap-2 border border-ttc-border bg-transparent text-ttc-text rounded-xl px-7 py-3 font-body text-sm font-semibold hover:bg-ttc-card hover:border-ttc-text-dim transition-colors cursor-pointer"
+          >
+            Ver cómo funciona
+          </button>
+        </div>
+        <a href="/login" class="font-body text-xs text-ttc-text-dim underline hover:text-ttc-text transition-colors">
+          O iniciá sesión con Google
         </a>
-        <button
-          @click="scrollToModes"
-          class="inline-flex items-center gap-2 border border-ttc-border bg-transparent text-ttc-text rounded-xl px-7 py-3 font-body text-sm font-semibold hover:bg-ttc-card hover:border-ttc-text-dim transition-colors cursor-pointer"
-        >
-          Ver cómo funciona
-        </button>
       </div>
     </div>
   </section>
 </template>
 
 <script setup>
-import { ArrowRight } from 'lucide-vue-next'
+import { MessageCircle } from 'lucide-vue-next'
+
+const config = useRuntimeConfig()
+const whatsappPhone = config.public.whatsappPhoneNumber
+const whatsappUrl = whatsappPhone ? `https://wa.me/${whatsappPhone}?text=Hola` : '/login'
 
 const scrollToModes = () => {
   document.getElementById('modes')?.scrollIntoView({ behavior: 'smooth' })

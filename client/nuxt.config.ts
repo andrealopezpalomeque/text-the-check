@@ -76,6 +76,8 @@ export default defineNuxtConfig({
   ssr: false,
   runtimeConfig: {
     public: {
+      apiBaseUrl: process.env.API_BASE_URL || 'http://localhost:3002',
+      whatsappPhoneNumber: process.env.WHATSAPP_LANDING_PHONE || '',
       firebaseApiKey: process.env.FIREBASE_API_KEY || '',
       firebaseAuthDomain: process.env.FIREBASE_AUTH_DOMAIN || '',
       firebaseProjectId: process.env.FIREBASE_PROJECT_ID || '',

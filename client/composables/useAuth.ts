@@ -1,5 +1,6 @@
 import {
   signInWithPopup,
+  signInWithCustomToken,
   GoogleAuthProvider,
   signOut as firebaseSignOut,
   onAuthStateChanged,
@@ -11,6 +12,7 @@ import {
   query,
   where,
   getDocs,
+  getDoc,
   doc,
   updateDoc,
   setDoc,
@@ -107,8 +109,13 @@ export const useAuth = () => {
   const linkAuthToFirestore = async (firebaseUser: FirebaseUser): Promise<User | null> => {
     const email = firebaseUser.email
 
+    // Custom token auth (WhatsApp OTP) — UID is the ttc_user doc ID
     if (!email) {
-      console.error('Firebase user has no email')
+      const database = requireDb()
+      const userDoc = await getDoc(doc(database, 'ttc_user', firebaseUser.uid))
+      if (userDoc.exists()) {
+        return { id: userDoc.id, ...userDoc.data() } as User
+      }
       return null
     }
 
@@ -229,6 +236,26 @@ export const useAuth = () => {
     }
   }
 
+  // Sign in with OTP custom token (WhatsApp login)
+  const signInWithOTP = async (token: string): Promise<AuthenticatedUser> => {
+    loading.value = true
+    error.value = null
+    try {
+      const result = await signInWithCustomToken(requireAuth(), token)
+      const firebaseUser = result.user
+      user.value = markRaw(firebaseUser)
+      const linkedUser = await linkAuthToFirestore(firebaseUser)
+      if (!linkedUser) throw new Error('No se encontró la cuenta')
+      firestoreUser.value = linkedUser
+      return { firebaseUser: markRaw(firebaseUser), firestoreUser: linkedUser }
+    } catch (err: any) {
+      error.value = err.message || 'Error al iniciar sesión'
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
   // Sign out
   const signOut = async () => {
     loading.value = true
@@ -256,6 +283,7 @@ export const useAuth = () => {
     isFirebaseAuthenticated: computed(() => !!user.value),
     initAuth,
     signInWithGoogle,
+    signInWithOTP,
     signOut
   }
 }

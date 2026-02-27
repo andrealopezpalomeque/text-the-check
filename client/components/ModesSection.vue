@@ -74,14 +74,15 @@
       <!-- CTA -->
       <div class="mt-14 text-center">
         <a
-          href="/login"
-          class="inline-flex items-center gap-2 bg-ttc-primary text-white rounded-xl px-8 py-3.5 font-body text-sm font-semibold hover:opacity-90 transition-opacity"
+          :href="whatsappUrl"
+          target="_blank"
+          class="inline-flex items-center gap-2 bg-[#25D366] text-white rounded-xl px-8 py-3.5 font-body text-sm font-semibold hover:opacity-90 transition-opacity"
         >
-          Empezar gratis
-          <ArrowRight :size="16" :stroke-width="2" />
+          Empezar por WhatsApp
+          <MessageCircle :size="16" :stroke-width="2" />
         </a>
         <p class="mt-3 font-body text-xs text-ttc-text-dim">
-          Iniciá sesión con Google — sin tarjeta, sin vueltas
+          O <a href="/login" class="underline hover:text-ttc-text transition-colors">iniciá sesión con Google</a>
         </p>
       </div>
     </div>
@@ -90,7 +91,11 @@
 
 <script setup>
 import { ref } from 'vue'
-import { ArrowRight } from 'lucide-vue-next'
+import { MessageCircle } from 'lucide-vue-next'
+
+const config = useRuntimeConfig()
+const whatsappPhone = config.public.whatsappPhoneNumber
+const whatsappUrl = whatsappPhone ? `https://wa.me/${whatsappPhone}?text=Hola` : '/login'
 
 const activeMode = ref('viajes')
 </script>
