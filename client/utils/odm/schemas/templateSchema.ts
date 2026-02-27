@@ -1,7 +1,7 @@
 import { Schema } from '../schema';
 import type { SchemaDefinition, FetchResult, UpdateResult } from '../types';
 import { doc, updateDoc, increment } from 'firebase/firestore';
-import { getFirestoreInstance, getCurrentUser } from '~/utils/finanzas/firebase';
+import { getFirestoreInstance } from '~/utils/finanzas/firebase';
 
 export class TemplateSchema extends Schema {
   protected collectionName = 'pt_payment_template';
@@ -60,8 +60,8 @@ export class TemplateSchema extends Schema {
 
   // Increment usage count when template is used
   async incrementUsage(templateId: string): Promise<UpdateResult> {
-    const user = getCurrentUser();
-    if (!user) {
+    const userId = this.getCurrentUserId();
+    if (!userId) {
       return { success: false, error: 'Usuario no autenticado' };
     }
 

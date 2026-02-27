@@ -11,7 +11,7 @@ import {
   deleteDoc,
   Timestamp
 } from "firebase/firestore";
-import { getFirestoreInstance, getCurrentUser } from "~/utils/finanzas/firebase";
+import { getFirestoreInstance } from "~/utils/finanzas/firebase";
 import { RecurrentSchema } from "~/utils/odm/schemas/recurrentSchema";
 import { PaymentSchema } from "~/utils/odm/schemas/paymentSchema";
 import customParseFormat from "dayjs/plugin/customParseFormat";
@@ -118,9 +118,9 @@ export const useFinanzasRecurrentStore = defineStore("finanzas-recurrent", {
 
   actions: {
     async fetchRecurrentPayments(forceRefresh = false) {
-      const user = getCurrentUser();
+      const { firestoreUser } = useAuth();
 
-      if (!user) {
+      if (!firestoreUser.value) {
         this.$state.error = "Usuario no autenticado";
         return false;
       }
@@ -153,10 +153,10 @@ export const useFinanzasRecurrentStore = defineStore("finanzas-recurrent", {
     },
 
     async fetchPaymentInstances(monthsBack = 6, forceRefresh = false, skipProcess = false) {
-      const user = getCurrentUser();
+      const { firestoreUser } = useAuth();
       const { $dayjs } = useNuxtApp();
 
-      if (!user) {
+      if (!firestoreUser.value) {
         this.$state.error = "Usuario no autenticado";
         return false;
       }
@@ -331,12 +331,12 @@ export const useFinanzasRecurrentStore = defineStore("finanzas-recurrent", {
     },
 
     async addNewPaymentInstance(recurrentId: string, month: string, isPaid = false, year?: string) {
-      const user = getCurrentUser();
+      const { firestoreUser } = useAuth();
       const db = getFirestoreInstance();
       const { $dayjs } = useNuxtApp();
       $dayjs.extend(customParseFormat);
 
-      if (!user) {
+      if (!firestoreUser.value) {
         this.$state.error = "Usuario no autenticado";
         return false;
       }
@@ -381,7 +381,7 @@ export const useFinanzasRecurrentStore = defineStore("finanzas-recurrent", {
           paidDate: isPaid ? serverTimestamp() : null,
           recurrentId: recurrentId,
           paymentType: "recurrent",
-          userId: user.uid,
+          userId: firestoreUser.value.id,
           createdAt: Timestamp.fromDate(paymentDate)
         };
 
@@ -438,8 +438,8 @@ export const useFinanzasRecurrentStore = defineStore("finanzas-recurrent", {
       this.isLoading = true;
 
       try {
-        const user = getCurrentUser();
-        if (!user) {
+        const { firestoreUser } = useAuth();
+        if (!firestoreUser.value) {
           this.$state.error = "Usuario no autenticado";
           return false;
         }
@@ -447,7 +447,7 @@ export const useFinanzasRecurrentStore = defineStore("finanzas-recurrent", {
         const paymentInstancesQuery = query(
           collection(db, "pt_payment"),
           where("recurrentId", "==", recurrentId),
-          where("userId", "==", user.uid)
+          where("userId", "==", firestoreUser.value.id)
         );
 
         const instancesSnapshot = await getDocs(paymentInstancesQuery);

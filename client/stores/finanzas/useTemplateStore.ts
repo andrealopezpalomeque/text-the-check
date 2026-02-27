@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { getCurrentUser } from '~/utils/finanzas/firebase';
+// useAuth() composable is used for user ID (auto-imported by Nuxt)
 import { TemplateSchema } from '~/utils/odm/schemas/templateSchema';
 
 interface PaymentTemplate {
@@ -36,9 +36,9 @@ export const useFinanzasTemplateStore = defineStore('finanzas-template', {
 
   actions: {
     async fetchTemplates() {
-      const user = getCurrentUser();
+      const { firestoreUser } = useAuth();
 
-      if (!user) {
+      if (!firestoreUser.value) {
         this.error = 'Usuario no autenticado';
         return false;
       }
@@ -65,9 +65,9 @@ export const useFinanzasTemplateStore = defineStore('finanzas-template', {
     },
 
     async createTemplate(templateData: Omit<PaymentTemplate, 'id' | 'createdAt' | 'usageCount'>) {
-      const user = getCurrentUser();
+      const { firestoreUser } = useAuth();
 
-      if (!user) {
+      if (!firestoreUser.value) {
         this.error = 'Usuario no autenticado';
         return false;
       }
@@ -78,7 +78,7 @@ export const useFinanzasTemplateStore = defineStore('finanzas-template', {
         const cleanData: any = {
           name: templateData.name,
           categoryId: templateData.categoryId,
-          userId: user.uid,
+          userId: firestoreUser.value.id,
           usageCount: 0
         };
 

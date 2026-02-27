@@ -17,7 +17,7 @@ import {
   type QuerySnapshot,
   type Unsubscribe
 } from 'firebase/firestore'
-import { getFirestoreInstance, getCurrentUser } from '~/utils/finanzas/firebase'
+import { getFirestoreInstance } from '~/utils/finanzas/firebase'
 import type {
   SchemaDefinition,
   ValidationResult,
@@ -46,10 +46,10 @@ export abstract class Schema {
 
   constructor() {}
 
-  // Get current user ID from Firebase Auth
+  // Get current user ID from Firestore ttc_user document
   protected getCurrentUserId(): string | null {
-    const user = getCurrentUser();
-    return user ? user.uid : null;
+    const { firestoreUser } = useAuth();
+    return firestoreUser.value ? firestoreUser.value.id : null;
   }
 
   // Format date for display using dayjs

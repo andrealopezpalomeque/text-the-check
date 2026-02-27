@@ -81,13 +81,13 @@ export const useWhatsappLink = () => {
 
   // Subscribe to real-time link changes for the current user
   function subscribe() {
-    const authUid = user.value?.uid
-    if (!authUid) return
+    const userId = firestoreUser.value?.id
+    if (!userId) return
 
     unsubscribe()
 
     const linksRef = collection(db, 'pt_whatsapp_link')
-    const q = query(linksRef, where('userId', '==', authUid), where('status', '==', 'linked'))
+    const q = query(linksRef, where('userId', '==', userId), where('status', '==', 'linked'))
 
     unsubscribeLink = onSnapshot(q, (snapshot) => {
       if (!snapshot.empty) {
@@ -116,8 +116,8 @@ export const useWhatsappLink = () => {
 
   // Generate a new linking code
   async function generateCode() {
-    const authUid = user.value?.uid
-    if (!authUid) return
+    const userId = firestoreUser.value?.id
+    if (!userId) return
 
     isGenerating.value = true
     error.value = null
@@ -126,7 +126,7 @@ export const useWhatsappLink = () => {
       const code = generateRandomCode()
       await setDoc(doc(db, 'pt_whatsapp_link', code), {
         status: 'pending',
-        userId: authUid,
+        userId,
         createdAt: serverTimestamp(),
       })
 

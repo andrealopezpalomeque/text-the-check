@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { Timestamp, serverTimestamp } from 'firebase/firestore';
-import { getCurrentUser } from '~/utils/finanzas/firebase';
+// useAuth() composable is used for user ID (auto-imported by Nuxt)
 import { PaymentSchema } from '~/utils/odm/schemas/paymentSchema';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
@@ -96,9 +96,9 @@ export const useFinanzasPaymentStore = defineStore('finanzas-payment', {
 
   actions: {
     async fetchPayments(filters: PaymentFilters = {}, forceRefresh = false) {
-      const user = getCurrentUser();
+      const { firestoreUser } = useAuth();
 
-      if (!user) {
+      if (!firestoreUser.value) {
         this.error = 'Usuario no autenticado';
         return false;
       }
@@ -202,9 +202,9 @@ export const useFinanzasPaymentStore = defineStore('finanzas-payment', {
     },
 
     async createPayment(paymentData: Omit<Payment, 'id'>) {
-      const user = getCurrentUser();
+      const { firestoreUser } = useAuth();
 
-      if (!user) {
+      if (!firestoreUser.value) {
         this.error = 'Usuario no autenticado';
         return false;
       }
@@ -214,7 +214,7 @@ export const useFinanzasPaymentStore = defineStore('finanzas-payment', {
       try {
         const newPayment = {
           ...paymentData,
-          userId: user.uid
+          userId: firestoreUser.value.id
         };
 
         const result = await paymentSchema.create(newPayment);

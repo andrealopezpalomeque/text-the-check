@@ -1,7 +1,7 @@
 import { Schema } from '../schema';
 import type { SchemaDefinition, FetchResult, CreateResult } from '../types';
 import { serverTimestamp, Timestamp } from 'firebase/firestore';
-import { getCurrentUser } from '~/utils/finanzas/firebase';
+
 import { DEFAULT_CATEGORIES } from '~/types/finanzas/category';
 
 export class CategorySchema extends Schema {
@@ -59,8 +59,8 @@ export class CategorySchema extends Schema {
 
   // Seed default categories for a new user
   async seedDefaults(): Promise<{ success: boolean; categories?: any[]; error?: string }> {
-    const user = getCurrentUser();
-    if (!user) {
+    const userId = this.getCurrentUserId();
+    if (!userId) {
       return { success: false, error: 'Usuario no autenticado' };
     }
 
@@ -71,7 +71,7 @@ export class CategorySchema extends Schema {
         const result = await this.create({
           name: category.name,
           color: category.color,
-          userId: user.uid,
+          userId,
           deletedAt: null
         });
 

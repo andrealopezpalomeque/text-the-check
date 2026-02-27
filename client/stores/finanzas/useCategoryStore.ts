@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { Timestamp, serverTimestamp } from 'firebase/firestore';
-import { getCurrentUser } from '~/utils/finanzas/firebase';
+// useAuth() composable is used for user ID (auto-imported by Nuxt)
 import { CategorySchema } from '~/utils/odm/schemas/categorySchema';
 import type { ExpenseCategory, CategoryState } from '~/types/finanzas/category';
 import { DEFAULT_CATEGORIES } from '~/types/finanzas/category';
@@ -44,9 +44,9 @@ export const useFinanzasCategoryStore = defineStore('finanzas-category', {
 
   actions: {
     async fetchCategories() {
-      const user = getCurrentUser();
+      const { firestoreUser } = useAuth();
 
-      if (!user) {
+      if (!firestoreUser.value) {
         this.error = 'Usuario no autenticado';
         return false;
       }
@@ -85,9 +85,9 @@ export const useFinanzasCategoryStore = defineStore('finanzas-category', {
     },
 
     async seedDefaultCategories() {
-      const user = getCurrentUser();
+      const { firestoreUser } = useAuth();
 
-      if (!user) {
+      if (!firestoreUser.value) {
         this.error = 'Usuario no autenticado';
         return false;
       }
@@ -101,7 +101,7 @@ export const useFinanzasCategoryStore = defineStore('finanzas-category', {
           const result = await categorySchema.create({
             name: category.name,
             color: category.color,
-            userId: user.uid,
+            userId: firestoreUser.value.id,
             deletedAt: null
           });
 
@@ -122,9 +122,9 @@ export const useFinanzasCategoryStore = defineStore('finanzas-category', {
     },
 
     async createCategory(name: string, color: string) {
-      const user = getCurrentUser();
+      const { firestoreUser } = useAuth();
 
-      if (!user) {
+      if (!firestoreUser.value) {
         this.error = 'Usuario no autenticado';
         return false;
       }
@@ -135,7 +135,7 @@ export const useFinanzasCategoryStore = defineStore('finanzas-category', {
         const result = await categorySchema.create({
           name,
           color,
-          userId: user.uid,
+          userId: firestoreUser.value.id,
           deletedAt: null
         });
 

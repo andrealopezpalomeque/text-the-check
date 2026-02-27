@@ -42,7 +42,11 @@ const initializeData = async () => {
   await groupStore.fetchGroupsForUser(firestoreUser.value.id, firestoreUser.value.activeGroupId)
 
   if (groupStore.groups.length === 0) {
-    navigateTo('/setup', { replace: true })
+    // Don't redirect when on /login — login.vue manages its own post-auth navigation
+    // (e.g. merge flow, google-prompt flow). /setup still works for all other entry points.
+    if (route.path !== '/login') {
+      navigateTo('/setup', { replace: true })
+    }
     return
   }
 

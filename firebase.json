@@ -18,7 +18,7 @@
     ]
   },
   "firestore": {
-    "rules": "viaje-grupo/firestore.rules",
+    "rules": "firestore.rules",
     "indexes": "pay-trackr/firestore.indexes.json"
   }
 }

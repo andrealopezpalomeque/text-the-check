@@ -1,0 +1,287 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ============================================
+    // Helper Functions
+    // ============================================
+
+    // Check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Canonical user ID: use custom claim if set (merged accounts), fallback to auth.uid
+    function ttcUserId() {
+      return ('ttcUserId' in request.auth.token)
+        ? request.auth.token.ttcUserId
+        : request.auth.uid;
+    }
+
+    // Validate expense data structure and constraints for CREATE
+    function isValidExpenseCreate() {
+      let data = request.resource.data;
+
+      return data.keys().hasAll(['userId', 'userName', 'amount', 'description', 'category', 'timestamp', 'originalInput'])
+        && data.userId is string
+        && data.userName is string
+        && data.amount is number
+        && data.amount > 0  // Amount must be positive
+        && data.description is string
+        && data.description.size() >= 1
+        && data.description.size() <= 500  // Max 500 characters
+        && data.category in ['food', 'transport', 'accommodation', 'entertainment', 'shopping', 'general']
+        && data.originalInput is string
+        && data.timestamp is timestamp
+        // Optional fields validation
+        && (!data.keys().hasAny(['originalAmount']) || data.originalAmount is number)
+        && (!data.keys().hasAny(['originalCurrency']) || data.originalCurrency is string)
+        && (!data.keys().hasAny(['splitAmong']) || data.splitAmong is list);
+    }
+
+    // Validate expense data structure and constraints for UPDATE
+    // More lenient: originalInput is optional (WhatsApp-created expenses may not have it)
+    function isValidExpenseUpdate() {
+      let data = request.resource.data;
+
+      return data.keys().hasAll(['userId', 'userName', 'amount', 'description', 'category', 'timestamp'])
+        && data.userId is string
+        && data.userName is string
+        && data.amount is number
+        && data.amount > 0  // Amount must be positive
+        && data.description is string
+        && data.description.size() >= 1
+        && data.description.size() <= 500  // Max 500 characters
+        && data.category in ['food', 'transport', 'accommodation', 'entertainment', 'shopping', 'general']
+        && data.timestamp is timestamp
+        // Optional fields validation
+        && (!data.keys().hasAny(['originalInput']) || data.originalInput is string)
+        && (!data.keys().hasAny(['originalAmount']) || data.originalAmount is number)
+        && (!data.keys().hasAny(['originalCurrency']) || data.originalCurrency is string)
+        && (!data.keys().hasAny(['splitAmong']) || data.splitAmong is list);
+    }
+
+    // Validate payment data structure and constraints
+    function isValidPayment() {
+      let data = request.resource.data;
+
+      return data.keys().hasAll(['groupId', 'fromUserId', 'toUserId', 'amount', 'recordedBy', 'createdAt'])
+        && data.groupId is string
+        && data.fromUserId is string
+        && data.toUserId is string
+        && data.fromUserId != data.toUserId  // Cannot pay yourself
+        && data.amount is number
+        && data.amount > 0  // Amount must be positive
+        && data.recordedBy is string
+        && data.createdAt is timestamp
+        // Optional fields validation
+        && (!data.keys().hasAny(['note']) || data.note is string);
+    }
+
+    // Validate user data structure
+    function isValidUser() {
+      let data = request.resource.data;
+
+      return data.keys().hasAll(['name', 'phone'])
+        && data.name is string
+        && data.name.size() >= 1
+        && data.name.size() <= 100
+        && data.phone is string
+        // Optional fields
+        && (!data.keys().hasAny(['email']) || data.email is string)
+        && (!data.keys().hasAny(['aliases']) || data.aliases is list)
+        && (!data.keys().hasAny(['paymentInfo']) || data.paymentInfo is map)
+        && (!data.keys().hasAny(['phoneNumber']) || data.phoneNumber is string) // legacy field
+        && (!data.keys().hasAny(['avatar']) || data.avatar is string);
+    }
+
+    // ============================================
+    // ttc_user Collection
+    // ============================================
+    match /ttc_user/{userId} {
+      // Anyone authenticated can read user profiles (needed for @mentions and display)
+      allow read: if isAuthenticated();
+
+      // Doc ID must equal canonical user ID — one user, one document
+      allow create: if isAuthenticated()
+                    && userId == ttcUserId()
+                    && isValidUser();
+
+      // Only the owner can update their profile
+      allow update: if isAuthenticated()
+                    && userId == ttcUserId();
+
+      // Users cannot delete their own profile (should be handled by admin)
+      allow delete: if false;
+    }
+
+    // ============================================
+    // ttc_expense Collection
+    // ============================================
+    match /ttc_expense/{expenseId} {
+      // All authenticated users can read expenses (collaborative tracking)
+      allow read: if isAuthenticated();
+
+      // Users can create expenses - userId must match their canonical user ID
+      // Note: WhatsApp-created expenses bypass rules (Admin SDK), so this only applies to Dashboard
+      allow create: if isAuthenticated()
+                    && request.resource.data.userId == ttcUserId()
+                    && isValidExpenseCreate();
+
+      // Any authenticated user can update expenses (collaborative editing)
+      // This allows group members to fix/edit any expense in their group
+      allow update: if isAuthenticated()
+                    && isValidExpenseUpdate()
+                    // Prevent changing the owner of an expense
+                    && request.resource.data.userId == resource.data.userId;
+
+      // Any authenticated user can delete expenses (collaborative management)
+      allow delete: if isAuthenticated();
+    }
+
+    // ============================================
+    // ttc_group Collection
+    // ============================================
+    match /ttc_group/{groupId} {
+      // All authenticated users can read groups (collaborative app)
+      // Note: Firebase Auth UID differs from Firestore user ID, so we can't check membership directly
+      allow read: if isAuthenticated();
+
+      // Only allow group creation/updates by admin (should be backend/Cloud Functions)
+      // For now, allowing authenticated users to create/update groups
+      allow create: if isAuthenticated()
+                    && request.resource.data.keys().hasAll(['name', 'members', 'createdBy'])
+                    && request.resource.data.name is string
+                    && request.resource.data.members is list
+                    && request.resource.data.createdBy is string;
+
+      allow update: if isAuthenticated()
+                    && request.resource.data.keys().hasAll(['name', 'members', 'createdBy']);
+
+      allow delete: if false; // Groups should not be deleted casually
+    }
+
+    // ============================================
+    // ttc_payment Collection
+    // ============================================
+    match /ttc_payment/{paymentId} {
+      // Helper: Check if current user is one of the parties in the payment
+      function isPaymentParty() {
+        return ttcUserId() == resource.data.fromUserId
+            || ttcUserId() == resource.data.toUserId;
+      }
+
+      // Helper: Check if current user is the one who recorded the payment
+      function isPaymentRecorder() {
+        return ttcUserId() == resource.data.recordedBy;
+      }
+
+      // All authenticated users can read payments (collaborative tracking)
+      allow read: if isAuthenticated();
+
+      // Users can create payments - recordedBy must match their canonical user ID
+      // Note: WhatsApp-created payments bypass rules (Admin SDK), so this only applies to Dashboard
+      allow create: if isAuthenticated()
+                    && request.resource.data.recordedBy == ttcUserId()
+                    && isValidPayment();
+
+      // Only the person who recorded the payment can update it
+      // Uses lookup to support both WhatsApp and Dashboard-created payments
+      allow update: if isAuthenticated()
+                    && isPaymentRecorder()
+                    && isValidPayment()
+                    // Prevent changing critical fields
+                    && request.resource.data.recordedBy == resource.data.recordedBy;
+
+      // Either party involved in the payment can delete it
+      allow delete: if isAuthenticated() && isPaymentParty();
+    }
+
+    // ============================================
+    // pt_whatsapp_link Collection
+    // ============================================
+    match /pt_whatsapp_link/{docId} {
+      // Users can only read/create/delete their own link docs
+      allow read: if isAuthenticated()
+                  && resource.data.userId == ttcUserId();
+      allow create: if isAuthenticated()
+                    && request.resource.data.userId == ttcUserId();
+      allow delete: if isAuthenticated()
+                    && resource.data.userId == ttcUserId();
+
+      // No client-side updates — linking is done by the server (Admin SDK)
+      allow update: if false;
+    }
+
+    // ============================================
+    // Finanzas Collections
+    // ============================================
+    match /pt_payment/{docId} {
+      allow read: if isAuthenticated()
+                  && resource.data.userId == ttcUserId();
+      allow create: if isAuthenticated()
+                    && request.resource.data.userId == ttcUserId();
+      allow update: if isAuthenticated()
+                    && resource.data.userId == ttcUserId();
+      allow delete: if isAuthenticated()
+                    && resource.data.userId == ttcUserId();
+    }
+
+    match /pt_recurrent/{docId} {
+      allow read: if isAuthenticated()
+                  && resource.data.userId == ttcUserId();
+      allow create: if isAuthenticated()
+                    && request.resource.data.userId == ttcUserId();
+      allow update: if isAuthenticated()
+                    && resource.data.userId == ttcUserId();
+      allow delete: if isAuthenticated()
+                    && resource.data.userId == ttcUserId();
+    }
+
+    match /pt_expense_category/{docId} {
+      allow read: if isAuthenticated()
+                  && resource.data.userId == ttcUserId();
+      allow create: if isAuthenticated()
+                    && request.resource.data.userId == ttcUserId();
+      allow update: if isAuthenticated()
+                    && resource.data.userId == ttcUserId();
+      allow delete: if isAuthenticated()
+                    && resource.data.userId == ttcUserId();
+    }
+
+    match /pt_payment_template/{docId} {
+      allow read: if isAuthenticated()
+                  && resource.data.userId == ttcUserId();
+      allow create: if isAuthenticated()
+                    && request.resource.data.userId == ttcUserId();
+      allow update: if isAuthenticated()
+                    && resource.data.userId == ttcUserId();
+      allow delete: if isAuthenticated()
+                    && resource.data.userId == ttcUserId();
+    }
+
+    match /pt_fcm_token/{docId} {
+      allow read: if isAuthenticated()
+                  && resource.data.userId == ttcUserId();
+      allow create: if isAuthenticated()
+                    && request.resource.data.userId == ttcUserId();
+      allow update, delete: if isAuthenticated()
+                            && resource.data.userId == ttcUserId();
+    }
+
+    // Doc ID = userId, server-written, client read-only
+    match /pt_weekly_summary/{docId} {
+      allow read: if isAuthenticated()
+                  && docId == ttcUserId();
+      allow create, update, delete: if false;
+    }
+
+    // ============================================
+    // Deny all other collections
+    // ============================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

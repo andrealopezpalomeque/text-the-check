@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { getCurrentUser } from '~/utils/finanzas/firebase';
+// useAuth() composable is used for user ID (auto-imported by Nuxt)
 import { WeeklySummarySchema } from '~/utils/odm/schemas/weeklySummarySchema';
 
 interface WeekStats {
@@ -62,9 +62,9 @@ export const useFinanzasWeeklySummaryStore = defineStore('finanzas-weekly-summar
 
   actions: {
     async fetchSummary() {
-      const user = getCurrentUser();
+      const { firestoreUser } = useAuth();
 
-      if (!user) {
+      if (!firestoreUser.value) {
         this.error = 'Usuario no autenticado';
         return false;
       }
@@ -77,7 +77,7 @@ export const useFinanzasWeeklySummaryStore = defineStore('finanzas-weekly-summar
       this.error = null;
 
       try {
-        const result = await weeklySummarySchema.findById(user.uid);
+        const result = await weeklySummarySchema.findById(firestoreUser.value.id);
 
         if (result.success && result.data) {
           this.summary = result.data as WeeklySummary;

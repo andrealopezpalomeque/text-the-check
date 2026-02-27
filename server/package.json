@@ -7,6 +7,8 @@
     "start": "node --import ./dist/instrument.js dist/webhooks/wp_webhook.js",
     "start:webhook": "node --import ./dist/instrument.js dist/webhooks/wp_webhook.js",
     "start:api": "node --import ./dist/instrument.js dist/index.js",
+    "dev": "tsx src/index.ts",
+    "dev:webhook": "tsx src/webhooks/wp_webhook.ts",
     "build": "tsc",
     "typecheck": "tsc --noEmit",
     "reminders:morning": "tsx src/scripts/send-reminders.ts --mode morning",

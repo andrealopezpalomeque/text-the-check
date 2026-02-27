@@ -77,5 +77,10 @@ export function generatePhoneCandidates(phone: string): string[] {
     candidates.push(with9, `+${with9}`)
   }
 
+  // Local number without country code (10 digits) → try with 549 and 54 prefix
+  if (!digitsOnly.startsWith('54') && digitsOnly.length === 10) {
+    candidates.push(`549${digitsOnly}`, `+549${digitsOnly}`, `54${digitsOnly}`, `+54${digitsOnly}`)
+  }
+
   return [...new Set(candidates.filter(Boolean))]
 }

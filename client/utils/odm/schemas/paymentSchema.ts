@@ -8,7 +8,7 @@ import {
   orderBy,
   Timestamp
 } from 'firebase/firestore';
-import { getFirestoreInstance, getCurrentUser } from '~/utils/finanzas/firebase';
+import { getFirestoreInstance } from '~/utils/finanzas/firebase';
 
 export class PaymentSchema extends Schema {
   protected collectionName = 'pt_payment';
@@ -104,15 +104,15 @@ export class PaymentSchema extends Schema {
 
   // Find payments by date range
   async findByDateRange(startDate: Date, endDate: Date, paymentType?: string): Promise<FetchResult> {
-    const user = getCurrentUser();
-    if (!user) {
+    const userId = this.getCurrentUserId();
+    if (!userId) {
       return { success: false, error: 'Usuario no autenticado' };
     }
 
     try {
       const db = getFirestoreInstance();
       const constraints: any[] = [
-        where('userId', '==', user.uid),
+        where('userId', '==', userId),
         where('dueDate', '>=', Timestamp.fromDate(startDate)),
         where('dueDate', '<=', Timestamp.fromDate(endDate)),
         orderBy('dueDate', 'desc')
@@ -143,8 +143,8 @@ export class PaymentSchema extends Schema {
 
   // Find recurrent payment instances within date range
   async findRecurrentInstances(startDate: Date, endDate: Date): Promise<FetchResult> {
-    const user = getCurrentUser();
-    if (!user) {
+    const userId = this.getCurrentUserId();
+    if (!userId) {
       return { success: false, error: 'Usuario no autenticado' };
     }
 
@@ -152,7 +152,7 @@ export class PaymentSchema extends Schema {
       const db = getFirestoreInstance();
       const q = query(
         collection(db, this.collectionName),
-        where('userId', '==', user.uid),
+        where('userId', '==', userId),
         where('paymentType', '==', 'recurrent'),
         where('createdAt', '>=', Timestamp.fromDate(startDate)),
         where('createdAt', '<=', Timestamp.fromDate(endDate)),
@@ -170,8 +170,8 @@ export class PaymentSchema extends Schema {
 
   // Find one-time payments for current month
   async findOneTimePayments(startDate: Date, endDate: Date): Promise<FetchResult> {
-    const user = getCurrentUser();
-    if (!user) {
+    const userId = this.getCurrentUserId();
+    if (!userId) {
       return { success: false, error: 'Usuario no autenticado' };
     }
 
@@ -179,7 +179,7 @@ export class PaymentSchema extends Schema {
       const db = getFirestoreInstance();
       const q = query(
         collection(db, this.collectionName),
-        where('userId', '==', user.uid),
+        where('userId', '==', userId),
         where('paymentType', '==', 'one-time'),
         where('dueDate', '>=', Timestamp.fromDate(startDate)),
         where('dueDate', '<=', Timestamp.fromDate(endDate)),

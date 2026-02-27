@@ -24,7 +24,7 @@ import type { User } from '~/types'
 // Extended user info combining Firebase Auth and Firestore user
 interface AuthenticatedUser {
   firebaseUser: FirebaseUser
-  firestoreUser: User
+  firestoreUser: User | null
 }
 
 // Track if auth has been initialized (outside of reactive state to prevent multiple inits)
@@ -126,18 +126,8 @@ export const useAuth = () => {
       return existingUser
     }
 
-    // Email not found - auto-create user on first sign-in
-    const database = requireDb()
-    const newUserRef = doc(database, 'ttc_user', firebaseUser.uid)
-    const newUser: User = {
-      id: newUserRef.id,
-      name: firebaseUser.displayName || email.split('@')[0],
-      phone: '',
-      email: email.toLowerCase(),
-      aliases: [],
-    }
-    await setDoc(newUserRef, { ...newUser, createdAt: Timestamp.now() })
-    return newUser
+    // Email not found — don't auto-create, let the caller handle it
+    return null
   }
 
   // Initialize auth state listener
@@ -164,9 +154,9 @@ export const useAuth = () => {
               if (linkedUser) {
                 firestoreUser.value = linkedUser
               } else {
-                // User not authorized - sign them out
+                // No matching ttc_user — leave firestoreUser null.
+                // app.vue's isAuthenticated watcher handles redirect to /login.
                 firestoreUser.value = null
-                // Don't sign out here on init - let the component handle it
               }
             } else {
               user.value = null
@@ -214,11 +204,19 @@ export const useAuth = () => {
       const linkedUser = await linkAuthToFirestore(firebaseUser)
 
       if (!linkedUser) {
-        // No email on the Google account — cannot create user
-        await firebaseSignOut(requireAuth())
-        user.value = null
-        firestoreUser.value = null
-        throw new Error('Tu cuenta de Google no tiene un email asociado. Intenta con otra cuenta.')
+        if (!firebaseUser.email) {
+          // No email on the Google account — cannot proceed
+          await firebaseSignOut(requireAuth())
+          user.value = null
+          firestoreUser.value = null
+          throw new Error('Tu cuenta de Google no tiene un email asociado. Intenta con otra cuenta.')
+        }
+        // Email exists but no ttc_user found — return null firestoreUser
+        // Caller decides: merge with existing phone account or create new
+        return {
+          firebaseUser: markRaw(firebaseUser),
+          firestoreUser: null
+        }
       }
 
       firestoreUser.value = linkedUser
@@ -234,6 +232,41 @@ export const useAuth = () => {
     } finally {
       loading.value = false
     }
+  }
+
+  /**
+   * Create a new ttc_user doc for a Google-only user (no WhatsApp account).
+   * Called explicitly when user confirms they don't have a WhatsApp account.
+   */
+  const createNewGoogleUser = async (firebaseUser: FirebaseUser): Promise<User> => {
+    const database = requireDb()
+    const email = firebaseUser.email!
+    const newUserRef = doc(database, 'ttc_user', firebaseUser.uid)
+    const newUser: User = {
+      id: newUserRef.id,
+      name: firebaseUser.displayName || email.split('@')[0],
+      phone: '',
+      email: email.toLowerCase(),
+      aliases: [],
+    }
+    await setDoc(newUserRef, { ...newUser, createdAt: Timestamp.now() })
+    firestoreUser.value = newUser
+    return newUser
+  }
+
+  /**
+   * Set the firestoreUser state after a merge completes.
+   * Fetches the ttc_user doc by ID and sets it as the active user.
+   */
+  const setFirestoreUserById = async (userId: string): Promise<User | null> => {
+    const database = requireDb()
+    const userDoc = await getDoc(doc(database, 'ttc_user', userId))
+    if (userDoc.exists()) {
+      const u = { id: userDoc.id, ...userDoc.data() } as User
+      firestoreUser.value = u
+      return u
+    }
+    return null
   }
 
   // Sign in with OTP custom token (WhatsApp login)
@@ -284,6 +317,8 @@ export const useAuth = () => {
     initAuth,
     signInWithGoogle,
     signInWithOTP,
-    signOut
+    signOut,
+    createNewGoogleUser,
+    setFirestoreUserById
   }
 }
