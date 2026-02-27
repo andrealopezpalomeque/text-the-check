@@ -90,7 +90,9 @@ app.post('/auth/otp/request', otpRateLimiter, async (req, res) => {
     const { phone } = req.body || {}
     if (!phone) return res.status(400).json({ error: 'Número de teléfono requerido' })
 
+    console.log('[OTP] Looking up user...')
     const user = await getUserByPhone(phone)
+    console.log('[OTP] User lookup result:', user?.id || 'not found')
 
     if (!user) {
       return res.status(404).json({ error: 'No hay cuenta asociada a este número' })
@@ -102,6 +104,7 @@ app.post('/auth/otp/request', otpRateLimiter, async (req, res) => {
 
     const code = Math.floor(Math.random() * 1000000).toString().padStart(6, '0')
 
+    console.log('[OTP] Writing OTP doc...')
     await db.collection('ttc_otp').doc(canonicalPhone).set({
       code,
       userId: user.id,
@@ -110,6 +113,7 @@ app.post('/auth/otp/request', otpRateLimiter, async (req, res) => {
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
     })
 
+    console.log('[OTP] Sending WhatsApp message...')
     await sendMessage(user.phone, `Tu código de acceso es: *${code}*\n\nExpira en 5 minutos. No lo compartas.`)
     console.log(`[OTP] Code sent to ${user.phone} for user ${user.id}`)
     return res.json({ success: true })
