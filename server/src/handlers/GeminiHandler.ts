@@ -1,9 +1,11 @@
 /**
  * GeminiHandler — all AI operations for both Grupos and Finanzas.
  *
- * Grupos: NL expense/payment parsing via Gemini 2.0 Flash (SDK).
- * Finanzas: audio transcription, image/PDF receipt parsing, categorization,
- *           financial analysis, weekly insight via Gemini 2.5 Flash Lite (SDK).
+ * All methods use Gemini 2.5 Flash Lite via SDK.
+ * Grupos: NL expense/payment parsing.
+ * Finanzas: NL personal expense parsing, audio transcription,
+ *           image/PDF receipt parsing, categorization,
+ *           financial analysis, weekly insight.
  */
 
 import { GoogleGenerativeAI, type GenerativeModel } from '@google/generative-ai'
@@ -99,6 +101,41 @@ export type AIPersonalParseResult = AIPersonalExpenseResult | AIUnknownResult | 
 
 const AI_TIMEOUT_MS = parseInt(process.env.AI_TIMEOUT_MS || '5000', 10)
 const AI_CONFIDENCE_THRESHOLD = parseFloat(process.env.AI_CONFIDENCE_THRESHOLD || '0.7')
+
+// Shared Argentine Spanish dictionary used by both Grupos and Finanzas prompts
+const ARGENTINE_DICTIONARY = `| Term | Meaning |
+|------|---------|
+| lucas, luquitas | thousands (5 lucas = 5000) |
+| k | thousands (5k = 5000) |
+| mangos | Argentine pesos |
+| guita, plata | money |
+| morfi | food |
+| birra | beer |
+| bondi | bus |
+| super | supermercado |
+| facu | facultad / universidad |
+| depto | departamento / alquiler |
+| expensas | building maintenance fees |
+| prepaga | health insurance |
+| abono | monthly subscription / plan |
+| monotributo | tax regime payment |
+| afip | tax authority |
+| dólar blue | informal dollar |
+| dol, dólar, dolares, usd | US dollars |
+| euro, eur | euros |
+| real, reais, brl | Brazilian reais |
+| pe, pes | pesos (abbreviation) |`
+
+const CURRENCY_RULES = `- Default to ARS (Argentine pesos)
+- "dólares", "dol", "usd", "dolares" → USD
+- "euros", "eur" → EUR
+- "reales", "reais", "brl" → BRL
+- "pesos", "mangos", "pe" → ARS`
+
+const CONFIDENCE_RULES = `- 0.95-1.0: Very clear message, explicit amount and description
+- 0.8-0.94: Clear message but uses slang or abbreviations
+- 0.7-0.79: Understandable message but somewhat ambiguous
+- <0.7: Very ambiguous message, better to ask for clarification`
 
 // ─── Handler class ─────────────────────────────────────────────────
 
@@ -349,27 +386,10 @@ MESSAGE TYPES:
 
 ARGENTINE SPANISH DICTIONARY:
 
-| Term | Meaning |
-|------|---------|
-| lucas, luquitas | thousands (5 lucas = 5000) |
-| k | thousands (5k = 5000) |
-| mangos | Argentine pesos |
-| guita, plata | money |
-| morfi | food |
-| birra | beer |
-| bondi | bus |
-| dólar blue | informal dollar |
-| dol, dólar, dolares, usd | US dollars |
-| euro, eur | euros |
-| real, reais, brl | Brazilian reais |
-| pe, pes | pesos (abbreviation) |
+${ARGENTINE_DICTIONARY}
 
 CURRENCY RULES:
-- Default to ARS (Argentine pesos)
-- "dólares", "dol", "usd", "dolares" → USD
-- "euros", "eur" → EUR
-- "reales", "reais", "brl" → BRL
-- "pesos", "mangos", "pe" → ARS
+${CURRENCY_RULES}
 
 MENTION RULES:
 - Identify ALL names of people mentioned in the message
@@ -475,10 +495,7 @@ For UNKNOWN:
 }
 
 CONFIDENCE RULES:
-- 0.95-1.0: Very clear message, explicit amount and description
-- 0.8-0.94: Clear message but uses slang or abbreviations
-- 0.7-0.79: Understandable message but somewhat ambiguous
-- <0.7: Very ambiguous message, better to ask for clarification
+${CONFIDENCE_RULES}
 
 EXAMPLES:
 
@@ -628,35 +645,10 @@ ${categoriesList}
 
 ARGENTINE SPANISH DICTIONARY:
 
-| Term | Meaning |
-|------|---------|
-| lucas, luquitas | thousands (5 lucas = 5000) |
-| k | thousands (5k = 5000) |
-| mangos | Argentine pesos |
-| guita, plata | money |
-| morfi | food |
-| birra | beer |
-| bondi | bus |
-| super | supermercado |
-| facu | facultad / universidad |
-| depto | departamento / alquiler |
-| expensas | building maintenance fees |
-| prepaga | health insurance |
-| abono | monthly subscription / plan |
-| monotributo | tax regime payment |
-| afip | tax authority |
-| dólar blue | informal dollar |
-| dol, dólar, dolares, usd | US dollars |
-| euro, eur | euros |
-| real, reais, brl | Brazilian reais |
-| pe, pes | pesos (abbreviation) |
+${ARGENTINE_DICTIONARY}
 
 CURRENCY RULES:
-- Default to ARS (Argentine pesos)
-- "dólares", "dol", "usd", "dolares" → USD
-- "euros", "eur" → EUR
-- "reales", "reais", "brl" → BRL
-- "pesos", "mangos", "pe" → ARS
+${CURRENCY_RULES}
 
 RECURRENT DETECTION RULES:
 - Keywords: "mensual", "semanal", "quincenal", "anual", "todos los meses", "cada mes", "por mes"
@@ -706,10 +698,7 @@ For UNKNOWN:
 }
 
 CONFIDENCE RULES:
-- 0.95-1.0: Very clear message, explicit amount and description
-- 0.8-0.94: Clear message but uses slang or abbreviations
-- 0.7-0.79: Understandable message but somewhat ambiguous
-- <0.7: Very ambiguous message, better to ask for clarification
+${CONFIDENCE_RULES}
 
 EXAMPLES:
 

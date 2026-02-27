@@ -14,13 +14,16 @@ import { db } from '../config/firebase.js'
 import { sendMessage, downloadMedia } from '../helpers/whatsapp.js'
 import { normalizeForComparison, generatePhoneCandidates } from '../helpers/phone.js'
 import {
-  appFooter,
   isAffirmativeResponse, isNegativeResponse, isGreeting, formatGreetingResponse,
   buildConfirmationRequest, buildConfirmationSuccess, buildConfirmationCancelled,
   formatParseError, formatValidationError, formatUnresolvedNamesError,
   formatPaymentError, formatSaveError, formatMediaError,
   formatPaymentConfirmation, formatPaymentNotification,
   formatHelpMessage, formatBalance, formatExpenseList,
+  formatWelcomeMessage, formatServiceUnavailable, formatProcessingStatus,
+  formatAudioParseError, formatReceiptParseError, formatUnsupportedMessageType,
+  formatNoGroupError, formatUnknownCommand, formatGroupSwitched,
+  formatDashboardRedirect, formatExcludeAllError, formatInvalidNumberSelection,
   type BalanceEntry, type ExpenseListEntry,
 } from '../helpers/responseFormatter.js'
 import type GeminiHandler from './GeminiHandler.js'
@@ -191,6 +194,15 @@ export default class GruposHandler {
     }
   }
 
+  /** Clear all pending states for a user (called on mode switch). Returns true if any pending was cleared. */
+  clearPendingStates(userId: string): boolean {
+    const hadPending = this.pendingAIExpenses.has(userId) || this.pendingGroupSelections.has(userId) || this.pendingExpenses.has(userId)
+    this.pendingAIExpenses.delete(userId)
+    this.pendingGroupSelections.delete(userId)
+    this.pendingExpenses.delete(userId)
+    return hadPending
+  }
+
   // ─── Message dedup ──────────────────────────────────────────────
 
   isDuplicate(messageId: string): boolean {
@@ -211,14 +223,23 @@ export default class GruposHandler {
       await this.processImageMessage(from, messageData.image?.id, messageData.image?.caption, user)
       return
     }
-    if (messageType !== 'text') return // Unsupported message type
+    if (messageType !== 'text') {
+      await sendMessage(from, formatUnsupportedMessageType())
+      return
+    }
 
     const text = messageData.text?.body || ''
+
+    // 0. Empty message guard
+    if (!text.trim()) {
+      await sendMessage(from, formatParseError('grupos'))
+      return
+    }
 
     // 1. Welcome message check
     if (!user.welcomedAt) {
       const userGroups = await this.getAllGroupsByUserId(user.id)
-      await sendMessage(from, this.getWelcomeMessage(user.name, userGroups))
+      await sendMessage(from, formatWelcomeMessage('grupos', { userName: user.name, groups: userGroups }))
       await this.markUserAsWelcomed(user.id)
       return
     }
@@ -244,8 +265,9 @@ export default class GruposHandler {
         await sendMessage(from, buildConfirmationCancelled())
         return
       }
-      // Something else — cancel pending, continue processing
+      // Something else — cancel pending, notify user, continue processing
       this.pendingAIExpenses.delete(user.id)
+      await sendMessage(from, '💬 _Gasto anterior descartado._')
     }
 
     // 4. Pending expense group selection
@@ -262,11 +284,12 @@ export default class GruposHandler {
           await this.handleExpenseMessage(from, pending.text, user, selectedGroup.id, selectedGroup.name)
           return
         } else {
-          await sendMessage(from, `⚠️ Número inválido. Elegí un número entre 1 y ${pending.groups.length}.`)
+          await sendMessage(from, formatInvalidNumberSelection(pending.groups.length))
           return
         }
       }
       this.pendingExpenses.delete(user.id)
+      await sendMessage(from, '💬 _Gasto anterior descartado._')
     }
 
     // 5. Pending group selection (from /grupo command)
@@ -276,6 +299,8 @@ export default class GruposHandler {
         await sendMessage(from, result)
         return
       }
+      // Non-numeric input — selection cancelled, notify and continue processing the message
+      await sendMessage(from, '💬 _Selección de grupo cancelada._')
     }
 
     // 6. Command check
@@ -288,7 +313,16 @@ export default class GruposHandler {
     // 7. Greeting detection — respond with mode + group context, don't send to AI
     if (isGreeting(text.trim().toLowerCase())) {
       const group = await this.getGroupByUserId(user.id)
-      await sendMessage(from, formatGreetingResponse('grupos', { groupName: group?.name }))
+      if (group) {
+        const allGroups = await this.getAllGroupsByUserId(user.id)
+        await sendMessage(from, formatGreetingResponse('grupos', { groupName: group.name, groupCount: allGroups.length }))
+        return
+      }
+      // Multi-group user with no active group — greeting + group selection
+      const prompted = await this.promptGroupSelectionIfNeeded(from, user.id, '👋 *¡Hola!*\n\nEstás en modo *grupos* 👥\n\n📍 *¿Qué grupo querés usar?*')
+      if (prompted) return
+      // 0 groups — greeting with no group context
+      await sendMessage(from, formatGreetingResponse('grupos'))
       return
     }
 
@@ -368,23 +402,29 @@ export default class GruposHandler {
 
       case '/balance':
       case '/saldo':
-        if (!groupId) { await sendMessage(from, '⚠️ No pertenecés a ningún grupo.'); return }
+        if (!groupId) {
+          if (await this.promptGroupSelectionIfNeeded(from, user.id)) return
+          await sendMessage(from, formatNoGroupError()); return
+        }
         await sendMessage(from, await this.getBalanceMessage(groupId))
         break
 
       case '/lista':
       case '/list':
-        if (!groupId) { await sendMessage(from, '⚠️ No pertenecés a ningún grupo.'); return }
+        if (!groupId) {
+          if (await this.promptGroupSelectionIfNeeded(from, user.id)) return
+          await sendMessage(from, formatNoGroupError()); return
+        }
         await sendMessage(from, await this.getExpenseListMessage(groupId))
         break
 
       case '/borrar':
       case '/delete':
-        await sendMessage(from, `✏️ Para agregar, editar o eliminar gastos manualmente, usá el dashboard:\n\n${appFooter()}`)
+        await sendMessage(from, formatDashboardRedirect())
         break
 
       default:
-        await sendMessage(from, `❓ Comando no reconocido: ${parsed.command}\n\nEscribí /ayuda para ver los comandos disponibles.\n\n${appFooter('O visitá')}`)
+        await sendMessage(from, formatUnknownCommand(parsed.command))
         break
     }
   }
@@ -482,7 +522,7 @@ export default class GruposHandler {
       }
 
       if (resolvedSplitAmong.length === 0) {
-        await sendMessage(from, '⚠️ No podés excluir a todo el grupo. Tiene que haber al menos una persona para dividir el gasto.')
+        await sendMessage(from, formatExcludeAllError())
         return
       }
     } else if (aiResult.splitAmong && aiResult.splitAmong.length > 0) {
@@ -540,7 +580,7 @@ export default class GruposHandler {
     if (!audioId) return
 
     if (!this.gemini.isAIEnabled()) {
-      await sendMessage(from, '⚠️ Esta función no está disponible en este momento.')
+      await sendMessage(from, formatServiceUnavailable())
       return
     }
 
@@ -550,7 +590,12 @@ export default class GruposHandler {
     const group = await this.getGroupByUserId(user.id)
     const groupId = group?.id || null
 
-    await sendMessage(from, '🎤 Procesando audio...')
+    if (!groupId) {
+      if (await this.promptGroupSelectionIfNeeded(from, user.id)) return
+      await sendMessage(from, formatNoGroupError()); return
+    }
+
+    await sendMessage(from, formatProcessingStatus('audio'))
     const transcription = await this.gemini.transcribeAudio(media.base64, media.mimeType)
     if (!transcription || !transcription.transcription) {
       await sendMessage(from, formatMediaError('procesar'))
@@ -584,7 +629,7 @@ export default class GruposHandler {
     }
 
     // Could not parse — show transcription and ask to retry
-    await sendMessage(from, `⚠️ No pude determinar el gasto del audio.\n\n_"${transcription.transcription}"_\n\nProbá escribirlo directamente.`)
+    await sendMessage(from, formatAudioParseError(transcription.transcription))
   }
 
   // ─── Image processing ──────────────────────────────────────────
@@ -593,7 +638,7 @@ export default class GruposHandler {
     if (!imageId) return
 
     if (!this.gemini.isAIEnabled()) {
-      await sendMessage(from, '⚠️ Esta función no está disponible en este momento.')
+      await sendMessage(from, formatServiceUnavailable())
       return
     }
 
@@ -604,17 +649,18 @@ export default class GruposHandler {
     const groupId = group?.id || null
 
     if (!groupId) {
-      await sendMessage(from, '⚠️ No pertenecés a ningún grupo.')
+      if (await this.promptGroupSelectionIfNeeded(from, user.id)) return
+      await sendMessage(from, formatNoGroupError())
       return
     }
 
-    await sendMessage(from, '📷 Procesando imagen...')
+    await sendMessage(from, formatProcessingStatus('image'))
     const transferData = await this.gemini.parseTransferImage(media.base64, media.mimeType)
     if (!transferData) { await sendMessage(from, formatMediaError('procesar')); return }
 
     const amount = parseFloat(String(transferData.amount)) || 0
     if (amount <= 0) {
-      await sendMessage(from, '⚠️ No pude determinar el monto del comprobante.')
+      await sendMessage(from, formatReceiptParseError())
       return
     }
 
@@ -684,7 +730,7 @@ export default class GruposHandler {
 
   private async handlePaymentMessage(from: string, text: string, user: User, groupId: string | null, groupName?: string): Promise<void> {
     if (!groupId) {
-      await sendMessage(from, '⚠️ No pertenecés a ningún grupo.')
+      await sendMessage(from, formatNoGroupError())
       return
     }
 
@@ -777,7 +823,7 @@ export default class GruposHandler {
 
     if (isNaN(number) || number < 1 || number > pending.groups.length) {
       if (/^\d+$/.test(trimmed)) {
-        return `⚠️ Número inválido. Elegí un número entre 1 y ${pending.groups.length}.`
+        return formatInvalidNumberSelection(pending.groups.length)
       }
       this.pendingGroupSelections.delete(userId)
       return null
@@ -786,7 +832,7 @@ export default class GruposHandler {
     const selectedGroup = pending.groups[number - 1]
     await this.updateUserActiveGroup(userId, selectedGroup.id)
     this.pendingGroupSelections.delete(userId)
-    return `✅ Grupo activo cambiado a: *${selectedGroup.name}*\n\nTus próximos gastos se registrarán en este grupo.\n\n${appFooter()}`
+    return formatGroupSwitched(selectedGroup.name)
   }
 
   // ─── Mention matching (Fuse.js) ────────────────────────────────
@@ -974,28 +1020,27 @@ export default class GruposHandler {
 
   // ─── Response helpers ───────────────────────────────────────────
 
-  isCommand(text: string): boolean { return text.trim().startsWith('/') }
+  private static readonly KNOWN_COMMANDS = ['ayuda', 'help', 'balance', 'saldo', 'lista', 'list', 'grupo', 'group', 'borrar', 'delete']
+
+  isCommand(text: string): boolean {
+    const trimmed = text.trim().toLowerCase()
+    if (trimmed.startsWith('/')) return true
+    // Accept bare single-word commands without slash (avoids "lista de compras" false positive)
+    return GruposHandler.KNOWN_COMMANDS.includes(trimmed)
+  }
 
   private parseCommand(text: string): { command: string; args: string } | null {
     const trimmed = text.trim()
-    if (!trimmed.startsWith('/')) return null
     const parts = trimmed.split(/\s+/)
-    return { command: parts[0].toLowerCase(), args: parts.slice(1).join(' ') }
+    // Normalize: ensure command starts with /
+    const cmd = parts[0].toLowerCase().startsWith('/') ? parts[0].toLowerCase() : `/${parts[0].toLowerCase()}`
+    return { command: cmd, args: parts.slice(1).join(' ') }
   }
 
-
-  private getWelcomeMessage(userName: string, groups: Group[] = []): string {
-    const firstName = userName?.split(' ')[0] || 'Hola'
-    let groupInfo = ''
-    if (groups.length === 1) groupInfo = `\n📍 Estás en el grupo: *${groups[0].name}*\n`
-    else if (groups.length > 1) groupInfo = `\n📍 Estás en los grupos: *${groups.map(g => g.name).join(', ')}*\nUsá /grupo para cambiar entre ellos.\n`
-
-    return `¡Hola ${firstName}! 👋 Bienvenido a *Text The Check*\n\nSoy tu bot para dividir gastos entre amigos.${groupInfo}\n\n💬 *Simplemente contame qué pagaste:*\n"Puse 5 lucas en el súper"\n"Pagué la cena, 12000"\n"Gasté 50 dólares en nafta con Juan"\n\nLa IA entiende lo que escribas y te pide confirmar antes de guardar.\n\n💸 *Para registrar pagos entre ustedes:*\n"Le pagué 5000 a María"\n"Recibí 3000 de Juan"\n\n⚡ *Comandos:*\n/balance → quién debe a quién\n/lista → ver últimos gastos\n/ayuda → más opciones\n\n━━━━━━━━━━━━━━━━━━━━━━\n\n📊 Desde el dashboard podés agregar, editar y eliminar gastos:\nhttps://textthecheck.app\n\n¡Empezá a cargar gastos! 🎉`
-  }
 
   private async getGroupMessage(userId: string, activeGroupId: string | null): Promise<{ message: string; groups: Group[] }> {
     const groups = await this.getAllGroupsByUserId(userId)
-    if (groups.length === 0) return { message: '⚠️ No pertenecés a ningún grupo.', groups: [] }
+    if (groups.length === 0) return { message: formatNoGroupError(), groups: [] }
     if (groups.length === 1) return { message: `📍 Tu grupo: *${groups[0].name}*\n\n_(Solo pertenecés a un grupo)_`, groups }
 
     let msg = '📍 *Tus grupos:*\n\n'
@@ -1012,11 +1057,31 @@ export default class GruposHandler {
     return msg
   }
 
+  /**
+   * For multi-group users with no activeGroupId: show group list and set up
+   * pendingGroupSelections. Returns true if prompt was shown (caller should return).
+   * Returns false if user has 0-1 groups (caller should handle normally).
+   */
+  private async promptGroupSelectionIfNeeded(from: string, userId: string, header?: string): Promise<boolean> {
+    const allGroups = await this.getAllGroupsByUserId(userId)
+    if (allGroups.length <= 1) return false
+
+    let msg = header || '📍 *Primero elegí un grupo:*'
+    msg += '\n\n'
+    allGroups.forEach((g, i) => { msg += `${i + 1}. ${g.name}\n` })
+    msg += '\n_Respondé con el número del grupo._'
+    await sendMessage(from, msg)
+    this.pendingGroupSelections.set(userId, {
+      groups: allGroups, expiresAt: Date.now() + this.GROUP_SELECTION_TIMEOUT,
+    })
+    return true
+  }
+
   // ─── Balance calculation ────────────────────────────────────────
 
   private async getBalanceMessage(groupId: string): Promise<string> {
     const members = await this.getGroupMembers(groupId)
-    if (members.length === 0) return '⚠️ No se encontraron miembros en el grupo.'
+    if (members.length === 0) return formatNoGroupError()
 
     const expenses = await this.getAllExpensesByGroup(groupId)
     const payments = await this.getPaymentsByGroup(groupId)
@@ -1127,12 +1192,23 @@ export default class GruposHandler {
           const group = { id: doc.id, ...doc.data() } as Group
           if (group.members.includes(userId)) return group
         }
+        // activeGroupId is stale (group deleted or user removed) — clear it
         await this.updateUserActiveGroup(userId, null)
       }
 
-      const snapshot = await db.collection('ttc_group').where('members', 'array-contains', userId).limit(1).get()
-      if (snapshot.empty) return null
-      return { id: snapshot.docs[0].id, ...snapshot.docs[0].data() } as Group
+      // No activeGroupId — check how many groups user belongs to
+      const allGroups = await db.collection('ttc_group').where('members', 'array-contains', userId).get()
+      if (allGroups.empty) return null
+
+      if (allGroups.size === 1) {
+        // Single-group user: auto-persist and return
+        const group = { id: allGroups.docs[0].id, ...allGroups.docs[0].data() } as Group
+        await this.updateUserActiveGroup(userId, group.id)
+        return group
+      }
+
+      // Multi-group user without activeGroupId: return null (caller must handle)
+      return null
     } catch (error) {
       console.error('Error getting group by user ID:', error)
       return null

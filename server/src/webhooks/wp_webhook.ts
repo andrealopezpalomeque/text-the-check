@@ -27,6 +27,7 @@ import {
   formatOnboardingGruposCreated,
   formatOnboardingFinanzasReady,
   formatOnboardingReprompt,
+  formatModeSwitchPendingCleared,
 } from '../helpers/responseFormatter.js'
 import GeminiHandler from '../handlers/GeminiHandler.js'
 import GruposHandler from '../handlers/GruposHandler.js'
@@ -373,9 +374,9 @@ async function processMessage(message: any, contacts: any[]): Promise<void> {
       return
     }
 
-    // /modo or /mode — switch between grupos/finanzas
-    if (textLower.startsWith('/modo') || textLower.startsWith('/mode')) {
-      await handleModo(from, textLower)
+    // /modo or /mode — switch between grupos/finanzas (with or without /)
+    if (textLower.startsWith('/modo') || textLower.startsWith('/mode') || textLower.startsWith('modo ') || textLower === 'modo') {
+      await handleModo(from, textLower.replace(/^\//, ''))
       return
     }
 
@@ -386,8 +387,8 @@ async function processMessage(message: any, contacts: any[]): Promise<void> {
       return
     }
 
-    // /ayuda or /help — unified help for users without a mode
-    if (textLower === '/ayuda' || textLower === '/help') {
+    // /ayuda or /help — unified help for users without a mode (with or without /)
+    if (textLower === '/ayuda' || textLower === '/help' || textLower === 'ayuda' || textLower === 'help') {
       const { mode: userMode } = await determineUserMode(from)
       if (!userMode) {
         await sendMessage(from, `📖 *Cómo usar text the check*\n\nEste bot tiene dos modos:\n👥 *Grupos* — Dividir gastos con amigos\n📊 *Finanzas* — Registrar gastos personales\n\nMandá cualquier mensaje para empezar!\n\nUna vez configurado, usá /modo grupos o /modo finanzas para cambiar.`)
@@ -531,6 +532,13 @@ async function handleModoSwitch(phone: string, targetMode: string): Promise<void
     return
   }
 
+  // Clear pending states in BOTH handlers before switching
+  const gruposHadPending = gruposHandler.clearPendingStates(user.id)
+  const finanzasHadPending = finanzasHandler.clearPendingStates(user.id)
+  if (gruposHadPending || finanzasHadPending) {
+    await sendMessage(phone, formatModeSwitchPendingCleared())
+  }
+
   await setActiveMode(user.id, targetMode)
 
   if (targetMode === 'grupos') {
@@ -599,11 +607,7 @@ async function determineUserMode(phone: string): Promise<UserWithMode> {
 
 async function setActiveMode(userId: string, mode: string): Promise<void> {
   try {
-    const update: Record<string, any> = { activeMode: mode }
-    if (mode === 'grupos') {
-      update.activeGroupId = null  // Force fresh group selection for multi-group users
-    }
-    await db.collection('ttc_user').doc(userId).update(update)
+    await db.collection('ttc_user').doc(userId).update({ activeMode: mode })
   } catch (error) {
     console.error('Error setting active mode:', error)
   }

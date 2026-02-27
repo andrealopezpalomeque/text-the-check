@@ -13,7 +13,7 @@
     </div>
 
     <!-- Primary glow -->
-    <div class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] rounded-full bg-ttc-primary/[0.04] pointer-events-none" style="filter: blur(120px);" />
+    <div class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] rounded-full bg-ttc-primary opacity-[0.04] pointer-events-none" style="filter: blur(120px);" />
 
     <div class="relative z-10 max-w-6xl mx-auto">
       <div class="flex flex-col-reverse lg:flex-row lg:items-center lg:gap-16">
@@ -22,7 +22,7 @@
         <div class="lg:w-[45%] text-center lg:text-left mt-10 lg:mt-0">
           <!-- Pill badge -->
           <div class="animate-fade-up">
-            <span class="inline-flex items-center gap-2 rounded-full border border-ttc-primary/30 bg-ttc-primary/[0.08] px-5 py-2 font-body text-[11px] font-semibold uppercase tracking-[2px] text-ttc-primary">
+            <span class="inline-flex items-center gap-2 rounded-full border border-[#4A90D9]/30 bg-[#4A90D9]/[0.08] px-5 py-2 font-body text-[11px] font-semibold uppercase tracking-[2px] text-ttc-primary">
               <svg width="14" height="14" viewBox="0 0 160 200" fill="none" class="inline-block">
                 <path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 136,40 131,80 134,115 C 137,148 131,167 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 24,162 32,125 28,88 C 24,55 33,35 28,25 Z" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
@@ -122,18 +122,19 @@
 
             <!-- Phone mockup -->
             <div class="phone-frame">
-              <div class="phone-island" />
-
               <div class="phone-screen">
+                <!-- Dynamic Island -->
+                <div class="phone-island" />
+
                 <!-- WhatsApp header -->
-                <div class="flex items-center gap-2.5 px-4 py-3 border-b border-ttc-border/50">
-                  <div class="w-8 h-8 rounded-full bg-ttc-primary/15 flex items-center justify-center flex-shrink-0">
+                <div class="flex items-center gap-2.5 px-4 py-3 border-b border-ttc-border">
+                  <div class="w-8 h-8 rounded-full bg-[#4A90D9]/15 flex items-center justify-center flex-shrink-0">
                     <svg width="14" height="14" viewBox="0 0 160 200" fill="none" class="text-ttc-primary">
                       <path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 136,40 131,80 134,115 C 137,148 131,167 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 24,162 32,125 28,88 C 24,55 33,35 28,25 Z" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                   </div>
                   <div>
-                    <p class="font-nunito text-xs font-bold text-ttc-text leading-tight">Text the Check</p>
+                    <p class="font-nunito text-xs font-bold text-ttc-text leading-tight">text <span class="text-ttc-primary">the</span> check</p>
                     <p class="font-body text-[10px] text-ttc-accent leading-tight">en linea</p>
                   </div>
                 </div>
@@ -166,8 +167,8 @@
                 </div>
 
                 <!-- Input bar -->
-                <div class="px-3 py-2 border-t border-ttc-border/30">
-                  <div class="flex items-center gap-2 rounded-full border border-ttc-border/50 bg-ttc-bg/50 px-3 py-1.5">
+                <div class="px-3 py-2 border-t border-ttc-border">
+                  <div class="flex items-center gap-2 rounded-full border border-ttc-border bg-ttc-surface px-3 py-1.5">
                     <span class="flex-1 font-body text-[10px] text-ttc-text-muted">Escribi un mensaje...</span>
                     <div :class="['w-5 h-5 rounded-full flex items-center justify-center transition-colors duration-500', activeMode === 'viajes' ? 'bg-ttc-primary' : 'bg-ttc-accent']">
                       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
@@ -183,7 +184,7 @@
                   :class="[
                     'px-3 py-1 rounded-full font-body text-[10px] font-semibold transition-all duration-300 cursor-pointer',
                     activeMode === 'viajes'
-                      ? 'bg-ttc-primary/15 text-ttc-primary border border-ttc-primary/30'
+                      ? 'bg-[#4A90D9]/15 text-ttc-primary border border-[#4A90D9]/30'
                       : 'text-ttc-text-muted border border-transparent hover:text-ttc-text'
                   ]"
                 >
@@ -194,7 +195,7 @@
                   :class="[
                     'px-3 py-1 rounded-full font-body text-[10px] font-semibold transition-all duration-300 cursor-pointer',
                     activeMode === 'finanzas'
-                      ? 'bg-ttc-accent/15 text-ttc-accent border border-ttc-accent/30'
+                      ? 'bg-[#34D399]/15 text-ttc-accent border border-[#34D399]/30'
                       : 'text-ttc-text-muted border border-transparent hover:text-ttc-text'
                   ]"
                 >
@@ -320,15 +321,11 @@ const scrollToComoFunciona = () => {
 }
 
 .phone-island {
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
   width: 80px;
   height: 22px;
+  margin: 10px auto 0;
   background: var(--color-bg);
   border-radius: 20px;
-  z-index: 10;
   border: 1px solid var(--color-border);
 }
 

@@ -14,7 +14,7 @@
           <input
             type="text"
             @input="(value) => $emit('onSearch', value.target.value)"
-            class="w-full h-10 rounded-md bg-base border border-gray-600 pl-10 text-white placeholder:text-gray-500 focus:ring-2 focus:ring-primary focus:border-transparent"
+            class="w-full h-10 rounded-md bg-ttc-surface border border-gray-600 pl-10 text-white placeholder:text-gray-500 focus:ring-2 focus:ring-primary focus:border-transparent"
             placeholder="Buscar pagos..."
           >
         </div>
@@ -22,7 +22,7 @@
         <!-- Filter Button -->
         <Tooltip ref="tooltipFilter">
           <button
-            class="h-10 w-10 flex items-center justify-center bg-base hover:bg-gray-700 rounded-md border border-gray-600 text-white transition-colors"
+            class="h-10 w-10 flex items-center justify-center bg-ttc-surface hover:bg-gray-700 rounded-md border border-gray-600 text-white transition-colors"
             @click="toggleTooltip"
             aria-label="Opciones de filtro"
           >
@@ -31,7 +31,7 @@
           
           <!-- Filter Dropdown Content -->
           <template #content>
-            <div class="bg-base border border-gray-600 rounded-lg shadow-lg overflow-hidden">
+            <div class="bg-ttc-surface border border-gray-600 rounded-lg shadow-lg overflow-hidden">
               <div
                 v-for="filter in filters"
                 :key="filter.name"

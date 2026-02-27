@@ -49,7 +49,7 @@
       <!-- Month Navigation & Summary -->
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 px-3">
         <!-- Month Navigation -->
-        <div class="flex items-center justify-between w-full md:w-auto bg-base rounded-xl p-1 border border-gray-600 shadow-sm shadow-white/5">
+        <div class="flex items-center justify-between w-full md:w-auto bg-ttc-surface rounded-xl p-1 border border-gray-600 shadow-sm shadow-white/5">
           <button
             @click="changeMonth(1)"
             class="p-2 rounded-lg hover:bg-gray-700 transition-colors"
@@ -120,7 +120,7 @@
           <div
             v-for="payment in payments"
             :key="payment.id"
-            class="rounded-xl p-4 bg-base cursor-pointer transition-all duration-200 border border-gray-600 shadow-sm shadow-white/5 hover:shadow-md hover:shadow-white/10 group"
+            class="rounded-xl p-4 bg-ttc-surface cursor-pointer transition-all duration-200 border border-gray-600 shadow-sm shadow-white/5 hover:shadow-md hover:shadow-white/10 group"
             @click="showDetails(payment.id)"
           >
             <!-- Card Header -->

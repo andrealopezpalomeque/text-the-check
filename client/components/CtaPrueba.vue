@@ -8,7 +8,7 @@
     </div>
 
     <!-- Glow -->
-    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full bg-ttc-primary/[0.04] pointer-events-none" style="filter: blur(100px);" />
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full bg-ttc-primary opacity-[0.04] pointer-events-none" style="filter: blur(100px);" />
 
     <div class="relative z-10 max-w-2xl mx-auto text-center">
       <!-- Recibito happy character — BIG, interactive -->
@@ -73,7 +73,7 @@
 
       <a
         href="/login"
-        class="inline-flex items-center gap-2.5 bg-ttc-primary text-white rounded-xl px-8 py-4 font-body text-base font-semibold hover:opacity-90 transition-opacity cursor-pointer shadow-lg shadow-ttc-primary/20"
+        class="inline-flex items-center gap-2.5 bg-ttc-primary text-white rounded-xl px-8 py-4 font-body text-base font-semibold hover:opacity-90 transition-opacity cursor-pointer shadow-lg shadow-[#4A90D9]/20"
       >
         Empezar gratis
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
