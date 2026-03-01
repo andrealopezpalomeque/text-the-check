@@ -16,10 +16,10 @@
     <div class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] rounded-full bg-ttc-primary opacity-[0.04] pointer-events-none" style="filter: blur(120px);" />
 
     <div class="relative z-10 max-w-6xl mx-auto">
-      <div class="flex flex-col-reverse lg:flex-row lg:items-center lg:gap-16">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:gap-16">
 
         <!-- Text column -->
-        <div class="lg:w-[45%] text-center lg:text-left mt-10 lg:mt-0">
+        <div class="lg:w-[45%] text-center lg:text-left mb-10 lg:mb-0">
           <!-- Pill badge -->
           <div class="animate-fade-up">
             <span class="inline-flex items-center gap-2 rounded-full border border-[#4A90D9]/30 bg-[#4A90D9]/[0.08] px-5 py-2 font-body text-[11px] font-semibold uppercase tracking-[2px] text-ttc-primary">
@@ -47,17 +47,17 @@
           </p>
 
           <!-- Buttons -->
-          <div class="mt-8 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 animate-fade-up" style="animation-delay: 0.3s;">
+          <div class="mt-8 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 animate-fade-up" style="animation-delay: 0.3s;">
             <a
               href="/login"
-              class="inline-flex items-center gap-2 bg-ttc-primary text-white rounded-xl px-7 py-3.5 font-body text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer"
+              class="inline-flex items-center justify-center gap-2 w-[200px] bg-ttc-primary text-white rounded-xl py-3.5 font-body text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer"
             >
               Empezar gratis
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
             </a>
             <button
               @click="scrollToComoFunciona"
-              class="inline-flex items-center gap-2 border border-ttc-border bg-transparent text-ttc-text rounded-xl px-7 py-3.5 font-body text-sm font-semibold hover:bg-ttc-card hover:border-ttc-text-dim transition-colors cursor-pointer"
+              class="inline-flex items-center justify-center gap-2 w-[200px] border border-ttc-border bg-transparent text-ttc-text rounded-xl py-3.5 font-body text-sm font-semibold hover:bg-ttc-card hover:border-ttc-text-dim transition-colors cursor-pointer"
             >
               Ver como funciona
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
