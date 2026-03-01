@@ -74,6 +74,9 @@ export default defineNuxtConfig({
   },
   css: ['~/assets/css/main.css'],
   ssr: false,
+  experimental: {
+    appManifest: false
+  },
   runtimeConfig: {
     public: {
       apiBaseUrl: process.env.API_BASE_URL || 'http://localhost:3002',
