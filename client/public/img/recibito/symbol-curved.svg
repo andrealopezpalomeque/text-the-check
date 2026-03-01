@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 200" fill="none">
+  <!--
+    Text the Check — Receipt Symbol (Curved variant)
+    Amplified organic side curves to match the original Looka logo's
+    "paper caught in a breeze" quality. Same zigzag edges, same construction
+    principles as the base Recibito, but with more dramatic cubic beziers.
+    Uses currentColor for theme compatibility.
+    See DESIGN.md for principles and usage guidelines.
+  -->
+
+  <!-- Receipt outline: zigzag top, dramatic curved sides, zigzag bottom -->
+  <path
+    d="
+      M 28,25
+      l 4,-3.5 4,3.5 4,-3.5 4,3.5
+        4,-3.5 4,3.5 4,-3.5 4,3.5
+        4,-3.5 4,3.5 4,-3.5 4,3.5
+        4,-3.5 4,3.5 4,-3.5 4,3.5
+        4,-3.5 4,3.5 4,-3.5 4,3.5
+        4,-3.5 4,3.5 4,-3.5 4,3.5
+        4,-3.5 4,3.5
+      C 144,36 122,78 140,115
+      C 146,148 122,170 132,175
+      l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5
+        -4,3.5 -4,-3.5 -4,3.5 -4,-3.5
+        -4,3.5 -4,-3.5 -4,3.5 -4,-3.5
+        -4,3.5 -4,-3.5 -4,3.5 -4,-3.5
+        -4,3.5 -4,-3.5 -4,3.5 -4,-3.5
+        -4,3.5 -4,-3.5 -4,3.5 -4,-3.5
+        -4,3.5 -4,-3.5
+      C 17,158 38,128 22,88
+      C 16,52 38,32 28,25
+      Z
+    "
+    stroke="currentColor"
+    stroke-width="2.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>

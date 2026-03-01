@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Receipt with Chat Inside — Logo Exploration</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&family=DM+Sans:wght@400;500;700&family=Outfit:wght@600&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    min-height: 100vh; background: #08080C; color: #E2E8F0;
+    font-family: 'DM Sans', sans-serif; padding: 48px 24px;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+  h1 { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 32px; text-align: center; margin-bottom: 6px; }
+  h1 span { color: #4A90D9; }
+  h2 { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 22px; margin-bottom: 6px; }
+  h2 span { color: #4A90D9; }
+  .page-subtitle { font-size: 14px; color: #7B8FA6; text-align: center; margin-bottom: 48px; max-width: 520px; margin-left: auto; margin-right: auto; line-height: 1.7; }
+  .section { margin-bottom: 64px; }
+  .section-head { text-align: center; margin-bottom: 28px; }
+  .section-sub { font-size: 13px; color: #7B8FA6; margin-top: 4px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; max-width: 700px; margin: 0 auto; }
+  .card {
+    display: flex; flex-direction: column; align-items: center; gap: 14px;
+    padding: 36px 20px 28px; border-radius: 16px;
+    border: 1px solid #242E3C; background: #0C1017;
+    transition: border-color 0.3s ease; cursor: pointer;
+  }
+  .card:hover { border-color: #4A90D9; }
+  .card.pick { border-color: #4A90D9; background: linear-gradient(180deg, rgba(74,144,217,0.04) 0%, #0C1017 100%); }
+  .tag { font-size: 9px; letter-spacing: 2px; font-weight: 600; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; color: #7B8FA6; background: #1A222C; }
+  .tag-blue { color: #4A90D9; background: rgba(74,144,217,0.12); }
+  .tag-green { color: #34D399; background: rgba(52,211,153,0.12); }
+  .tag-purple { color: #A78BFA; background: rgba(167,139,250,0.12); }
+  .card-label { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 14px; }
+  .card-desc { font-size: 11px; color: #7B8FA6; text-align: center; line-height: 1.5; max-width: 200px; }
+  .wordmark { font-family: 'Outfit', sans-serif; font-weight: 600; letter-spacing: 3px; color: #E2E8F0; }
+  .wordmark .the { color: #4A90D9; }
+  .tagline { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: #7B8FA6; font-weight: 500; }
+  .logo-card { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 48px 32px; border-radius: 16px; border: 1px solid #242E3C; background: #0C1017; }
+  .logo-card.light-card { background: #F8FAFB; border-color: #E2E7ED; }
+  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+  .float { animation: float 4s ease-in-out infinite; }
+  .concept-callout { text-align: center; padding: 24px 32px; border-radius: 12px; border: 1px solid rgba(74,144,217,0.25); background: rgba(74,144,217,0.04); margin-bottom: 48px; max-width: 600px; margin-left: auto; margin-right: auto; }
+  .concept-callout p { font-size: 13px; color: #7B8FA6; line-height: 1.6; }
+  .concept-callout strong { color: #4A90D9; }
+  @media (max-width: 768px) { .grid-4, .grid-3 { grid-template-columns: repeat(2, 1fr); } .grid-2 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Receipt <span>with Chat Inside</span></h1>
+<p class="page-subtitle">
+  The receipt shape stays exactly as it is. Inside it: small abstract chat lines that say <strong style="color:#4A90D9">"messaging is happening here."</strong> Receipt = check. Lines inside = text.
+</p>
+
+<div class="concept-callout">
+  <p>The receipt is the <strong>container</strong>. The chat lines are the <strong>content</strong>. Together they tell the whole story: you're texting your finances.</p>
+</div>
+
+<!-- ============================================
+     SECTION 1: BUBBLE VARIATIONS
+     ============================================ -->
+<div class="section">
+  <div class="section-head">
+    <h2>Chat Lines <span>Inside</span></h2>
+    <p class="section-sub">Different densities and positions of the abstract chat lines</p>
+  </div>
+
+  <div class="grid-4">
+
+    <!-- A: 3 lines, classic left-right-left -->
+    <div class="card pick">
+      <span class="tag tag-blue">3 lines</span>
+      <svg width="110" height="138" viewBox="0 0 160 200" fill="none" style="color: #E2E8F0;">
+        <path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 136,40 131,80 134,115 C 137,148 131,167 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 24,162 32,125 28,88 C 24,55 33,35 28,25 Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Chat lines inside -->
+        <rect x="42" y="72" width="42" height="10" rx="5" fill="currentColor" opacity="0.18"/>
+        <rect x="78" y="92" width="46" height="10" rx="5" fill="currentColor" opacity="0.12"/>
+        <rect x="44" y="112" width="34" height="10" rx="5" fill="currentColor" opacity="0.18"/>
+      </svg>
+      <div class="card-label">Left-right-left</div>
+      <p class="card-desc">Classic chat pattern. Three lines alternating sides, clearly reads as a conversation.</p>
+    </div>
+
+    <!-- B: 2 lines only -->
+    <div class="card">
+      <span class="tag">2 lines</span>
+      <svg width="110" height="138" viewBox="0 0 160 200" fill="none" style="color: #E2E8F0;">
+        <path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 136,40 131,80 134,115 C 137,148 131,167 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 24,162 32,125 28,88 C 24,55 33,35 28,25 Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="42" y="80" width="44" height="10" rx="5" fill="currentColor" opacity="0.18"/>
+        <rect x="76" y="102" width="48" height="10" rx="5" fill="currentColor" opacity="0.12"/>
+      </svg>
+      <div class="card-label">Just two</div>
+      <p class="card-desc">Even more minimal. One sent, one received. The simplest conversation.</p>
+    </div>
+
+    <!-- C: 4 lines, fuller conversation -->
+    <div class="card">
+      <span class="tag">4 lines</span>
+      <svg width="110" height="138" viewBox="0 0 160 200" fill="none" style="color: #E2E8F0;">
+        <path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 136,40 131,80 134,115 C 137,148 131,167 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 24,162 32,125 28,88 C 24,55 33,35 28,25 Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="42" y="62" width="38" height="9" rx="4.5" fill="currentColor" opacity="0.18"/>
+        <rect x="80" y="80" width="42" height="9" rx="4.5" fill="currentColor" opacity="0.12"/>
+        <rect x="44" y="98" width="32" height="9" rx="4.5" fill="currentColor" opacity="0.18"/>
+        <rect x="74" y="116" width="48" height="9" rx="4.5" fill="currentColor" opacity="0.12"/>
+      </svg>
+      <div class="card-label">Full chat</div>
+      <p class="card-desc">Four lines — a real back-and-forth. Might be too busy at small sizes.</p>
+    </div>
+
+    <!-- D: 3 lines, tighter + centered vertically -->
+    <div class="card">
+      <span class="tag tag-green">Compact</span>
+      <svg width="110" height="138" viewBox="0 0 160 200" fill="none" style="color: #E2E8F0;">
+        <path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 136,40 131,80 134,115 C 137,148 131,167 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 24,162 32,125 28,88 C 24,55 33,35 28,25 Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="44" y="78" width="36" height="8" rx="4" fill="currentColor" opacity="0.20"/>
+        <rect x="82" y="94" width="38" height="8" rx="4" fill="currentColor" opacity="0.13"/>
+        <rect x="46" y="110" width="28" height="8" rx="4" fill="currentColor" opacity="0.20"/>
+      </svg>
+      <div class="card-label">Compact 3</div>
+      <p class="card-desc">Tighter spacing, smaller bubbles. Cleaner at small sizes while still reading as chat.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================
+     SECTION 2: COLOR / EMPHASIS VARIATIONS
+     ============================================ -->
+<div class="section">
+  <div class="section-head">
+    <h2>Color <span>Treatments</span></h2>
+    <p class="section-sub">Same 3-line layout, different ways to color the chat lines</p>
+  </div>
+
+  <div class="grid-4">
+
+    <!-- Monochrome (all same color) -->
+    <div class="card">
+      <span class="tag">Mono</span>
+      <svg width="110" height="138" viewBox="0 0 160 200" fill="none" style="color: #E2E8F0;">
+        <path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 136,40 131,80 134,115 C 137,148 131,167 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 24,162 32,125 28,88 C 24,55 33,35 28,25 Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="42" y="72" width="42" height="10" rx="5" fill="currentColor" opacity="0.18"/>
+        <rect x="78" y="92" width="46" height="10" rx="5" fill="currentColor" opacity="0.12"/>
+        <rect x="44" y="112" width="34" height="10" rx="5" fill="currentColor" opacity="0.18"/>
+      </svg>
+      <div class="card-label">All currentColor</div>
+      <p class="card-desc">Pure monochrome. Works on any color, any background. Maximum flexibility.</p>
+    </div>
+
+    <!-- User = primary, bot = lighter -->
+    <div class="card pick">
+      <span class="tag tag-blue">Two-tone</span>
+      <svg width="110" height="138" viewBox="0 0 160 200" fill="none" style="color: #E2E8F0;">
+        <path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 136,40 131,80 134,115 C 137,148 131,167 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 24,162 32,125 28,88 C 24,55 33,35 28,25 Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Left = user (primary) -->
+        <rect x="42" y="72" width="42" height="10" rx="5" fill="#4A90D9" opacity="0.30"/>
+        <!-- Right = bot (currentColor, lighter) -->
+        <rect x="78" y="92" width="46" height="10" rx="5" fill="currentColor" opacity="0.12"/>
+        <!-- Left = user (primary) -->
+        <rect x="44" y="112" width="34" height="10" rx="5" fill="#4A90D9" opacity="0.30"/>
+      </svg>
+      <div class="card-label">User = blue</div>
+      <p class="card-desc">User messages in brand primary, bot replies lighter. Adds depth and the brand color inside.</p>
+    </div>
+
+    <!-- Primary outline -->
+    <div class="card">
+      <span class="tag tag-purple">Primary body</span>
+      <svg width="110" height="138" viewBox="0 0 160 200" fill="none" style="color: #4A90D9;">
+        <path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 136,40 131,80 134,115 C 137,148 131,167 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 24,162 32,125 28,88 C 24,55 33,35 28,25 Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="42" y="72" width="42" height="10" rx="5" fill="currentColor" opacity="0.25"/>
+        <rect x="78" y="92" width="46" height="10" rx="5" fill="currentColor" opacity="0.15"/>
+        <rect x="44" y="112" width="34" height="10" rx="5" fill="currentColor" opacity="0.25"/>
+      </svg>
+      <div class="card-label">All primary</div>
+      <p class="card-desc">Receipt and chat lines both in brand blue. One unified color statement.</p>
+    </div>
+
+    <!-- Stroked lines instead of filled -->
+    <div class="card">
+      <span class="tag">Outlined</span>
+      <svg width="110" height="138" viewBox="0 0 160 200" fill="none" style="color: #E2E8F0;">
+        <path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 136,40 131,80 134,115 C 137,148 131,167 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 24,162 32,125 28,88 C 24,55 33,35 28,25 Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="42" y="72" width="42" height="10" rx="5" stroke="currentColor" stroke-width="1.5" opacity="0.20"/>
+        <rect x="78" y="92" width="46" height="10" rx="5" stroke="currentColor" stroke-width="1.5" opacity="0.14"/>
+        <rect x="44" y="112" width="34" height="10" rx="5" stroke="currentColor" stroke-width="1.5" opacity="0.20"/>
+      </svg>
+      <div class="card-label">Outlined</div>
+      <p class="card-desc">Chat bubbles as outlines, matching the receipt's stroke-only style. Lightest possible.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================
+     SECTION 3: WITH EYES (CHARACTER)
+     ============================================ -->
+<div class="section">
+  <div class="section-head">
+    <h2>Recibito <span>with Chat Inside</span></h2>
+    <p class="section-sub">Eyes + chat lines. The receipt character contains messages.</p>
+  </div>
+
+  <div class="grid-3">
+
+    <!-- Chat below eyes -->
+    <div class="card pick">
+      <span class="tag tag-blue">Chat below eyes</span>
+      <div class="float">
+        <svg width="130" height="163" viewBox="0 0 160 200" fill="none" style="color: #4A90D9;">
+          <g transform="rotate(-3, 80, 100)">
+            <path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 136,40 131,80 134,115 C 137,148 131,167 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 24,162 32,125 28,88 C 24,55 33,35 28,25 Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Curious eyes (upper area) -->
+            <circle cx="62" cy="68" r="5" fill="currentColor"/>
+            <circle cx="100" cy="65" r="5" fill="currentColor"/>
+            <!-- Chat lines (lower area, below eyes) -->
+            <rect x="44" y="100" width="36" height="8" rx="4" fill="currentColor" opacity="0.22"/>
+            <rect x="78" y="115" width="40" height="8" rx="4" fill="currentColor" opacity="0.14"/>
+            <rect x="46" y="130" width="28" height="8" rx="4" fill="currentColor" opacity="0.22"/>
+          </g>
+          <!-- Floating ? -->
+          <g opacity="0.4">
+            <path d="M 126,36 C 126,28 134,25 138,30 C 142,35 136,40 132,42 L 132,48" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <circle cx="132" cy="54" r="2" fill="currentColor"/>
+          </g>
+        </svg>
+      </div>
+      <div class="card-label">Eyes + chat below</div>
+      <p class="card-desc">Recibito's face at the top, chat content in the body. Like the receipt is "reading" the messages.</p>
+    </div>
+
+    <!-- Happy with chat lines -->
+    <div class="card">
+      <span class="tag tag-green">Happy version</span>
+      <div class="float" style="animation-delay: 0.5s;">
+        <svg width="130" height="163" viewBox="0 0 160 200" fill="none" style="color: #34D399;">
+          <g transform="rotate(2, 80, 100)">
+            <path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 136,40 131,80 134,115 C 137,148 131,167 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 24,162 32,125 28,88 C 24,55 33,35 28,25 Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Happy eyes -->
+            <path d="M 55,66 Q 62,59 69,66" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"/>
+            <path d="M 93,66 Q 100,59 107,66" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"/>
+            <!-- Chat lines -->
+            <rect x="44" y="100" width="36" height="8" rx="4" fill="currentColor" opacity="0.22"/>
+            <rect x="78" y="115" width="40" height="8" rx="4" fill="currentColor" opacity="0.14"/>
+            <rect x="46" y="130" width="28" height="8" rx="4" fill="currentColor" opacity="0.22"/>
+          </g>
+          <!-- Sparkles -->
+          <g opacity="0.4">
+            <path d="M 140,50 l 0,-7 M 136.5,46.5 l 7,0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M 18,55 l 0,-5 M 15.5,52.5 l 5,0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </g>
+        </svg>
+      </div>
+      <div class="card-label">Happy + chat</div>
+      <p class="card-desc">Happy Recibito with a conversation in its body. "Your finances are going well!"</p>
+    </div>
+
+    <!-- Symbol only (no eyes, just receipt + chat) -->
+    <div class="card">
+      <span class="tag">Pure symbol</span>
+      <div class="float" style="animation-delay: 1s;">
+        <svg width="130" height="163" viewBox="0 0 160 200" fill="none" style="color: #E2E8F0;">
+          <path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 136,40 131,80 134,115 C 137,148 131,167 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 24,162 32,125 28,88 C 24,55 33,35 28,25 Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- Chat lines centered -->
+          <rect x="42" y="72" width="42" height="10" rx="5" fill="currentColor" opacity="0.18"/>
+          <rect x="78" y="92" width="46" height="10" rx="5" fill="currentColor" opacity="0.12"/>
+          <rect x="44" y="112" width="34" height="10" rx="5" fill="currentColor" opacity="0.18"/>
+        </svg>
+      </div>
+      <div class="card-label">Logo symbol</div>
+      <p class="card-desc">No eyes, no extras. Receipt + chat lines = "text the check" in one shape. This is the logo.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================
+     SECTION 4: FULL LOGO COMPOSITION
+     ============================================ -->
+<div class="section">
+  <div class="section-head">
+    <h2>Full <span>Logo</span></h2>
+    <p class="section-sub">Symbol + wordmark</p>
+  </div>
+
+  <div class="grid-2">
+    <!-- Dark -->
+    <div class="logo-card">
+      <span class="tag" style="margin-bottom: 8px;">Dark mode</span>
+      <svg width="80" height="100" viewBox="0 0 160 200" fill="none" style="color: #E2E8F0;">
+        <path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 136,40 131,80 134,115 C 137,148 131,167 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 24,162 32,125 28,88 C 24,55 33,35 28,25 Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="42" y="72" width="42" height="10" rx="5" fill="currentColor" opacity="0.18"/>
+        <rect x="78" y="92" width="46" height="10" rx="5" fill="currentColor" opacity="0.12"/>
+        <rect x="44" y="112" width="34" height="10" rx="5" fill="currentColor" opacity="0.18"/>
+      </svg>
+      <div class="wordmark" style="font-size: 22px;">text <span class="the">the</span> check</div>
+      <div class="tagline">tu plata, a un mensaje</div>
+    </div>
+
+    <!-- Light -->
+    <div class="logo-card light-card">
+      <span class="tag" style="margin-bottom: 8px; color: #5A6B80; background: #E2E7ED;">Light mode</span>
+      <svg width="80" height="100" viewBox="0 0 160 200" fill="none" style="color: #1A2030;">
+        <path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 136,40 131,80 134,115 C 137,148 131,167 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 24,162 32,125 28,88 C 24,55 33,35 28,25 Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="42" y="72" width="42" height="10" rx="5" fill="#3B7DD8" opacity="0.30"/>
+        <rect x="78" y="92" width="46" height="10" rx="5" fill="currentColor" opacity="0.12"/>
+        <rect x="44" y="112" width="34" height="10" rx="5" fill="#3B7DD8" opacity="0.30"/>
+      </svg>
+      <div class="wordmark" style="font-size: 22px; color: #1A2030;">text <span class="the" style="color: #3B7DD8;">the</span> check</div>
+      <div class="tagline" style="color: #5A6B80;">tu plata, a un mensaje</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================
+     SECTION 5: SIZE TEST
+     ============================================ -->
+<div class="section">
+  <div class="section-head">
+    <h2>Size <span>Test</span></h2>
+    <p class="section-sub">Do the chat lines inside read at small sizes?</p>
+  </div>
+
+  <div style="display: flex; gap: 36px; align-items: flex-end; justify-content: center; padding: 40px; border-radius: 16px; border: 1px solid #242E3C; background: #0C1017;">
+    <div style="text-align: center;">
+      <svg width="120" height="150" viewBox="0 0 160 200" fill="none" style="color: #E2E8F0;"><path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 136,40 131,80 134,115 C 137,148 131,167 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 24,162 32,125 28,88 C 24,55 33,35 28,25 Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="42" y="72" width="42" height="10" rx="5" fill="currentColor" opacity="0.18"/><rect x="78" y="92" width="46" height="10" rx="5" fill="currentColor" opacity="0.12"/><rect x="44" y="112" width="34" height="10" rx="5" fill="currentColor" opacity="0.18"/></svg>
+      <div style="font-size: 10px; color: #4A5A6E; margin-top: 8px;">120px</div>
+    </div>
+    <div style="text-align: center;">
+      <svg width="64" height="80" viewBox="0 0 160 200" fill="none" style="color: #E2E8F0;"><path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 136,40 131,80 134,115 C 137,148 131,167 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 24,162 32,125 28,88 C 24,55 33,35 28,25 Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="42" y="72" width="42" height="10" rx="5" fill="currentColor" opacity="0.18"/><rect x="78" y="92" width="46" height="10" rx="5" fill="currentColor" opacity="0.12"/><rect x="44" y="112" width="34" height="10" rx="5" fill="currentColor" opacity="0.18"/></svg>
+      <div style="font-size: 10px; color: #4A5A6E; margin-top: 8px;">64px</div>
+    </div>
+    <div style="text-align: center;">
+      <svg width="40" height="50" viewBox="0 0 160 200" fill="none" style="color: #E2E8F0;"><path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 136,40 131,80 134,115 C 137,148 131,167 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 24,162 32,125 28,88 C 24,55 33,35 28,25 Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="42" y="72" width="42" height="10" rx="5" fill="currentColor" opacity="0.18"/><rect x="78" y="92" width="46" height="10" rx="5" fill="currentColor" opacity="0.12"/><rect x="44" y="112" width="34" height="10" rx="5" fill="currentColor" opacity="0.18"/></svg>
+      <div style="font-size: 10px; color: #4A5A6E; margin-top: 8px;">40px</div>
+    </div>
+    <div style="text-align: center;">
+      <svg width="24" height="30" viewBox="0 0 160 200" fill="none" style="color: #E2E8F0;"><path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 136,40 131,80 134,115 C 137,148 131,167 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 24,162 32,125 28,88 C 24,55 33,35 28,25 Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="42" y="75" width="42" height="10" rx="5" fill="currentColor" opacity="0.18"/><rect x="78" y="95" width="46" height="10" rx="5" fill="currentColor" opacity="0.12"/><rect x="44" y="115" width="34" height="10" rx="5" fill="currentColor" opacity="0.18"/></svg>
+      <div style="font-size: 10px; color: #4A5A6E; margin-top: 8px;">24px</div>
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

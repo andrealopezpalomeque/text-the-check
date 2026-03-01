@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Curve Tuning — Receipt + Chat Inside</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&family=DM+Sans:wght@400;500;700&family=Outfit:wght@600&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { min-height: 100vh; background: #08080C; color: #E2E8F0; font-family: 'DM Sans', sans-serif; padding: 48px 24px; }
+  .container { max-width: 1100px; margin: 0 auto; }
+  h1 { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 32px; text-align: center; margin-bottom: 6px; }
+  h1 span { color: #4A90D9; }
+  h2 { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 22px; margin-bottom: 6px; }
+  h2 span { color: #4A90D9; }
+  .page-subtitle { font-size: 14px; color: #7B8FA6; text-align: center; margin-bottom: 48px; max-width: 520px; margin-left: auto; margin-right: auto; line-height: 1.7; }
+  .section { margin-bottom: 64px; }
+  .section-head { text-align: center; margin-bottom: 28px; }
+  .section-sub { font-size: 13px; color: #7B8FA6; margin-top: 4px; }
+  .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; max-width: 700px; margin: 0 auto; }
+  .card {
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    padding: 32px 12px 24px; border-radius: 16px;
+    border: 1px solid #242E3C; background: #0C1017;
+    transition: border-color 0.3s ease; cursor: pointer;
+  }
+  .card:hover { border-color: #4A90D9; }
+  .card.pick { border-color: #4A90D9; background: linear-gradient(180deg, rgba(74,144,217,0.04) 0%, #0C1017 100%); }
+  .tag { font-size: 9px; letter-spacing: 2px; font-weight: 600; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; color: #7B8FA6; background: #1A222C; }
+  .tag-blue { color: #4A90D9; background: rgba(74,144,217,0.12); }
+  .tag-green { color: #34D399; background: rgba(52,211,153,0.12); }
+  .card-label { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 13px; }
+  .card-desc { font-size: 10px; color: #7B8FA6; text-align: center; line-height: 1.5; max-width: 180px; }
+  .wordmark { font-family: 'Outfit', sans-serif; font-weight: 600; letter-spacing: 3px; color: #E2E8F0; }
+  .wordmark .the { color: #4A90D9; }
+  .tagline { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: #7B8FA6; font-weight: 500; }
+  .logo-card { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 48px 32px; border-radius: 16px; border: 1px solid #242E3C; background: #0C1017; }
+  .logo-card.light-card { background: #F8FAFB; border-color: #E2E7ED; }
+  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+  .float { animation: float 4s ease-in-out infinite; }
+  @media (max-width: 900px) { .grid-5 { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 600px) { .grid-5 { grid-template-columns: repeat(2, 1fr); } .grid-3 { grid-template-columns: repeat(2, 1fr); } }
+
+  /* Curve amount meter */
+  .meter { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+  .meter-bar { height: 4px; border-radius: 2px; background: #4A90D9; }
+  .meter-track { width: 60px; height: 4px; border-radius: 2px; background: #1A222C; overflow: hidden; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Curve <span>Tuning</span></h1>
+<p class="page-subtitle">
+  Same receipt + chat lines. Dialing the side curves from flat to organic.<br>
+  Pick the amount of paper-curl that feels right.
+</p>
+
+<!-- ============================================
+     SECTION 1: FIVE CURVE LEVELS
+     ============================================ -->
+<div class="section">
+  <div class="section-head">
+    <h2>Pick Your <span>Curve</span></h2>
+    <p class="section-sub">Left to right: flat → structured → organic → dramatic → max</p>
+  </div>
+
+  <div class="grid-5">
+
+    <!-- Level 1: Current (flat) -->
+    <div class="card">
+      <span class="tag">Current</span>
+      <svg width="100" height="125" viewBox="0 0 160 200" fill="none" style="color: #E2E8F0;">
+        <path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 136,40 131,80 134,115 C 137,148 131,167 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 24,162 32,125 28,88 C 24,55 33,35 28,25 Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="42" y="72" width="42" height="10" rx="5" fill="currentColor" opacity="0.18"/>
+        <rect x="78" y="92" width="46" height="10" rx="5" fill="currentColor" opacity="0.12"/>
+        <rect x="44" y="112" width="34" height="10" rx="5" fill="currentColor" opacity="0.18"/>
+      </svg>
+      <div class="card-label">Flat</div>
+      <div class="meter"><div class="meter-track"><div class="meter-bar" style="width: 15%;"></div></div><span style="font-size:9px; color:#4A5A6E;">~5px</span></div>
+      <p class="card-desc">What we have now. Subtle curve, a bit rigid.</p>
+    </div>
+
+    <!-- Level 2: Slight -->
+    <div class="card">
+      <span class="tag tag-green">Slight</span>
+      <svg width="100" height="125" viewBox="0 0 160 200" fill="none" style="color: #E2E8F0;">
+        <path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 138,39 129,79 135,115 C 139,148 129,168 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 23,161 34,126 27,88 C 22,54 34,34 28,25 Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="42" y="72" width="42" height="10" rx="5" fill="currentColor" opacity="0.18"/>
+        <rect x="78" y="92" width="46" height="10" rx="5" fill="currentColor" opacity="0.12"/>
+        <rect x="44" y="112" width="34" height="10" rx="5" fill="currentColor" opacity="0.18"/>
+      </svg>
+      <div class="card-label">Slight</div>
+      <div class="meter"><div class="meter-track"><div class="meter-bar" style="width: 30%;"></div></div><span style="font-size:9px; color:#4A5A6E;">~8px</span></div>
+      <p class="card-desc">A touch more life. Noticeable but still controlled.</p>
+    </div>
+
+    <!-- Level 3: Moderate -->
+    <div class="card pick">
+      <span class="tag tag-blue">Moderate</span>
+      <svg width="100" height="125" viewBox="0 0 160 200" fill="none" style="color: #4A90D9;">
+        <path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 140,38 127,79 137,115 C 141,148 127,168 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 21,160 35,126 25,88 C 20,53 36,33 28,25 Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="43" y="72" width="42" height="10" rx="5" fill="currentColor" opacity="0.22"/>
+        <rect x="79" y="92" width="44" height="10" rx="5" fill="currentColor" opacity="0.14"/>
+        <rect x="45" y="112" width="34" height="10" rx="5" fill="currentColor" opacity="0.22"/>
+      </svg>
+      <div class="card-label">Moderate</div>
+      <div class="meter"><div class="meter-track"><div class="meter-bar" style="width: 50%;"></div></div><span style="font-size:9px; color:#4A5A6E;">~11px</span></div>
+      <p class="card-desc">Organic paper feel. Structured but clearly alive. Sweet spot?</p>
+    </div>
+
+    <!-- Level 4: Pronounced -->
+    <div class="card">
+      <span class="tag">Pronounced</span>
+      <svg width="100" height="125" viewBox="0 0 160 200" fill="none" style="color: #E2E8F0;">
+        <path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 142,37 124,78 139,115 C 144,148 124,170 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 19,159 37,127 23,88 C 18,52 37,32 28,25 Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="43" y="72" width="42" height="10" rx="5" fill="currentColor" opacity="0.18"/>
+        <rect x="80" y="92" width="44" height="10" rx="5" fill="currentColor" opacity="0.12"/>
+        <rect x="45" y="112" width="34" height="10" rx="5" fill="currentColor" opacity="0.18"/>
+      </svg>
+      <div class="card-label">Pronounced</div>
+      <div class="meter"><div class="meter-track"><div class="meter-bar" style="width: 70%;"></div></div><span style="font-size:9px; color:#4A5A6E;">~14px</span></div>
+      <p class="card-desc">Getting closer to the original Looka feel. Paper with real movement.</p>
+    </div>
+
+    <!-- Level 5: Dramatic (original Looka territory) -->
+    <div class="card">
+      <span class="tag">Dramatic</span>
+      <svg width="100" height="125" viewBox="0 0 160 200" fill="none" style="color: #E2E8F0;">
+        <path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 144,36 122,78 140,115 C 146,148 122,170 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 17,158 38,128 22,88 C 16,52 38,32 28,25 Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="44" y="72" width="42" height="10" rx="5" fill="currentColor" opacity="0.18"/>
+        <rect x="82" y="92" width="42" height="10" rx="5" fill="currentColor" opacity="0.12"/>
+        <rect x="46" y="112" width="34" height="10" rx="5" fill="currentColor" opacity="0.18"/>
+      </svg>
+      <div class="card-label">Dramatic</div>
+      <div class="meter"><div class="meter-track"><div class="meter-bar" style="width: 90%;"></div></div><span style="font-size:9px; color:#4A5A6E;">~18px</span></div>
+      <p class="card-desc">Max curve. Looka territory. Might feel too floppy.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================
+     SECTION 2: FAVORITE AT DIFFERENT SIZES + COLORS
+     ============================================ -->
+<div class="section">
+  <div class="section-head">
+    <h2>Moderate Curve — <span>Full Exploration</span></h2>
+    <p class="section-sub">The "moderate" level in all contexts: sizes, colors, character variants</p>
+  </div>
+
+  <div class="grid-3">
+
+    <!-- White on dark -->
+    <div class="card">
+      <span class="tag">White on dark</span>
+      <svg width="120" height="150" viewBox="0 0 160 200" fill="none" style="color: #E2E8F0;">
+        <path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 140,38 127,79 137,115 C 141,148 127,168 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 21,160 35,126 25,88 C 20,53 36,33 28,25 Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="43" y="72" width="42" height="10" rx="5" fill="currentColor" opacity="0.18"/>
+        <rect x="79" y="92" width="44" height="10" rx="5" fill="currentColor" opacity="0.12"/>
+        <rect x="45" y="112" width="34" height="10" rx="5" fill="currentColor" opacity="0.18"/>
+      </svg>
+      <div class="card-label">Monochrome</div>
+    </div>
+
+    <!-- Primary -->
+    <div class="card pick">
+      <span class="tag tag-blue">Primary blue</span>
+      <svg width="120" height="150" viewBox="0 0 160 200" fill="none" style="color: #4A90D9;">
+        <path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 140,38 127,79 137,115 C 141,148 127,168 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 21,160 35,126 25,88 C 20,53 36,33 28,25 Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="43" y="72" width="42" height="10" rx="5" fill="currentColor" opacity="0.25"/>
+        <rect x="79" y="92" width="44" height="10" rx="5" fill="currentColor" opacity="0.15"/>
+        <rect x="45" y="112" width="34" height="10" rx="5" fill="currentColor" opacity="0.25"/>
+      </svg>
+      <div class="card-label">Brand color</div>
+    </div>
+
+    <!-- Recibito: eyes + chat -->
+    <div class="card">
+      <span class="tag tag-green">Character</span>
+      <div class="float">
+        <svg width="120" height="150" viewBox="0 0 160 200" fill="none" style="color: #4A90D9;">
+          <g transform="rotate(-3, 80, 100)">
+            <path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 140,38 127,79 137,115 C 141,148 127,168 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 21,160 35,126 25,88 C 20,53 36,33 28,25 Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="62" cy="68" r="5" fill="currentColor"/>
+            <circle cx="100" cy="65" r="5" fill="currentColor"/>
+            <rect x="44" y="100" width="36" height="8" rx="4" fill="currentColor" opacity="0.22"/>
+            <rect x="80" y="115" width="38" height="8" rx="4" fill="currentColor" opacity="0.14"/>
+            <rect x="46" y="130" width="28" height="8" rx="4" fill="currentColor" opacity="0.22"/>
+          </g>
+          <g opacity="0.4">
+            <path d="M 126,36 C 126,28 134,25 138,30 C 142,35 136,40 132,42 L 132,48" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <circle cx="132" cy="54" r="2" fill="currentColor"/>
+          </g>
+        </svg>
+      </div>
+      <div class="card-label">Recibito + chat</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================
+     SECTION 3: FULL LOGOS
+     ============================================ -->
+<div class="section">
+  <div class="section-head">
+    <h2>Full <span>Logo</span></h2>
+    <p class="section-sub">Moderate curve + chat lines + wordmark</p>
+  </div>
+
+  <div class="grid-2">
+    <div class="logo-card">
+      <span class="tag" style="margin-bottom: 8px;">Dark mode</span>
+      <svg width="80" height="100" viewBox="0 0 160 200" fill="none" style="color: #E2E8F0;">
+        <path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 140,38 127,79 137,115 C 141,148 127,168 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 21,160 35,126 25,88 C 20,53 36,33 28,25 Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="43" y="72" width="42" height="10" rx="5" fill="currentColor" opacity="0.18"/>
+        <rect x="79" y="92" width="44" height="10" rx="5" fill="currentColor" opacity="0.12"/>
+        <rect x="45" y="112" width="34" height="10" rx="5" fill="currentColor" opacity="0.18"/>
+      </svg>
+      <div class="wordmark" style="font-size: 22px;">text <span class="the">the</span> check</div>
+      <div class="tagline">tu plata, a un mensaje</div>
+    </div>
+    <div class="logo-card light-card">
+      <span class="tag" style="margin-bottom: 8px; color: #5A6B80; background: #E2E7ED;">Light mode</span>
+      <svg width="80" height="100" viewBox="0 0 160 200" fill="none" style="color: #1A2030;">
+        <path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 140,38 127,79 137,115 C 141,148 127,168 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 21,160 35,126 25,88 C 20,53 36,33 28,25 Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="43" y="72" width="42" height="10" rx="5" fill="#3B7DD8" opacity="0.30"/>
+        <rect x="79" y="92" width="44" height="10" rx="5" fill="currentColor" opacity="0.12"/>
+        <rect x="45" y="112" width="34" height="10" rx="5" fill="#3B7DD8" opacity="0.30"/>
+      </svg>
+      <div class="wordmark" style="font-size: 22px; color: #1A2030;">text <span class="the" style="color: #3B7DD8;">the</span> check</div>
+      <div class="tagline" style="color: #5A6B80;">tu plata, a un mensaje</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================
+     SECTION 4: SIZE TEST
+     ============================================ -->
+<div class="section">
+  <div class="section-head">
+    <h2>Size <span>Test</span></h2>
+    <p class="section-sub">Moderate curve + chat lines at all target sizes</p>
+  </div>
+  <div style="display: flex; gap: 36px; align-items: flex-end; justify-content: center; padding: 40px; border-radius: 16px; border: 1px solid #242E3C; background: #0C1017;">
+    <div style="text-align: center;">
+      <svg width="120" height="150" viewBox="0 0 160 200" fill="none" style="color: #E2E8F0;"><path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 140,38 127,79 137,115 C 141,148 127,168 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 21,160 35,126 25,88 C 20,53 36,33 28,25 Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="43" y="72" width="42" height="10" rx="5" fill="currentColor" opacity="0.18"/><rect x="79" y="92" width="44" height="10" rx="5" fill="currentColor" opacity="0.12"/><rect x="45" y="112" width="34" height="10" rx="5" fill="currentColor" opacity="0.18"/></svg>
+      <div style="font-size: 10px; color: #4A5A6E; margin-top: 8px;">120px (hero)</div>
+    </div>
+    <div style="text-align: center;">
+      <svg width="64" height="80" viewBox="0 0 160 200" fill="none" style="color: #E2E8F0;"><path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 140,38 127,79 137,115 C 141,148 127,168 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 21,160 35,126 25,88 C 20,53 36,33 28,25 Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="43" y="72" width="42" height="10" rx="5" fill="currentColor" opacity="0.18"/><rect x="79" y="92" width="44" height="10" rx="5" fill="currentColor" opacity="0.12"/><rect x="45" y="112" width="34" height="10" rx="5" fill="currentColor" opacity="0.18"/></svg>
+      <div style="font-size: 10px; color: #4A5A6E; margin-top: 8px;">64px (nav)</div>
+    </div>
+    <div style="text-align: center;">
+      <svg width="40" height="50" viewBox="0 0 160 200" fill="none" style="color: #E2E8F0;"><path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 140,38 127,79 137,115 C 141,148 127,168 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 21,160 35,126 25,88 C 20,53 36,33 28,25 Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="43" y="72" width="42" height="10" rx="5" fill="currentColor" opacity="0.18"/><rect x="79" y="92" width="44" height="10" rx="5" fill="currentColor" opacity="0.12"/><rect x="45" y="112" width="34" height="10" rx="5" fill="currentColor" opacity="0.18"/></svg>
+      <div style="font-size: 10px; color: #4A5A6E; margin-top: 8px;">40px (favicon)</div>
+    </div>
+    <div style="text-align: center;">
+      <svg width="24" height="30" viewBox="0 0 160 200" fill="none" style="color: #E2E8F0;"><path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 140,38 127,79 137,115 C 141,148 127,168 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 21,160 35,126 25,88 C 20,53 36,33 28,25 Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="43" y="75" width="42" height="10" rx="5" fill="currentColor" opacity="0.18"/><rect x="79" y="95" width="44" height="10" rx="5" fill="currentColor" opacity="0.12"/><rect x="45" y="115" width="34" height="10" rx="5" fill="currentColor" opacity="0.18"/></svg>
+      <div style="font-size: 10px; color: #4A5A6E; margin-top: 8px;">24px (tiny)</div>
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

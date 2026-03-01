@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 310" fill="none">
+  <!--
+    Text the Check — Full Logo (Dark mode)
+    Receipt symbol + wordmark + tagline on dark background.
+  -->
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@600&amp;family=DM+Sans:wght@500&amp;display=swap');
+    </style>
+  </defs>
+
+  <!-- Dark background -->
+  <rect width="280" height="310" rx="16" fill="#0C1017"/>
+
+  <!-- Receipt symbol -->
+  <g transform="translate(60, 30)">
+    <path
+      d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 142,37 124,78 139,115 C 144,148 124,170 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 19,159 37,127 23,88 C 18,52 37,32 28,25 Z"
+      stroke="#E2E8F0"
+      stroke-width="2.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <rect x="43" y="72" width="42" height="10" rx="5" fill="#E2E8F0" opacity="0.18"/>
+    <rect x="80" y="92" width="44" height="10" rx="5" fill="#E2E8F0" opacity="0.12"/>
+    <rect x="45" y="112" width="34" height="10" rx="5" fill="#E2E8F0" opacity="0.18"/>
+  </g>
+
+  <!-- Wordmark: "text the check" -->
+  <text
+    x="140" y="248"
+    text-anchor="middle"
+    font-family="'Outfit', sans-serif"
+    font-weight="600"
+    font-size="22"
+    letter-spacing="3"
+    fill="#E2E8F0"
+  >text <tspan fill="#4A90D9">the</tspan> check</text>
+
+  <!-- Tagline -->
+  <text
+    x="140" y="272"
+    text-anchor="middle"
+    font-family="'DM Sans', sans-serif"
+    font-weight="500"
+    font-size="9"
+    letter-spacing="3"
+    fill="#7B8FA6"
+  >TU PLATA, A UN MENSAJE</text>
+</svg>
