@@ -12,26 +12,26 @@
       <form v-else @submit.prevent="savePayment" class="space-y-6">
         <!-- Payment Title & Description -->
         <div class="space-y-2">
-          <label for="title" class="block text-sm font-medium text-gray-400">Título del Pago*</label>
+          <label for="title" class="block text-sm font-medium text-ttc-text-muted">Título del Pago*</label>
           <input
             id="title"
             v-model="form.title"
             type="text"
             required
             @blur="touched.title = true"
-            class="w-full p-2 bg-gray-700 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
-            :class="touched.title && !form.title ? 'border-red-500 ring-2 ring-red-500 focus:ring-red-500' : 'border-gray-600 focus:ring-primary'"
+            class="w-full p-2 bg-ttc-input border rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
+            :class="touched.title && !form.title ? 'border-red-500 ring-2 ring-red-500 focus:ring-red-500' : 'border-ttc-border focus:ring-primary'"
             placeholder="ej. Suscripción Netflix"
           />
           <span v-if="touched.title && !form.title" class="text-xs text-red-400">Este campo es obligatorio</span>
         </div>
 
         <div class="space-y-2">
-          <label for="description" class="block text-sm font-medium text-gray-400">Descripción (Opcional)</label>
+          <label for="description" class="block text-sm font-medium text-ttc-text-muted">Descripción (Opcional)</label>
           <textarea
             id="description"
             v-model="form.description"
-            class="w-full p-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            class="w-full p-2 bg-ttc-input border border-ttc-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             placeholder="Agregá detalles sobre este pago"
             rows="2"
           ></textarea>
@@ -40,9 +40,9 @@
         <!-- Amount & Category -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="space-y-2">
-            <label for="amount" class="block text-sm font-medium text-gray-400">Monto*</label>
+            <label for="amount" class="block text-sm font-medium text-ttc-text-muted">Monto*</label>
             <div class="relative">
-              <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">$</span>
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-ttc-text-dim">$</span>
               <input
                 id="amount"
                 v-model="form.amount"
@@ -52,8 +52,8 @@
                 @input="normalizeAmount"
                 @blur="touched.amount = true"
                 required
-                class="w-full p-2 pl-7 bg-gray-700 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
-                :class="touched.amount && !form.amount ? 'border-red-500 ring-2 ring-red-500 focus:ring-red-500' : 'border-gray-600 focus:ring-primary'"
+                class="w-full p-2 pl-7 bg-ttc-input border rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
+                :class="touched.amount && !form.amount ? 'border-red-500 ring-2 ring-red-500 focus:ring-red-500' : 'border-ttc-border focus:ring-primary'"
                 placeholder="0,00"
               />
             </div>
@@ -61,14 +61,14 @@
           </div>
 
           <div class="space-y-2">
-            <label for="category" class="block text-sm font-medium text-gray-400">Categoría*</label>
+            <label for="category" class="block text-sm font-medium text-ttc-text-muted">Categoría*</label>
             <select
               id="category"
               v-model="form.categoryId"
               @blur="touched.categoryId = true"
               required
-              class="w-full p-2 bg-gray-700 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
-              :class="touched.categoryId && !form.categoryId ? 'border-red-500 ring-2 ring-red-500 focus:ring-red-500' : 'border-gray-600 focus:ring-primary'"
+              class="w-full p-2 bg-ttc-input border rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
+              :class="touched.categoryId && !form.categoryId ? 'border-red-500 ring-2 ring-red-500 focus:ring-red-500' : 'border-ttc-border focus:ring-primary'"
             >
               <option v-for="cat in categories" :key="cat.id" :value="cat.id">
                 {{ cat.name }}
@@ -80,7 +80,7 @@
         <!-- Due Date & Period -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="space-y-2">
-            <label for="dueDateDay" class="block text-sm font-medium text-gray-400">Día de Vencimiento*</label>
+            <label for="dueDateDay" class="block text-sm font-medium text-ttc-text-muted">Día de Vencimiento*</label>
             <input
               id="dueDateDay"
               v-model="form.dueDateDay"
@@ -89,8 +89,8 @@
               max="31"
               required
               @blur="touched.dueDateDay = true"
-              class="w-full p-2 bg-gray-700 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
-              :class="touched.dueDateDay && !form.dueDateDay ? 'border-red-500 ring-2 ring-red-500 focus:ring-red-500' : 'border-gray-600 focus:ring-primary'"
+              class="w-full p-2 bg-ttc-input border rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
+              :class="touched.dueDateDay && !form.dueDateDay ? 'border-red-500 ring-2 ring-red-500 focus:ring-red-500' : 'border-ttc-border focus:ring-primary'"
               placeholder="Día del mes (1-31)"
             />
             <span v-if="touched.dueDateDay && !form.dueDateDay" class="text-xs text-red-400">Este campo es obligatorio</span>
@@ -100,12 +100,12 @@
           </div>
 
           <div class="space-y-2">
-            <label for="timePeriod" class="block text-sm font-medium text-gray-400">Período de Pago</label>
+            <label for="timePeriod" class="block text-sm font-medium text-ttc-text-muted">Período de Pago</label>
             <select
               id="timePeriod"
               v-model="form.timePeriod"
               required
-              class="w-full p-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              class="w-full p-2 bg-ttc-input border border-ttc-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             >
               <option value="monthly">Mensual</option>
               <option value="biweekly">Quincenal</option>
@@ -119,26 +119,26 @@
         <!-- Start & End Dates -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="space-y-2">
-            <label for="startDate" class="block text-sm font-medium text-gray-400">Fecha de Inicio*</label>
+            <label for="startDate" class="block text-sm font-medium text-ttc-text-muted">Fecha de Inicio*</label>
             <input
               id="startDate"
               v-model="form.startDate"
               type="date"
               required
               @blur="touched.startDate = true"
-              class="w-full p-2 bg-gray-700 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
-              :class="touched.startDate && !form.startDate ? 'border-red-500 ring-2 ring-red-500 focus:ring-red-500' : 'border-gray-600 focus:ring-primary'"
+              class="w-full p-2 bg-ttc-input border rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
+              :class="touched.startDate && !form.startDate ? 'border-red-500 ring-2 ring-red-500 focus:ring-red-500' : 'border-ttc-border focus:ring-primary'"
             />
             <span v-if="touched.startDate && !form.startDate" class="text-xs text-red-400">Este campo es obligatorio</span>
           </div>
 
           <div class="space-y-2">
-            <label for="endDate" class="block text-sm font-medium text-gray-400">Fecha de Fin (Opcional)</label>
+            <label for="endDate" class="block text-sm font-medium text-ttc-text-muted">Fecha de Fin (Opcional)</label>
             <input
               id="endDate"
               v-model="form.endDate"
               type="date"
-              class="w-full p-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              class="w-full p-2 bg-ttc-input border border-ttc-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             />
           </div>
         </div>
@@ -151,7 +151,7 @@
       <div class="flex justify-between w-full">
         <button
           @click="closeModal"
-          class="px-4 py-2 border border-gray-600 rounded-lg hover:bg-gray-700 transition-colors"
+          class="px-4 py-2 border border-ttc-border rounded-lg hover:bg-ttc-card-hover transition-colors"
         >
           Cancelar
         </button>

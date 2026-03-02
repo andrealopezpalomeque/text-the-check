@@ -2,14 +2,14 @@
     <Modal ref="modal">
       <template #header>
         <div class="flex items-center">
-          <div v-if="isLoading" class="w-3 h-14 rounded-full mr-3 bg-gray-700 animate-pulse"></div>
+          <div v-if="isLoading" class="w-3 h-14 rounded-full mr-3 bg-ttc-input animate-pulse"></div>
           <div v-else-if="payment" class="w-3 h-14 rounded-full mr-3" :style="{ backgroundColor: getDisplayCategoryColor(payment) }"></div>
           <div>
             <h2 class="text-xl font-bold">
               {{ payment ? payment.title : 'Detalles del Pago' }}
               <span v-if="isRecurrent" class="text-sm font-normal text-primary ml-2">Fijo</span>
             </h2>
-            <p class="text-sm text-gray-500">{{ payment?.description }}</p>
+            <p class="text-sm text-ttc-text-dim">{{ payment?.description }}</p>
           </div>
         </div>
       </template>
@@ -23,45 +23,45 @@
           <!-- Payment Basic Info -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="flex flex-col">
-              <span class="text-sm text-gray-500">Monto</span>
+              <span class="text-sm text-ttc-text-dim">Monto</span>
               <span class="text-lg font-semibold">{{ formatPrice(payment.amount) }}</span>
             </div>
 
             <div class="flex flex-col">
-              <span class="text-sm text-gray-500">Categoría</span>
+              <span class="text-sm text-ttc-text-dim">Categoría</span>
               <span class="text-lg">{{ getDisplayCategoryName(payment) }}</span>
             </div>
 
             <template v-if="isRecurrent">
               <div class="flex flex-col">
-                <span class="text-sm text-gray-500">Día de Pago</span>
+                <span class="text-sm text-ttc-text-dim">Día de Pago</span>
                 <span class="text-lg">{{ payment.dueDateDay }}</span>
               </div>
 
               <div class="flex flex-col">
-                <span class="text-sm text-gray-500">Frecuencia</span>
+                <span class="text-sm text-ttc-text-dim">Frecuencia</span>
                 <span class="text-lg capitalize">{{ payment.timePeriod || 'Mensual' }}</span>
               </div>
 
               <div class="flex flex-col">
-                <span class="text-sm text-gray-500">Fecha de Inicio</span>
+                <span class="text-sm text-ttc-text-dim">Fecha de Inicio</span>
                 <span class="text-lg">{{ formatDateString(payment.startDate) }}</span>
               </div>
 
               <div class="flex flex-col">
-                <span class="text-sm text-gray-500">Fecha de Fin</span>
+                <span class="text-sm text-ttc-text-dim">Fecha de Fin</span>
                 <span class="text-lg">{{ payment.endDate ? formatDateString(payment.endDate) : 'Sin fecha de fin' }}</span>
               </div>
             </template>
 
             <template v-else>
               <div class="flex flex-col">
-                <span class="text-sm text-gray-500">Fecha de Vencimiento</span>
+                <span class="text-sm text-ttc-text-dim">Fecha de Vencimiento</span>
                 <span class="text-lg">{{ formatDate(payment.dueDate || payment.createdAt) }}</span>
               </div>
 
               <div class="flex flex-col">
-                <span class="text-sm text-gray-500">Estado</span>
+                <span class="text-sm text-ttc-text-dim">Estado</span>
                 <span class="text-lg">
                   <span
                     class="px-2 py-1 rounded-full text-xs font-medium"
@@ -82,7 +82,7 @@
             <h3 class="text-lg font-semibold mb-3">Historial de Pagos</h3>
             <div class="overflow-y-auto max-h-[300px] dark-scrollbar">
               <table class="w-full">
-                <thead class="text-left bg-gray-700/50">
+                <thead class="text-left bg-ttc-surface">
                   <tr>
                     <th class="py-2 px-3 rounded-tl-lg">Fecha</th>
                     <th class="py-2 px-3">Monto</th>
@@ -131,7 +131,7 @@
           </div>
         </div>
         
-        <div v-else class="text-center py-6 text-gray-500">
+        <div v-else class="text-center py-6 text-ttc-text-dim">
           <p>Pago no encontrado</p>
         </div>
       </template>
@@ -140,7 +140,7 @@
         <div class="flex justify-between w-full">
           <button
             @click="closeModal"
-            class="px-4 py-2 border border-gray-600 rounded-lg hover:bg-gray-700 transition-colors"
+            class="px-4 py-2 border border-ttc-border rounded-lg hover:bg-ttc-card-hover transition-colors"
           >
             Cerrar
           </button>

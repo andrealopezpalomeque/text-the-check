@@ -1,9 +1,9 @@
 <template>
   <div v-if="templates.length > 0" class="px-3 mb-4">
     <div class="flex items-center justify-between mb-2">
-      <h3 class="text-sm font-medium text-gray-400">Quick Templates</h3>
-      <span class="text-xs text-gray-500 opacity-60 hidden sm:inline">Right click to delete</span>
-      <span class="text-xs text-gray-500 opacity-60 inline sm:hidden">Swipe left to delete</span>
+      <h3 class="text-sm font-medium text-ttc-text-muted">Quick Templates</h3>
+      <span class="text-xs text-ttc-text-dim opacity-60 hidden sm:inline">Right click to delete</span>
+      <span class="text-xs text-ttc-text-dim opacity-60 inline sm:hidden">Swipe left to delete</span>
     </div>
 
     <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
@@ -16,7 +16,7 @@
         <div class="relative overflow-hidden rounded-full border-2" :class="getBorderClass(template.category)">
           <!-- Delete button (revealed by swipe) -->
           <div
-            class="absolute inset-0 flex items-center justify-end bg-gray-800/95 rounded-full"
+            class="absolute inset-0 flex items-center justify-end bg-ttc-card/95 rounded-full"
             :style="{
               opacity: swipedTemplateId === template.id ? '1' : '0',
               pointerEvents: swipedTemplateId === template.id ? 'auto' : 'none'

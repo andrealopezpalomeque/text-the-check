@@ -11,7 +11,7 @@
         <div class="relative p-4 text-center bg-ttc-card rounded-lg shadow sm:p-5">
           <button
             @click="confirm(false)"
-            class="text-gray-400 absolute top-2.5 right-2.5 bg-transparent hover:bg-ttc-card-hover hover:text-ttc-text rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+            class="text-ttc-text-muted absolute top-2.5 right-2.5 bg-transparent hover:bg-ttc-card-hover hover:text-ttc-text rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
             data-modal-toggle="deleteModal"
           >
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -62,7 +62,7 @@
             </button>
             <button
               @click="confirm(true)"
-              class="py-2 px-3 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900"
+              class="py-2 px-3 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300"
             >
               {{ textConfirmButton }}
             </button>

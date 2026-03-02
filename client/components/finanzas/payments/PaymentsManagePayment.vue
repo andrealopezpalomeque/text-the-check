@@ -3,7 +3,7 @@
     <Modal ref="modal">
       <template #header>
         <div class="flex items-center">
-          <div v-if="isLoading" class="w-3 h-14 rounded-full mr-3 bg-gray-700 animate-pulse"></div>
+          <div v-if="isLoading" class="w-3 h-14 rounded-full mr-3 bg-ttc-input animate-pulse"></div>
           <div
             v-else-if="form.categoryId"
             class="w-3 h-14 rounded-full mr-3"
@@ -13,7 +13,7 @@
             <h2 class="text-xl font-bold">
               {{ props.isReview ? "Revisar" : (isEdit ? "Editar" : "Crear") }} Pago {{ isRecurrent ? "Fijo" : "Único" }}
             </h2>
-            <p class="text-sm text-gray-500" v-if="isEdit && form.title">{{ form.title }}</p>
+            <p class="text-sm text-ttc-text-dim" v-if="isEdit && form.title">{{ form.title }}</p>
             <p class="text-xs text-green-400 flex items-center gap-1 mt-1" v-if="props.isReview">
               <span class="inline-block w-2 h-2 rounded-full bg-green-400"></span>
               Creado via WhatsApp
@@ -35,7 +35,7 @@
           <!-- Quick Templates (only for new one-time payments) -->
           <div v-if="!props.isEdit && !props.isRecurrent && templates.length > 0" class="space-y-2">
             <div class="flex items-center justify-between">
-              <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">Agregar Rápido</span>
+              <span class="text-xs font-medium text-ttc-text-dim uppercase tracking-wider">Agregar Rápido</span>
               <button
                 v-if="templates.length > 4"
                 type="button"
@@ -80,7 +80,7 @@
 
           <!-- Payment Title & Description -->
           <div class="space-y-2">
-            <label for="title" class="block text-sm font-medium text-gray-400">Título del Pago*</label>
+            <label for="title" class="block text-sm font-medium text-ttc-text-muted">Título del Pago*</label>
             <input
               id="title"
               ref="titleInput"
@@ -89,8 +89,8 @@
               :disabled="props.isRecurrent"
               required
               @blur="touched.title = true"
-              class="w-full p-2 bg-gray-700 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
-              :class="touched.title && !form.title ? 'border-red-500 ring-2 ring-red-500 focus:ring-red-500' : 'border-gray-600 focus:ring-primary'"
+              class="w-full p-2 bg-ttc-input border rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
+              :class="touched.title && !form.title ? 'border-red-500 ring-2 ring-red-500 focus:ring-red-500' : 'border-ttc-border focus:ring-primary'"
               placeholder="ej. Suscripción Netflix"
             />
             <span v-if="touched.title && !form.title" class="text-xs text-red-400">Este campo es obligatorio</span>
@@ -108,47 +108,47 @@
               v-if="showDescription"
               id="description"
               v-model="form.description"
-              class="w-full p-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              class="w-full p-2 bg-ttc-input border border-ttc-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               placeholder="Agregá detalles sobre este pago"
               rows="2"
             ></textarea>
           </div>
 
           <!-- Recipient Info (from transfer) -->
-          <div v-if="form.recipient" class="rounded-lg bg-gray-800/50 border border-gray-700 p-3 space-y-1.5">
-            <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">Datos del destinatario</span>
+          <div v-if="form.recipient" class="rounded-lg bg-ttc-surface border border-ttc-border p-3 space-y-1.5">
+            <span class="text-xs font-medium text-ttc-text-dim uppercase tracking-wider">Datos del destinatario</span>
             <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
               <div v-if="form.recipient.name">
-                <span class="text-gray-500">Nombre:</span>
-                <span class="text-gray-300 ml-1">{{ form.recipient.name }}</span>
+                <span class="text-ttc-text-dim">Nombre:</span>
+                <span class="text-ttc-text ml-1">{{ form.recipient.name }}</span>
               </div>
               <div v-if="form.recipient.bank">
-                <span class="text-gray-500">Banco:</span>
-                <span class="text-gray-300 ml-1">{{ form.recipient.bank }}</span>
+                <span class="text-ttc-text-dim">Banco:</span>
+                <span class="text-ttc-text ml-1">{{ form.recipient.bank }}</span>
               </div>
               <div v-if="form.recipient.alias" class="col-span-2">
-                <span class="text-gray-500">Alias:</span>
-                <span class="text-gray-300 ml-1">{{ form.recipient.alias }}</span>
+                <span class="text-ttc-text-dim">Alias:</span>
+                <span class="text-ttc-text ml-1">{{ form.recipient.alias }}</span>
               </div>
               <div v-if="form.recipient.cbu" class="col-span-2">
-                <span class="text-gray-500">CBU:</span>
-                <span class="text-gray-300 ml-1 font-mono text-xs">{{ form.recipient.cbu }}</span>
+                <span class="text-ttc-text-dim">CBU:</span>
+                <span class="text-ttc-text ml-1 font-mono text-xs">{{ form.recipient.cbu }}</span>
               </div>
             </div>
           </div>
 
           <!-- Audio Transcription -->
-          <div v-if="form.audioTranscription" class="rounded-lg bg-gray-800/50 border border-gray-700 p-3 space-y-1.5">
-            <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">Transcripcion del audio</span>
-            <p class="text-sm text-gray-300 italic">"{{ form.audioTranscription }}"</p>
+          <div v-if="form.audioTranscription" class="rounded-lg bg-ttc-surface border border-ttc-border p-3 space-y-1.5">
+            <span class="text-xs font-medium text-ttc-text-dim uppercase tracking-wider">Transcripcion del audio</span>
+            <p class="text-sm text-ttc-text italic">"{{ form.audioTranscription }}"</p>
           </div>
 
           <!-- Amount & Category -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="space-y-2">
-              <label for="amount" class="block text-sm font-medium text-gray-400">Monto*</label>
+              <label for="amount" class="block text-sm font-medium text-ttc-text-muted">Monto*</label>
               <div class="relative">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">$</span>
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-ttc-text-dim">$</span>
                 <input
                   id="amount"
                   ref="amountInput"
@@ -159,8 +159,8 @@
                   @input="normalizeAmount"
                   @blur="touched.amount = true"
                   required
-                  class="w-full p-2 pl-7 bg-gray-700 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
-                  :class="touched.amount && !form.amount ? 'border-red-500 ring-2 ring-red-500 focus:ring-red-500' : 'border-gray-600 focus:ring-primary'"
+                  class="w-full p-2 pl-7 bg-ttc-input border rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
+                  :class="touched.amount && !form.amount ? 'border-red-500 ring-2 ring-red-500 focus:ring-red-500' : 'border-ttc-border focus:ring-primary'"
                   placeholder="0,00"
                 />
               </div>
@@ -168,14 +168,14 @@
             </div>
 
             <div class="space-y-2" v-if="!props.isRecurrent">
-              <label for="category" class="block text-sm font-medium text-gray-400">Categoría*</label>
+              <label for="category" class="block text-sm font-medium text-ttc-text-muted">Categoría*</label>
               <select
                 id="category"
                 v-model="form.categoryId"
                 @blur="touched.categoryId = true"
                 required
-                class="w-full p-2 bg-gray-700 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
-                :class="touched.categoryId && !form.categoryId ? 'border-red-500 ring-2 ring-red-500 focus:ring-red-500' : 'border-gray-600 focus:ring-primary'"
+                class="w-full p-2 bg-ttc-input border rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
+                :class="touched.categoryId && !form.categoryId ? 'border-red-500 ring-2 ring-red-500 focus:ring-red-500' : 'border-ttc-border focus:ring-primary'"
               >
                 <option v-for="cat in categories" :key="cat.id" :value="cat.id">
                   {{ cat.name }}
@@ -186,15 +186,15 @@
 
           <!-- One-time Payment Fields -->
           <div class="space-y-2" v-if="!props.isRecurrent && !props.isEdit">
-            <label for="dueDate" class="block text-sm font-medium text-gray-400">Fecha de Pago*</label>
+            <label for="dueDate" class="block text-sm font-medium text-ttc-text-muted">Fecha de Pago*</label>
             <input
               id="dueDate"
               v-model="form.dueDate"
               type="date"
               @blur="touched.dueDate = true"
               required
-              class="w-full p-2 bg-gray-700 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
-              :class="touched.dueDate && !form.dueDate ? 'border-red-500 ring-2 ring-red-500 focus:ring-red-500' : 'border-gray-600 focus:ring-primary'"
+              class="w-full p-2 bg-ttc-input border rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
+              :class="touched.dueDate && !form.dueDate ? 'border-red-500 ring-2 ring-red-500 focus:ring-red-500' : 'border-ttc-border focus:ring-primary'"
             />
             <span v-if="touched.dueDate && !form.dueDate" class="text-xs text-red-400">Este campo es obligatorio</span>
           </div>
@@ -207,22 +207,22 @@
                 v-model="saveAsTemplate"
                 class="form-checkbox h-5 w-5 text-primary rounded focus:ring-primary"
               />
-              <span class="text-sm font-medium text-gray-400">Guardar como plantilla</span>
+              <span class="text-sm font-medium text-ttc-text-muted">Guardar como plantilla</span>
             </label>
           </div>
 
           <!-- Edit mode: Show all fields -->
           <div v-if="!props.isRecurrent && props.isEdit" class="space-y-4">
             <div class="space-y-2">
-              <label for="dueDate" class="block text-sm font-medium text-gray-400">Fecha de Vencimiento*</label>
+              <label for="dueDate" class="block text-sm font-medium text-ttc-text-muted">Fecha de Vencimiento*</label>
               <input
                 id="dueDate"
                 v-model="form.dueDate"
                 type="date"
                 @blur="touched.dueDate = true"
                 required
-                class="w-full p-2 bg-gray-700 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
-                :class="touched.dueDate && !form.dueDate ? 'border-red-500 ring-2 ring-red-500 focus:ring-red-500' : 'border-gray-600 focus:ring-primary'"
+                class="w-full p-2 bg-ttc-input border rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
+                :class="touched.dueDate && !form.dueDate ? 'border-red-500 ring-2 ring-red-500 focus:ring-red-500' : 'border-ttc-border focus:ring-primary'"
               />
               <span v-if="touched.dueDate && !form.dueDate" class="text-xs text-red-400">Este campo es obligatorio</span>
             </div>
@@ -234,23 +234,23 @@
                   v-model="form.isPaid"
                   class="form-checkbox h-5 w-5 text-primary rounded focus:ring-primary"
                 />
-                <span class="text-sm font-medium text-gray-400">Marcar como pagado</span>
+                <span class="text-sm font-medium text-ttc-text-muted">Marcar como pagado</span>
               </label>
 
               <div v-if="form.isPaid" class="mt-2">
-                <label for="paidDate" class="block text-sm font-medium text-gray-400">Fecha de Pago</label>
+                <label for="paidDate" class="block text-sm font-medium text-ttc-text-muted">Fecha de Pago</label>
                 <input
                   id="paidDate"
                   v-model="form.paidDate"
                   type="date"
-                  class="w-full p-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                  class="w-full p-2 bg-ttc-input border border-ttc-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
             </div>
 
             <!-- Mark as pending for later review (WhatsApp payments only) -->
             <div v-if="form.isWhatsapp && form.status === 'reviewed' && !isSubmitting" class="space-y-2">
-              <label class="block text-sm font-medium text-gray-400">Revisión</label>
+              <label class="block text-sm font-medium text-ttc-text-muted">Revisión</label>
               <button
                 type="button"
                 @click="markAsPending"
@@ -259,7 +259,7 @@
                 <MdiClockOutline class="text-base text-warning" />
                 <span>Revisar después</span>
               </button>
-              <p class="text-xs text-gray-500">El pago volverá a aparecer como pendiente de revisión</p>
+              <p class="text-xs text-ttc-text-dim">El pago volverá a aparecer como pendiente de revisión</p>
             </div>
           </div>
         </form>
@@ -283,7 +283,7 @@
         <div v-else class="flex justify-between w-full">
           <button
             @click="closeModal"
-            class="px-4 py-2 border border-gray-600 rounded-lg hover:bg-gray-700 transition-colors"
+            class="px-4 py-2 border border-ttc-border rounded-lg hover:bg-ttc-card-hover transition-colors"
           >
             {{ paymentsCreatedCount > 0 && !isEdit ? 'Listo' : 'Cancelar' }}
           </button>
@@ -782,7 +782,7 @@ defineExpose({
 
 <style scoped>
 .form-checkbox {
-  @apply text-primary border-gray-600 rounded;
+  @apply text-primary border-ttc-border rounded;
 }
 
 /* Hide scrollbar but keep functionality */
