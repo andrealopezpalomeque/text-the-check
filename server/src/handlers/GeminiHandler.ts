@@ -243,12 +243,12 @@ export default class GeminiHandler {
    * Parse a natural language message into structured expense/payment/command data.
    * Uses Gemini 2.0 Flash via SDK with the full extraction prompt.
    */
-  async parseExpenseNL(message: string, groupMembers: MemberInfo[]): Promise<AIParseResult> {
+  async parseExpenseNL(message: string, groupMembers: MemberInfo[], senderName?: string): Promise<AIParseResult> {
     const startTime = Date.now()
 
     try {
       const model = this.getModel('gemini-2.5-flash-lite')
-      const systemPrompt = this.buildExtractionPrompt(groupMembers)
+      const systemPrompt = this.buildExtractionPrompt(groupMembers, senderName)
 
       console.log('[AI] Input:', message)
       console.log('[AI] Group members:', groupMembers.map(m => `${m.name} (${(m.aliases || []).join(', ')})`))
@@ -348,7 +348,7 @@ export default class GeminiHandler {
    * Contains the complete Argentine Spanish dictionary, split logic rules,
    * and example messages (419 lines from expenseExtraction.ts).
    */
-  private buildExtractionPrompt(groupMembers: MemberInfo[]): string {
+  private buildExtractionPrompt(groupMembers: MemberInfo[], senderName?: string): string {
     let membersList: string
     if (groupMembers.length === 0) {
       membersList = 'No registered members'
@@ -359,10 +359,14 @@ export default class GeminiHandler {
       }).join('\n')
     }
 
+    const senderContext = senderName
+      ? `\nSENDER (the person sending this WhatsApp message): ${senderName}\n`
+      : ''
+
     return `You are an assistant that extracts expense and payment information from messages in Argentine Spanish.
 
 TASK: Analyze the user's message and extract structured data.
-
+${senderContext}
 GROUP MEMBERS (for identifying mentions):
 ${membersList}
 
@@ -376,6 +380,10 @@ MESSAGE TYPES:
    - Keywords: "le pagué a", "le di a", "transferí a", "recibí de", "me pagó"
    - Must have a clear recipient or sender
    - Example: "Le pagué 5000 a María", "Recibí 3k de Juan"
+   - THIRD-PERSON messages: The user may describe a payment between two people using third person (e.g. "Juan pagó a Pedro 5000"). Use the SENDER name to determine direction:
+     - If the sender is the recipient → direction: "received", person: the OTHER person
+     - If the sender is the payer → direction: "paid", person: the OTHER person
+     - The "person" field must ALWAYS be the OTHER party, never the sender themselves
 
 3. COMMAND (command): User wants to execute a bot command
    - Start with "/"
@@ -531,6 +539,12 @@ Message: "Le pagué 5000 a María"
 
 Message: "Recibí 3k de Juan"
 {"type":"payment","amount":3000,"currency":"ARS","direction":"received","person":"Juan","confidence":0.9}
+
+Message: "Pablito pagó 5000 a Imanol" (sender is Imanol)
+{"type":"payment","amount":5000,"currency":"ARS","direction":"received","person":"Pablito","confidence":0.9}
+
+Message: "Imanol le transfirió 3000 a María" (sender is Imanol)
+{"type":"payment","amount":3000,"currency":"ARS","direction":"paid","person":"María","confidence":0.9}
 
 Message: "/balance"
 {"type":"command","command":"balance","confidence":1.0}

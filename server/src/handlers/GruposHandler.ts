@@ -346,7 +346,7 @@ export default class GruposHandler {
       try {
         const groupMembers = await this.getGroupMembers(groupId)
         const memberInfos: MemberInfo[] = groupMembers.map(m => ({ name: m.name, aliases: m.aliases || [] }))
-        const aiResult = await this.gemini.parseExpenseNL(text, memberInfos)
+        const aiResult = await this.gemini.parseExpenseNL(text, memberInfos, user.name)
         const threshold = this.gemini.getConfidenceThreshold()
 
         if (aiResult.type === 'expense' && aiResult.confidence >= threshold) {
@@ -609,7 +609,7 @@ export default class GruposHandler {
 
       // Try parsing the transcribed text
       const textToParse = transcription.transcription
-      const aiResult = await this.gemini.parseExpenseNL(textToParse, memberInfos)
+      const aiResult = await this.gemini.parseExpenseNL(textToParse, memberInfos, user.name)
       const threshold = this.gemini.getConfidenceThreshold()
 
       if (aiResult.type === 'expense' && aiResult.confidence >= threshold && aiResult.amount > 0) {
@@ -1080,11 +1080,14 @@ export default class GruposHandler {
   // ─── Balance calculation ────────────────────────────────────────
 
   private async getBalanceMessage(groupId: string): Promise<string> {
+    console.log(`[DEBUG /balance] groupId="${groupId}"`)
     const members = await this.getGroupMembers(groupId)
+    console.log(`[DEBUG /balance] members=${members.length}:`, members.map(m => m.id))
     if (members.length === 0) return formatNoGroupError()
 
     const expenses = await this.getAllExpensesByGroup(groupId)
     const payments = await this.getPaymentsByGroup(groupId)
+    console.log(`[DEBUG /balance] expenses=${expenses.length}, payments=${payments.length}`)
 
     const balances = new Map<string, { paid: number; share: number; paymentAdj: number }>()
     members.forEach(u => balances.set(u.id, { paid: 0, share: 0, paymentAdj: 0 }))
