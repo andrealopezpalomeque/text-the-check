@@ -74,7 +74,7 @@
                 <h3 class="text-xl font-semibold text-ttc-text">
                   {{ firestoreUser.name }}
                 </h3>
-                <p class="text-gray-500 dark:text-gray-400 text-sm">
+                <p class="text-ttc-text-muted text-sm">
                   {{ groupStore.selectedGroup?.name || 'Cargando grupo...' }}
                 </p>
               </div>

@@ -70,20 +70,20 @@
         />
       </NuxtLink>
 
-      <!-- Categorías Tab -->
+      <!-- Perfil Tab -->
       <NuxtLink
-        to="/finanzas/categories"
+        to="/profile"
         :class="[
           'relative flex flex-col items-center justify-center w-16 h-full transition-colors',
-          route.path === '/finanzas/categories'
+          isProfileActive
             ? 'text-ttc-primary'
             : 'text-ttc-text-muted hover:text-ttc-text'
         ]"
       >
-        <IconTagMultiple class="w-6 h-6" />
-        <span class="text-xs mt-1 font-medium">Categorías</span>
+        <IconUser class="w-6 h-6" />
+        <span class="text-xs mt-1 font-medium">Perfil</span>
         <div
-          v-if="route.path === '/finanzas/categories'"
+          v-if="isProfileActive"
           class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-ttc-primary rounded-full"
         />
       </NuxtLink>
@@ -95,7 +95,7 @@
 import IconCalendarCheck from '~icons/mdi/calendar-check'
 import IconReceiptText from '~icons/mdi/receipt-text'
 import IconChartBar from '~icons/mdi/chart-bar'
-import IconTagMultiple from '~icons/mdi/tag-multiple'
+import IconUser from '~icons/mdi/account'
 import IconPlus from '~icons/mdi/plus'
 
 const route = useRoute()
@@ -104,6 +104,8 @@ const { openNewPaymentModal } = useFinanzasNavigationState()
 const isSummaryActive = computed(() =>
   route.path === '/finanzas/summary' || route.path === '/finanzas/weekly-summary'
 )
+
+const isProfileActive = computed(() => route.path === '/profile')
 
 function handleAdd() {
   if (route.path === '/finanzas') {

@@ -43,7 +43,7 @@
       <!-- Header & Summary -->
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-3">
         <!-- Month Navigation & Title -->
-        <div class="flex items-center justify-between w-full md:w-auto bg-ttc-surface rounded-xl p-1 border border-ttc-border shadow-sm shadow-white/5">
+        <div class="flex items-center justify-between w-full md:w-auto bg-ttc-surface rounded-xl p-1 border border-ttc-border shadow-sm">
           <button @click="changeMonthRange(3)" class="p-2 rounded-lg hover:bg-ttc-input transition-colors" aria-label="Meses anteriores">
             <MdiChevronLeft class="text-xl" />
           </button>
@@ -199,7 +199,7 @@
         <div
           v-for="payment in recurrents"
           :key="payment.id"
-          class="bg-ttc-surface rounded-xl border border-ttc-border shadow-sm shadow-white/5 overflow-hidden"
+          class="bg-ttc-surface rounded-xl border border-ttc-border shadow-sm overflow-hidden"
         >
           <!-- Payment Header -->
           <div class="p-4 border-b border-ttc-border flex items-center gap-3 cursor-pointer" @click="showDetails(payment.id)">

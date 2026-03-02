@@ -9,10 +9,9 @@
   </div>
 
   <!-- Full-page loading state - show until all data is ready -->
-  <div v-else-if="!isDataReady" class="min-h-screen bg-ttc-bg pb-20 md:pb-0">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+  <div v-else-if="!isDataReady" class="pb-20 md:pb-0">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 pb-6">
       <div class="flex flex-col gap-4 skeleton-shimmer">
-        <div class="h-8 w-48 bg-ttc-input rounded"></div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div v-for="i in 3" :key="i" class="h-24 bg-ttc-input rounded-xl"></div>
         </div>
@@ -25,13 +24,9 @@
   </div>
 
   <!-- Main dashboard - only show when data is ready -->
-  <div v-else class="min-h-screen bg-ttc-bg pb-20 md:pb-0">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-      <!-- Header -->
-      <AppHeader />
-
+  <div v-else class="pb-20 md:pb-0">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 pb-6">
       <!-- Dashboard Content -->
-    <!-- Dashboard Content -->
       <ClientOnly>
         <!-- Error State -->
         <div v-if="expenseStore.error" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
@@ -129,9 +124,6 @@
       </ClientOnly>
     </div>
 
-    <!-- Bottom Navigation -->
-    <BottomNav />
-
     <!-- Expense Modal -->
     <ExpenseModal />
 
@@ -160,6 +152,7 @@ import IconCalculator from '~icons/mdi/calculator'
 
 definePageMeta({
   middleware: ['auth'],
+  layout: 'grupos',
   ssr: false  // Disable SSR - Firebase auth only works on client
 })
 

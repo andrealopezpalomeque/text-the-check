@@ -4,13 +4,16 @@
       <!-- Top bar with app name and mode toggle -->
       <div class="flex items-center justify-between h-14">
         <div class="flex items-center gap-3">
-          <h1 class="font-display text-lg font-bold text-ttc-text">
-            Text The Check
-          </h1>
+          <div class="flex items-center gap-2">
+            <TtcSymbol size-class="w-5 h-5" class="text-ttc-primary" />
+            <h1 class="font-display text-lg font-bold text-ttc-text">
+              Text The Check
+            </h1>
+          </div>
           <!-- Mode Toggle -->
           <button
             @click="switchToGrupos"
-            class="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-ttc-text-muted hover:text-ttc-primary hover:bg-blue-900/20 rounded-md transition-colors"
+            class="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-ttc-text-muted hover:text-ttc-primary hover:bg-ttc-primary/10 rounded-md transition-colors"
           >
             <IconGroup class="w-3.5 h-3.5" />
             <span>Grupos</span>

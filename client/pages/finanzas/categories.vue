@@ -78,7 +78,7 @@
       </div>
 
       <!-- Add New Category Form -->
-      <div class="bg-ttc-surface rounded-xl border border-ttc-border shadow-sm shadow-white/5 p-4">
+      <div class="bg-ttc-surface rounded-xl border border-ttc-border shadow-sm p-4">
         <h2 class="font-display text-lg font-bold mb-4">Nueva Categoría</h2>
         <div class="flex flex-col sm:flex-row gap-4">
           <div class="flex-1">
@@ -137,7 +137,7 @@
         <div
           v-for="category in categories"
           :key="category.id"
-          class="bg-ttc-surface rounded-xl border border-ttc-border shadow-sm shadow-white/5 p-4 flex items-center justify-between gap-4"
+          class="bg-ttc-surface rounded-xl border border-ttc-border shadow-sm p-4 flex items-center justify-between gap-4"
         >
           <div class="flex items-center gap-4">
             <div
