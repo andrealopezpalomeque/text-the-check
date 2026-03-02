@@ -25,7 +25,7 @@
 
   <!-- Report content -->
   <div v-else class="min-h-screen bg-ttc-bg pb-8">
-    <div class="container mx-auto px-4 py-6 max-w-2xl">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 py-6">
 
       <!-- Header with back and export buttons -->
       <div class="no-print flex items-center justify-between mb-6">

@@ -68,7 +68,7 @@
     />
 
     <!-- Page Content -->
-    <div class="flex flex-col gap-6 px-3">
+    <div class="flex flex-col gap-4 px-3">
       <!-- Header -->
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>

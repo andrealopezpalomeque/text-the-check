@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-ttc-bg pb-20 md:pb-0">
-    <div class="container mx-auto px-4 py-6 max-w-2xl">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 py-6">
       <!-- Header -->
       <header class="mb-6">
         <div class="flex items-center gap-4">

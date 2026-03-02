@@ -10,7 +10,7 @@
 
   <!-- Full-page loading state - show until all data is ready -->
   <div v-else-if="!isDataReady" class="min-h-screen bg-ttc-bg pb-20 md:pb-0">
-    <div class="container mx-auto px-4 py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-6">
       <div class="flex flex-col gap-4 skeleton-shimmer">
         <div class="h-8 w-48 bg-ttc-input rounded"></div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -26,7 +26,7 @@
 
   <!-- Main dashboard - only show when data is ready -->
   <div v-else class="min-h-screen bg-ttc-bg pb-20 md:pb-0">
-    <div class="container mx-auto px-4 py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-6">
       <!-- Header -->
       <AppHeader />
 

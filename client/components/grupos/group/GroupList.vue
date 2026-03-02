@@ -1,8 +1,8 @@
 <template>
   <div class="min-h-screen bg-ttc-bg pb-20 md:pb-0">
-    <div class="container mx-auto px-4 py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-6">
       <!-- Header -->
-      <div class="flex items-center justify-between mb-8">
+      <div class="flex items-center justify-between mb-6">
         <div>
           <h1 class="font-display text-2xl font-bold text-ttc-text">
             Mis Grupos

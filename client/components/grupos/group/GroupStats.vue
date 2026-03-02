@@ -1,5 +1,5 @@
 <template>
-  <div class="grid grid-cols-3 gap-2">
+  <div class="grid grid-cols-3 gap-3 sm:gap-4">
     <!-- Members -->
     <div class="bg-ttc-card rounded-xl shadow-sm border border-ttc-border p-3 overflow-hidden">
       <div class="flex items-center gap-1 mb-1">
