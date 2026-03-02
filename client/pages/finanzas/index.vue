@@ -32,7 +32,7 @@
       <div class="px-3 pt-2">
         <div class="flex items-center justify-between">
           <div>
-            <h1 class="text-2xl font-bold">Pagos Fijos</h1>
+            <h1 class="font-display text-2xl font-bold">Pagos Fijos</h1>
             <p class="text-sm text-ttc-text-dim">
               {{ recurrents.length }} pago{{ recurrents.length !== 1 ? 's' : '' }}
             </p>
@@ -47,7 +47,7 @@
           <button @click="changeMonthRange(3)" class="p-2 rounded-lg hover:bg-ttc-input transition-colors" aria-label="Meses anteriores">
             <MdiChevronLeft class="text-xl" />
           </button>
-          <h2 class="text-lg font-semibold px-4">
+          <h2 class="font-display text-lg font-bold px-4">
             {{ months[0].key }} - {{ months[months.length - 1].key }} {{ currentYear }}
           </h2>
           <button
@@ -65,17 +65,17 @@
         <div class="flex flex-wrap gap-4 md:gap-6">
           <div class="flex items-center gap-3">
             <MdiCashCheck class="text-success text-2xl" />
-            <span class="text-lg font-semibold text-ttc-text">{{ formatPrice(currentMonthTotals.paid) }}</span>
+            <span class="text-lg font-semibold text-ttc-text font-mono tabular-nums">{{ formatPrice(currentMonthTotals.paid) }}</span>
           </div>
 
           <div class="flex items-center gap-3">
             <MdiCashRemove class="text-danger text-2xl" />
-            <span class="text-lg font-semibold text-ttc-text">{{ formatPrice(currentMonthTotals.unpaid) }}</span>
+            <span class="text-lg font-semibold text-ttc-text font-mono tabular-nums">{{ formatPrice(currentMonthTotals.unpaid) }}</span>
           </div>
 
           <div class="flex items-center gap-3">
             <MdiCalendarMonth class="text-ttc-text-muted text-2xl" />
-            <span class="text-lg font-semibold text-ttc-text">{{ formatPrice(currentMonthTotals.paid + currentMonthTotals.unpaid) }}</span>
+            <span class="text-lg font-semibold text-ttc-text font-mono tabular-nums">{{ formatPrice(currentMonthTotals.paid + currentMonthTotals.unpaid) }}</span>
           </div>
         </div>
       </div>
@@ -127,7 +127,7 @@
                   </div>
                 </div>
               </td>
-              <td class="font-medium text-sm">{{ formatPrice(payment.amount) }}</td>
+              <td class="font-medium text-sm font-mono tabular-nums">{{ formatPrice(payment.amount) }}</td>
               <td>
                 <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-ttc-input text-xs font-medium">
                   {{ payment.dueDateDay }}
@@ -161,7 +161,7 @@
                   </button>
 
                   <!-- Amount -->
-                  <span class="text-xs mt-1">{{ formatPrice(payment.months[month.key].amount) }}</span>
+                  <span class="text-xs mt-1 font-mono tabular-nums">{{ formatPrice(payment.months[month.key].amount) }}</span>
                 </div>
                 <button
                   v-else
@@ -217,7 +217,7 @@
             </div>
 
             <div class="text-right shrink-0">
-              <span class="font-medium block">{{ formatPrice(payment.amount) }}</span>
+              <span class="font-medium block font-mono tabular-nums">{{ formatPrice(payment.amount) }}</span>
               <span class="text-xs text-ttc-text-dim">Día: {{ payment.dueDateDay }}</span>
             </div>
           </div>
@@ -257,7 +257,7 @@
                   <MdiCircleOutline v-else class="text-ttc-text-muted text-xl" />
                 </button>
 
-                <span class="text-xs mt-1">{{ formatPrice(payment.months[month.key].amount) }}</span>
+                <span class="text-xs mt-1 font-mono tabular-nums">{{ formatPrice(payment.months[month.key].amount) }}</span>
               </div>
 
               <button

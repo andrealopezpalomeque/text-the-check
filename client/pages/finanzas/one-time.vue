@@ -38,7 +38,7 @@
       <div class="px-3 pt-2">
         <div class="flex items-center justify-between">
           <div>
-            <h1 class="text-2xl font-bold">Pagos Únicos</h1>
+            <h1 class="font-display text-2xl font-bold">Pagos Únicos</h1>
             <p class="text-sm text-ttc-text-dim">
               {{ payments.length }} pago{{ payments.length !== 1 ? 's' : '' }} este mes
             </p>
@@ -75,17 +75,17 @@
         <div class="flex flex-wrap gap-4 md:gap-6">
           <div class="flex items-center gap-3">
             <MdiCashCheck class="text-success text-2xl" />
-            <span class="text-lg font-semibold text-ttc-text">{{ formatPrice(monthTotals.paid) }}</span>
+            <span class="text-lg font-semibold text-ttc-text font-mono tabular-nums">{{ formatPrice(monthTotals.paid) }}</span>
           </div>
 
           <div class="flex items-center gap-3">
             <MdiCashRemove class="text-danger text-2xl" />
-            <span class="text-lg font-semibold text-ttc-text">{{ formatPrice(monthTotals.unpaid) }}</span>
+            <span class="text-lg font-semibold text-ttc-text font-mono tabular-nums">{{ formatPrice(monthTotals.unpaid) }}</span>
           </div>
 
           <div class="flex items-center gap-3">
             <MdiCalculator class="text-ttc-text text-2xl" />
-            <span class="text-lg font-semibold text-ttc-text">{{ formatPrice(monthTotals.paid + monthTotals.unpaid) }}</span>
+            <span class="text-lg font-semibold text-ttc-text font-mono tabular-nums">{{ formatPrice(monthTotals.paid + monthTotals.unpaid) }}</span>
           </div>
         </div>
       </div>
@@ -175,7 +175,7 @@
             <!-- Amount & Date -->
             <div class="flex justify-between items-end mb-4">
               <div>
-                <p class="text-2xl font-bold text-ttc-text">{{ formatPrice(payment.amount) }}</p>
+                <p class="text-2xl font-bold text-ttc-text font-mono tabular-nums">{{ formatPrice(payment.amount) }}</p>
               </div>
               <div class="text-right">
                 <p class="text-xs text-ttc-text-muted">{{ formatDate(payment.dueDate || payment.createdAt) }}</p>

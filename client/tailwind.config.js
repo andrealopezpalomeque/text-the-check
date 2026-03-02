@@ -70,7 +70,7 @@ module.exports = {
         'outfit': ['Outfit', 'sans-serif'],
         'nunito': ['Nunito', 'sans-serif'],
         'body': ['DM Sans', 'sans-serif'],
-        'display': ['Poppins', 'sans-serif'],
+        'display': ['Nunito', 'sans-serif'],
         'sans': ['Inter', 'Roboto', 'system-ui', 'sans-serif'],
         'mono': ['Monaco', 'Courier New', 'monospace'],
       },

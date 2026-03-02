@@ -6,7 +6,7 @@
     <!-- Edit Modal -->
     <Modal ref="editModal" @onClose="resetEditForm">
       <template #header>
-        <h2 class="text-xl font-semibold">Editar Categoría</h2>
+        <h2 class="font-display text-xl font-bold">Editar Categoría</h2>
       </template>
 
       <template #body>
@@ -72,14 +72,14 @@
       <!-- Header -->
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 class="text-2xl font-bold text-left">Categorías</h1>
+          <h1 class="font-display text-2xl font-bold text-left">Categorías</h1>
           <p class="text-ttc-text-muted text-sm mt-1">Administrá las categorías de tus gastos</p>
         </div>
       </div>
 
       <!-- Add New Category Form -->
       <div class="bg-ttc-surface rounded-xl border border-ttc-border shadow-sm shadow-white/5 p-4">
-        <h2 class="text-lg font-semibold mb-4">Nueva Categoría</h2>
+        <h2 class="font-display text-lg font-bold mb-4">Nueva Categoría</h2>
         <div class="flex flex-col sm:flex-row gap-4">
           <div class="flex-1">
             <label for="new-name" class="block text-sm font-medium text-ttc-text-muted mb-2">Nombre*</label>

@@ -18,7 +18,7 @@
 
     <!-- Page Header -->
     <div class="flex flex-col gap-2 p-3 mb-6">
-      <h1 class="text-2xl font-bold">Resumen Semanal</h1>
+      <h1 class="font-display text-2xl font-bold">Resumen Semanal</h1>
       <p class="text-sm text-ttc-text-muted">Tu resumen de pagos de esta semana y progreso del mes</p>
     </div>
 
@@ -46,7 +46,7 @@
     <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-6 p-3">
       <!-- Card 1: Semana Pasada -->
       <div class="bg-ttc-surface rounded-xl border border-ttc-border shadow-sm shadow-white/5 p-4">
-        <h2 class="text-lg font-semibold mb-3 flex items-center">
+        <h2 class="font-display text-lg font-bold mb-3 flex items-center">
           <MdiCalendarWeek class="mr-2 text-primary" />
           Semana Pasada
         </h2>
@@ -89,7 +89,7 @@
               </div>
             </div>
             <div class="flex items-center gap-2">
-              <span class="font-semibold text-sm">{{ formatPrice(payment.amount) }}</span>
+              <span class="font-semibold text-sm font-mono tabular-nums">{{ formatPrice(payment.amount) }}</span>
               <span
                 class="inline-flex items-center justify-center text-xs font-medium px-2 py-0.5 rounded-full"
                 :class="payment.isPaidThisMonth ? 'bg-success/20 text-success' : 'bg-warning/20 text-warning'"
@@ -103,7 +103,7 @@
 
       <!-- Card 2: Semana Entrante -->
       <div class="bg-ttc-surface rounded-xl border border-ttc-border shadow-sm shadow-white/5 p-4">
-        <h2 class="text-lg font-semibold mb-3 flex items-center">
+        <h2 class="font-display text-lg font-bold mb-3 flex items-center">
           <MdiCreditCardClock class="mr-2 text-primary" />
           Semana Entrante
         </h2>
@@ -146,7 +146,7 @@
               </div>
             </div>
             <div class="flex items-center gap-2">
-              <span class="font-semibold text-sm">{{ formatPrice(payment.amount) }}</span>
+              <span class="font-semibold text-sm font-mono tabular-nums">{{ formatPrice(payment.amount) }}</span>
               <span
                 class="inline-flex items-center justify-center text-xs font-medium px-2 py-0.5 rounded-full"
                 :class="payment.isPaidThisMonth ? 'bg-success/20 text-success' : 'bg-warning/20 text-warning'"
@@ -160,11 +160,11 @@
 
       <!-- Card 3: Total Pendiente -->
       <div class="lg:col-span-2 bg-ttc-surface rounded-xl border border-ttc-border shadow-sm shadow-white/5 p-4">
-        <h2 class="text-lg font-semibold mb-2 flex items-center">
+        <h2 class="font-display text-lg font-bold mb-2 flex items-center">
           <MdiCashClock class="mr-2 text-primary" />
           Total Pendiente
         </h2>
-        <p class="text-3xl font-bold text-warning">{{ formatPrice(totalUnpaidAmount) }}</p>
+        <p class="text-3xl font-bold text-warning font-mono tabular-nums">{{ formatPrice(totalUnpaidAmount) }}</p>
         <p class="text-sm text-ttc-text-muted mt-1">
           Total necesario para estar al día ({{ totalUnpaidCount }} pago{{ totalUnpaidCount !== 1 ? 's' : '' }})
         </p>
@@ -172,7 +172,7 @@
 
       <!-- Card 4: Mes Actual -->
       <div class="lg:col-span-2 bg-ttc-surface rounded-xl border border-ttc-border shadow-sm shadow-white/5 p-4">
-        <h2 class="text-lg font-semibold mb-4 flex items-center">
+        <h2 class="font-display text-lg font-bold mb-4 flex items-center">
           <MdiCalendarMonth class="mr-2 text-primary" />
           Mes Actual
         </h2>
@@ -189,20 +189,20 @@
           </div>
           <div class="flex flex-col p-3 bg-ttc-surface rounded-lg">
             <span class="text-xs text-ttc-text-muted">Total Pagado</span>
-            <span class="text-xl font-bold">{{ formatPrice(stats.totalPaidAmount) }}</span>
+            <span class="text-xl font-bold font-mono tabular-nums">{{ formatPrice(stats.totalPaidAmount) }}</span>
             <span class="text-xs text-ttc-text-dim">este mes</span>
           </div>
           <div class="flex flex-col p-3 bg-ttc-surface rounded-lg">
             <span class="text-xs text-ttc-text-muted">Gastos Unicos</span>
             <span class="text-xl font-bold">{{ stats.oneTimeCount }}</span>
-            <span class="text-xs text-ttc-text-dim">{{ formatPrice(stats.oneTimeAmount) }}</span>
+            <span class="text-xs text-ttc-text-dim font-mono tabular-nums">{{ formatPrice(stats.oneTimeAmount) }}</span>
           </div>
         </div>
       </div>
 
       <!-- Card 5: AI Insight -->
       <div v-if="weeklySummaryStore.getAiInsight" class="lg:col-span-2 bg-ttc-surface rounded-xl border border-ttc-border shadow-sm shadow-white/5 p-4">
-        <h2 class="text-lg font-semibold mb-2 flex items-center">
+        <h2 class="font-display text-lg font-bold mb-2 flex items-center">
           <MdiLightbulbOn class="mr-2 text-primary" />
           Resumen IA
         </h2>
@@ -211,7 +211,7 @@
 
       <!-- Card 6: Progreso del Mes -->
       <div class="lg:col-span-2 bg-ttc-surface rounded-xl border border-ttc-border shadow-sm shadow-white/5 p-4">
-        <h2 class="text-lg font-semibold mb-2 flex items-center">
+        <h2 class="font-display text-lg font-bold mb-2 flex items-center">
           <MdiProgressCheck class="mr-2 text-primary" />
           Progreso del Mes
         </h2>

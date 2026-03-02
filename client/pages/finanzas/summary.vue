@@ -18,7 +18,7 @@
 
     <!-- Page Header -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-3 mb-6">
-      <h1 class="text-2xl font-bold">Resumen Financiero</h1>
+      <h1 class="font-display text-2xl font-bold">Resumen Financiero</h1>
       <div class="flex items-center gap-2">
         <span class="text-sm text-ttc-text-dim">Rango de fechas:</span>
         <select
@@ -68,7 +68,7 @@
     <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-6 p-3">
       <!-- Monthly Spending Trends -->
       <div class="bg-ttc-card rounded-lg shadow-sm border border-ttc-border p-4">
-        <h2 class="text-lg font-semibold mb-2 flex items-center">
+        <h2 class="font-display text-lg font-bold mb-2 flex items-center">
           <MdiChartLine class="mr-2 text-primary" />
           Tendencias de Gastos Mensuales
         </h2>
@@ -80,7 +80,7 @@
 
       <!-- Spending Distribution -->
       <div class="bg-ttc-card rounded-lg shadow-sm border border-ttc-border p-4">
-        <h2 class="text-lg font-semibold mb-2 flex items-center">
+        <h2 class="font-display text-lg font-bold mb-2 flex items-center">
           <MdiChartPie class="mr-2 text-primary" />
           Distribución de Gastos
         </h2>
@@ -107,7 +107,7 @@
 
       <!-- Key Statistics -->
       <div class="bg-ttc-card rounded-lg shadow-sm border border-ttc-border p-4">
-        <h2 class="text-lg font-semibold mb-2 flex items-center">
+        <h2 class="font-display text-lg font-bold mb-2 flex items-center">
           <MdiChartMultiple class="mr-2 text-primary" />
           Estadísticas Clave
         </h2>
@@ -117,7 +117,7 @@
           <!-- Average Monthly Spend -->
           <div class="flex flex-col p-3 bg-ttc-surface rounded-lg">
             <span class="text-xs text-ttc-text-muted">Gasto Mensual Promedio</span>
-            <span class="text-xl font-bold text-ttc-text">{{ formatPrice(stats.averageMonthlySpend) }}</span>
+            <span class="text-xl font-bold text-ttc-text font-mono tabular-nums">{{ formatPrice(stats.averageMonthlySpend) }}</span>
             <div class="text-sm mt-1">
               <span :class="stats.monthOverMonthChange >= 0 ? 'text-danger' : 'text-success'">
                 {{ stats.monthOverMonthChange >= 0 ? "↑" : "↓" }} {{ Math.abs(stats.monthOverMonthChange).toFixed(1) }}%
@@ -130,7 +130,7 @@
           <div class="flex flex-col p-3 bg-ttc-surface rounded-lg">
             <span class="text-xs text-ttc-text-muted">Mes con Mayor Gasto</span>
             <span class="text-xl font-bold text-ttc-text">{{ stats.peakSpendingMonth || "N/A" }}</span>
-            <span class="text-sm text-ttc-text-muted">{{ formatPrice(stats.peakSpendingAmount) }}</span>
+            <span class="text-sm text-ttc-text-muted font-mono tabular-nums">{{ formatPrice(stats.peakSpendingAmount) }}</span>
           </div>
 
           <!-- Recurring vs One-time -->
@@ -148,7 +148,7 @@
           <!-- Avg One-time Transaction -->
           <div class="flex flex-col p-3 bg-ttc-surface rounded-lg">
             <span class="text-xs text-ttc-text-muted">Promedio Pago Único</span>
-            <span class="text-xl font-bold text-ttc-text">{{ formatPrice(stats.avgOneTimeTransaction) }}</span>
+            <span class="text-xl font-bold text-ttc-text font-mono tabular-nums">{{ formatPrice(stats.avgOneTimeTransaction) }}</span>
             <span class="text-sm text-ttc-text-muted">por transacción</span>
           </div>
 
@@ -191,7 +191,7 @@
 
       <!-- Payment Breakdown -->
       <div class="bg-ttc-card rounded-lg shadow-sm border border-ttc-border p-4">
-        <h2 class="text-lg font-semibold mb-2 flex items-center">
+        <h2 class="font-display text-lg font-bold mb-2 flex items-center">
           <MdiCreditCardOutline class="mr-2 text-primary" />
           Desglose de Pagos
         </h2>
@@ -212,7 +212,7 @@
                     <p class="text-xs text-ttc-text-dim">{{ payment.isRecurring ? "Fijo" : "Único" }}</p>
                   </div>
                 </div>
-                <p class="font-semibold">{{ formatPrice(payment.amount) }}</p>
+                <p class="font-semibold font-mono tabular-nums">{{ formatPrice(payment.amount) }}</p>
               </div>
               <div class="w-full h-2 bg-ttc-border rounded-full overflow-hidden">
                 <div
