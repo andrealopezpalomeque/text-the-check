@@ -1,22 +1,22 @@
 <template>
   <!-- Loading state -->
-  <div v-if="loading" class="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+  <div v-if="loading" class="min-h-screen bg-ttc-bg flex items-center justify-center">
     <div class="text-center">
-      <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 dark:border-white mb-4"></div>
-      <p class="text-gray-600 dark:text-gray-400">Cargando reporte...</p>
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-ttc-text mb-4"></div>
+      <p class="text-ttc-text-muted">Cargando reporte...</p>
     </div>
   </div>
 
   <!-- Empty state -->
-  <div v-else-if="expenses.length === 0" class="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+  <div v-else-if="expenses.length === 0" class="min-h-screen bg-ttc-bg flex items-center justify-center">
     <div class="text-center px-4">
-      <div class="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4">
+      <div class="w-16 h-16 rounded-full bg-ttc-card flex items-center justify-center mx-auto mb-4">
         <IconBarChart3 class="w-8 h-8 text-gray-400" />
       </div>
-      <p class="text-gray-500 dark:text-gray-400 mb-4">No hay gastos registrados todavia</p>
+      <p class="text-ttc-text-muted mb-4">No hay gastos registrados todavia</p>
       <NuxtLink
         to="/"
-        class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+        class="inline-flex items-center gap-2 px-4 py-2 bg-ttc-primary hover:bg-ttc-primary-light text-white font-medium rounded-lg transition-colors"
       >
         Volver al inicio
       </NuxtLink>
@@ -24,14 +24,14 @@
   </div>
 
   <!-- Report content -->
-  <div v-else class="min-h-screen bg-gray-50 dark:bg-gray-900 pb-8">
+  <div v-else class="min-h-screen bg-ttc-bg pb-8">
     <div class="container mx-auto px-4 py-6 max-w-2xl">
 
       <!-- Header with back and export buttons -->
       <div class="no-print flex items-center justify-between mb-6">
         <NuxtLink
           to="/?tab=grupo"
-          class="inline-flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+          class="inline-flex items-center gap-1 text-sm text-ttc-text-muted hover:text-ttc-text"
         >
           <IconChevronLeft class="w-4 h-4" />
           Volver
@@ -55,63 +55,63 @@
           <div class="w-16 h-16 rounded-2xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mx-auto mb-3">
             <IconPlane class="w-8 h-8 text-blue-600 dark:text-blue-400" />
           </div>
-          <h1 class="text-2xl font-display font-bold text-gray-900 dark:text-white mb-1">
+          <h1 class="text-2xl font-display font-bold text-ttc-text mb-1">
             {{ groupName }}
           </h1>
-          <p class="text-gray-600 dark:text-gray-400 mb-2">
+          <p class="text-ttc-text-muted mb-2">
             {{ formatDateRange(firstExpenseDate, lastExpenseDate) }}
           </p>
-          <p class="text-sm text-gray-500 dark:text-gray-500">
+          <p class="text-sm text-ttc-text-muted">
             {{ tripDays }} dias · {{ memberCount }} personas · {{ expenseCount }} gastos
           </p>
         </div>
 
         <!-- Section 2: General Summary Card -->
-        <div class="report-section bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6 mb-4">
+        <div class="report-section bg-ttc-card rounded-xl shadow-sm border border-ttc-border p-4 sm:p-6 mb-4">
           <div class="flex items-center gap-3 mb-4">
             <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
               <IconWallet class="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             </div>
-            <h2 class="text-lg font-display font-semibold text-gray-900 dark:text-white">
+            <h2 class="text-lg font-display font-semibold text-ttc-text">
               Resumen General
             </h2>
           </div>
 
           <div class="space-y-3">
-            <div class="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
-              <span class="text-gray-600 dark:text-gray-400">Total gastado</span>
-              <span class="font-mono font-semibold text-gray-900 dark:text-white">{{ formatCurrency(totalSpent) }}</span>
+            <div class="flex justify-between items-center py-2 border-b border-ttc-border">
+              <span class="text-ttc-text-muted">Total gastado</span>
+              <span class="font-mono font-semibold text-ttc-text">{{ formatCurrency(totalSpent) }}</span>
             </div>
-            <div class="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
-              <span class="text-gray-600 dark:text-gray-400">Promedio por persona</span>
-              <span class="font-mono text-gray-900 dark:text-white">{{ formatCurrency(avgPerPerson) }}</span>
+            <div class="flex justify-between items-center py-2 border-b border-ttc-border">
+              <span class="text-ttc-text-muted">Promedio por persona</span>
+              <span class="font-mono text-ttc-text">{{ formatCurrency(avgPerPerson) }}</span>
             </div>
-            <div class="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
-              <span class="text-gray-600 dark:text-gray-400">Promedio por dia</span>
-              <span class="font-mono text-gray-900 dark:text-white">{{ formatCurrency(avgPerDay) }}</span>
+            <div class="flex justify-between items-center py-2 border-b border-ttc-border">
+              <span class="text-ttc-text-muted">Promedio por dia</span>
+              <span class="font-mono text-ttc-text">{{ formatCurrency(avgPerDay) }}</span>
             </div>
-            <div class="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
-              <span class="text-gray-600 dark:text-gray-400">Gasto promedio</span>
-              <span class="font-mono text-gray-900 dark:text-white">{{ formatCurrency(avgPerExpense) }}</span>
+            <div class="flex justify-between items-center py-2 border-b border-ttc-border">
+              <span class="text-ttc-text-muted">Gasto promedio</span>
+              <span class="font-mono text-ttc-text">{{ formatCurrency(avgPerExpense) }}</span>
             </div>
-            <div class="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
-              <span class="text-gray-600 dark:text-gray-400">Total de gastos</span>
-              <span class="font-mono text-gray-900 dark:text-white">{{ expenseCount }}</span>
+            <div class="flex justify-between items-center py-2 border-b border-ttc-border">
+              <span class="text-ttc-text-muted">Total de gastos</span>
+              <span class="font-mono text-ttc-text">{{ expenseCount }}</span>
             </div>
             <div class="flex justify-between items-center py-2">
-              <span class="text-gray-600 dark:text-gray-400">Total de pagos registrados</span>
-              <span class="font-mono text-gray-900 dark:text-white">{{ paymentCount }}</span>
+              <span class="text-ttc-text-muted">Total de pagos registrados</span>
+              <span class="font-mono text-ttc-text">{{ paymentCount }}</span>
             </div>
           </div>
         </div>
 
         <!-- Section 3: Category Breakdown Card -->
-        <div class="report-section bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6 mb-4">
+        <div class="report-section bg-ttc-card rounded-xl shadow-sm border border-ttc-border p-4 sm:p-6 mb-4">
           <div class="flex items-center gap-3 mb-4">
             <div class="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
               <IconPieChart class="w-5 h-5 text-purple-600 dark:text-purple-400" />
             </div>
-            <h2 class="text-lg font-display font-semibold text-gray-900 dark:text-white">
+            <h2 class="text-lg font-display font-semibold text-ttc-text">
               Gastos por Categoria
             </h2>
           </div>
@@ -120,22 +120,22 @@
             <div v-for="cat in categoryStats" :key="cat.category" class="space-y-1">
               <div class="flex items-center gap-2">
                 <CategoryIcon :category="cat.category" size="sm" />
-                <span class="text-sm font-medium text-gray-700 dark:text-gray-300 capitalize">
+                <span class="text-sm font-medium text-ttc-text capitalize">
                   {{ getCategoryLabel(cat.category) }}
                 </span>
               </div>
               <div class="flex items-center gap-3">
-                <div class="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+                <div class="flex-1 bg-ttc-input rounded-full h-3 overflow-hidden">
                   <div
                     class="h-full rounded-full transition-all duration-500"
                     :class="getCategoryBarColor(cat.category)"
                     :style="{ width: cat.percentage + '%' }"
                   />
                 </div>
-                <span class="font-mono text-sm text-gray-900 dark:text-white whitespace-nowrap">
+                <span class="font-mono text-sm text-ttc-text whitespace-nowrap">
                   {{ formatCurrency(cat.total) }}
                 </span>
-                <span class="text-xs text-gray-500 dark:text-gray-400 w-10 text-right">
+                <span class="text-xs text-ttc-text-muted w-10 text-right">
                   {{ Math.round(cat.percentage) }}%
                 </span>
               </div>
@@ -144,12 +144,12 @@
         </div>
 
         <!-- Section 4: Spending Per Person Card -->
-        <div class="report-section bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6 mb-4">
+        <div class="report-section bg-ttc-card rounded-xl shadow-sm border border-ttc-border p-4 sm:p-6 mb-4">
           <div class="flex items-center gap-3 mb-4">
             <div class="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
               <IconUsers class="w-5 h-5 text-blue-600 dark:text-blue-400" />
             </div>
-            <h2 class="text-lg font-display font-semibold text-gray-900 dark:text-white">
+            <h2 class="text-lg font-display font-semibold text-ttc-text">
               Quien Pago Mas
             </h2>
           </div>
@@ -157,22 +157,22 @@
           <div class="space-y-4">
             <div v-for="(person, index) in personSpending" :key="person.userId" class="space-y-1">
               <div class="flex items-center gap-2">
-                <span class="text-sm font-semibold text-gray-500 dark:text-gray-400 w-5">{{ index + 1 }}.</span>
-                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                <span class="text-sm font-semibold text-ttc-text-muted w-5">{{ index + 1 }}.</span>
+                <span class="text-sm font-medium text-ttc-text">
                   {{ person.userName }}
                 </span>
               </div>
               <div class="flex items-center gap-3 pl-7">
-                <div class="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+                <div class="flex-1 bg-ttc-input rounded-full h-3 overflow-hidden">
                   <div
                     class="h-full rounded-full transition-all duration-500 bg-gradient-to-r from-blue-500 to-indigo-500"
                     :style="{ width: person.percentage + '%' }"
                   />
                 </div>
-                <span class="font-mono text-sm text-gray-900 dark:text-white whitespace-nowrap">
+                <span class="font-mono text-sm text-ttc-text whitespace-nowrap">
                   {{ formatCurrency(person.totalPaid) }}
                 </span>
-                <span class="text-xs text-gray-500 dark:text-gray-400 w-10 text-right">
+                <span class="text-xs text-ttc-text-muted w-10 text-right">
                   {{ Math.round(person.percentage) }}%
                 </span>
               </div>
@@ -181,12 +181,12 @@
         </div>
 
         <!-- Section 5: Daily Spending Chart -->
-        <div class="report-section bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6 mb-4">
+        <div class="report-section bg-ttc-card rounded-xl shadow-sm border border-ttc-border p-4 sm:p-6 mb-4">
           <div class="flex items-center gap-3 mb-6">
             <div class="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
               <IconCalendarDays class="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
             </div>
-            <h2 class="text-lg font-display font-semibold text-gray-900 dark:text-white">
+            <h2 class="text-lg font-display font-semibold text-ttc-text">
               Gasto por Dia
             </h2>
           </div>
@@ -203,10 +203,10 @@
             <!-- Chart area -->
             <div class="ml-14">
               <!-- Horizontal grid lines -->
-              <div class="relative h-[180px] border-b border-gray-200 dark:border-gray-700">
+              <div class="relative h-[180px] border-b border-ttc-border">
                 <div class="absolute inset-0 flex flex-col justify-between pointer-events-none">
-                  <div class="border-t border-dashed border-gray-200 dark:border-gray-700"></div>
-                  <div class="border-t border-dashed border-gray-200 dark:border-gray-700"></div>
+                  <div class="border-t border-dashed border-ttc-border"></div>
+                  <div class="border-t border-dashed border-ttc-border"></div>
                   <div></div>
                 </div>
 
@@ -218,7 +218,7 @@
                     class="flex-1 min-w-[28px] sm:min-w-[40px] flex flex-col items-center justify-end h-full group"
                   >
                     <!-- Amount tooltip on hover (screen only) -->
-                    <div class="no-print opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-mono text-gray-600 dark:text-gray-300 mb-1 whitespace-nowrap">
+                    <div class="no-print opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-mono text-ttc-text mb-1 whitespace-nowrap">
                       {{ formatAmount(day.total) }}
                     </div>
                     <!-- Bar with fixed pixel height for print compatibility -->
@@ -237,7 +237,7 @@
                   :key="'label-' + day.dateKey"
                   class="flex-1 min-w-[28px] sm:min-w-[40px] text-center"
                 >
-                  <span class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                  <span class="text-[10px] sm:text-xs text-ttc-text-muted whitespace-nowrap">
                     {{ formatChartDate(day.dateKey) }}
                   </span>
                 </div>
@@ -246,19 +246,19 @@
           </div>
 
           <!-- Summary row -->
-          <div class="flex justify-between mt-4 pt-3 border-t border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400">
+          <div class="flex justify-between mt-4 pt-3 border-t border-ttc-border text-xs text-ttc-text-muted">
             <span>Max: <span class="font-mono font-medium">{{ formatCurrency(maxDailySpend) }}</span></span>
             <span>Promedio: <span class="font-mono font-medium">{{ formatCurrency(avgDailySpend) }}</span></span>
           </div>
         </div>
 
         <!-- Section 6: Highlights Card -->
-        <div class="report-section bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6 mb-4">
+        <div class="report-section bg-ttc-card rounded-xl shadow-sm border border-ttc-border p-4 sm:p-6 mb-4">
           <div class="flex items-center gap-3 mb-4">
             <div class="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
               <IconTrophy class="w-5 h-5 text-amber-600 dark:text-amber-400" />
             </div>
-            <h2 class="text-lg font-display font-semibold text-gray-900 dark:text-white">
+            <h2 class="text-lg font-display font-semibold text-ttc-text">
               Highlights
             </h2>
           </div>
@@ -270,10 +270,10 @@
                 <IconTrendingUp class="w-4 h-4 text-red-600 dark:text-red-400" />
               </div>
               <div>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Gasto mas grande</p>
-                <p class="font-mono text-gray-900 dark:text-white">
+                <p class="text-sm text-ttc-text-muted">Gasto mas grande</p>
+                <p class="font-mono text-ttc-text">
                   {{ formatCurrency(biggestExpense.amount) }} - {{ biggestExpense.description }}
-                  <span class="text-gray-500 dark:text-gray-400">({{ biggestExpense.userName }})</span>
+                  <span class="text-ttc-text-muted">({{ biggestExpense.userName }})</span>
                 </p>
               </div>
             </div>
@@ -284,8 +284,8 @@
                 <IconCalendarX class="w-4 h-4 text-orange-600 dark:text-orange-400" />
               </div>
               <div>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Dia mas caro</p>
-                <p class="font-mono text-gray-900 dark:text-white">
+                <p class="text-sm text-ttc-text-muted">Dia mas caro</p>
+                <p class="font-mono text-ttc-text">
                   {{ formatFullDate(mostExpensiveDay.dateKey) }} - {{ formatCurrency(mostExpensiveDay.total) }}
                 </p>
               </div>
@@ -297,8 +297,8 @@
                 <IconPiggyBank class="w-4 h-4 text-green-600 dark:text-green-400" />
               </div>
               <div>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Dia mas barato</p>
-                <p class="font-mono text-gray-900 dark:text-white">
+                <p class="text-sm text-ttc-text-muted">Dia mas barato</p>
+                <p class="font-mono text-ttc-text">
                   {{ formatFullDate(cheapestDay.dateKey) }} - {{ formatCurrency(cheapestDay.total) }}
                 </p>
               </div>
@@ -310,11 +310,11 @@
                 <IconTag class="w-4 h-4 text-purple-600 dark:text-purple-400" />
               </div>
               <div>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Categoria favorita</p>
-                <p class="flex items-center gap-2 text-gray-900 dark:text-white">
+                <p class="text-sm text-ttc-text-muted">Categoria favorita</p>
+                <p class="flex items-center gap-2 text-ttc-text">
                   <CategoryIcon :category="topCategory.category" size="sm" />
                   <span class="capitalize">{{ getCategoryLabel(topCategory.category) }}</span>
-                  <span class="text-gray-500 dark:text-gray-400">({{ Math.round(topCategory.percentage) }}% del total)</span>
+                  <span class="text-ttc-text-muted">({{ Math.round(topCategory.percentage) }}% del total)</span>
                 </p>
               </div>
             </div>
@@ -325,9 +325,9 @@
                 <IconReceipt class="w-4 h-4 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Mas gastos registrados</p>
-                <p class="text-gray-900 dark:text-white">
-                  {{ mostActiveUser.userName }} <span class="text-gray-500 dark:text-gray-400">({{ mostActiveUser.expenseCount }} gastos)</span>
+                <p class="text-sm text-ttc-text-muted">Mas gastos registrados</p>
+                <p class="text-ttc-text">
+                  {{ mostActiveUser.userName }} <span class="text-ttc-text-muted">({{ mostActiveUser.expenseCount }} gastos)</span>
                 </p>
               </div>
             </div>
@@ -335,15 +335,15 @@
         </div>
 
         <!-- Section 7: Debt Status Card -->
-        <div class="report-section bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6">
+        <div class="report-section bg-ttc-card rounded-xl shadow-sm border border-ttc-border p-4 sm:p-6">
           <div class="flex items-center gap-3 mb-4">
-            <div class="w-10 h-10 rounded-xl" :class="allSettled ? 'bg-green-100 dark:bg-green-900/30' : 'bg-gray-100 dark:bg-gray-700'">
+            <div class="w-10 h-10 rounded-xl" :class="allSettled ? 'bg-green-100 dark:bg-green-900/30' : 'bg-ttc-input'">
               <div class="w-full h-full flex items-center justify-center">
                 <IconCheckCircle v-if="allSettled" class="w-5 h-5 text-green-600 dark:text-green-400" />
-                <IconClipboardList v-else class="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                <IconClipboardList v-else class="w-5 h-5 text-ttc-text-muted" />
               </div>
             </div>
-            <h2 class="text-lg font-display font-semibold text-gray-900 dark:text-white">
+            <h2 class="text-lg font-display font-semibold text-ttc-text">
               Estado de Deudas
             </h2>
           </div>
@@ -360,7 +360,7 @@
 
           <!-- Pending settlements -->
           <div v-else class="space-y-3">
-            <p class="text-sm text-gray-500 dark:text-gray-400">
+            <p class="text-sm text-ttc-text-muted">
               Pendientes: {{ settlements.length }}
             </p>
 
@@ -368,33 +368,33 @@
               <div
                 v-for="settlement in settlements.slice(0, 5)"
                 :key="`${settlement.fromUserId}-${settlement.toUserId}`"
-                class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0"
+                class="flex items-center justify-between py-2 border-b border-ttc-border last:border-0"
               >
                 <div class="flex items-center gap-2 text-sm">
-                  <span class="text-gray-700 dark:text-gray-300">{{ getUserName(settlement.fromUserId) }}</span>
+                  <span class="text-ttc-text">{{ getUserName(settlement.fromUserId) }}</span>
                   <IconArrowRight class="w-4 h-4 text-gray-400" />
-                  <span class="text-gray-700 dark:text-gray-300">{{ getUserName(settlement.toUserId) }}</span>
+                  <span class="text-ttc-text">{{ getUserName(settlement.toUserId) }}</span>
                 </div>
-                <span class="font-mono text-sm text-gray-900 dark:text-white">
+                <span class="font-mono text-sm text-ttc-text">
                   {{ formatCurrency(settlement.amount) }}
                 </span>
               </div>
             </div>
 
-            <div v-if="settlements.length > 5" class="text-sm text-gray-500 dark:text-gray-400 text-center">
+            <div v-if="settlements.length > 5" class="text-sm text-ttc-text-muted text-center">
               y {{ settlements.length - 5 }} mas...
             </div>
 
-            <div class="flex justify-between items-center pt-2 border-t border-gray-200 dark:border-gray-600">
-              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Total pendiente</span>
-              <span class="font-mono font-semibold text-gray-900 dark:text-white">
+            <div class="flex justify-between items-center pt-2 border-t border-ttc-border">
+              <span class="text-sm font-medium text-ttc-text">Total pendiente</span>
+              <span class="font-mono font-semibold text-ttc-text">
                 {{ formatCurrency(totalPending) }}
               </span>
             </div>
 
             <NuxtLink
               to="/?tab=grupo"
-              class="no-print w-full flex items-center justify-center gap-2 px-4 py-2 mt-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+              class="no-print w-full flex items-center justify-center gap-2 px-4 py-2 mt-2 bg-ttc-primary hover:bg-ttc-primary-light text-white text-sm font-medium rounded-lg transition-colors"
             >
               Ver en Grupo
             </NuxtLink>

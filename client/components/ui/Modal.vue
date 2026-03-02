@@ -19,24 +19,24 @@
             <div
               v-if="isOpen"
               ref="modalContainer"
-              class="relative bg-white dark:bg-gray-800 w-full md:max-w-md md:rounded-xl rounded-t-2xl shadow-xl max-h-[90vh] md:max-h-[85vh] flex flex-col"
+              class="relative bg-ttc-card w-full md:max-w-md md:rounded-xl rounded-t-2xl shadow-xl max-h-[90vh] md:max-h-[85vh] flex flex-col"
               :style="{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }"
               @click.stop
             >
               <!-- Handle bar (mobile only) -->
               <div class="flex justify-center pt-3 pb-1 md:hidden">
-                <div class="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full" />
+                <div class="w-10 h-1 bg-ttc-border rounded-full" />
               </div>
 
               <!-- Header -->
-              <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700 shrink-0">
+              <div class="flex items-center justify-between px-6 py-4 border-b border-ttc-border shrink-0">
                 <slot name="header">
-                  <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Modal</h3>
+                  <h3 class="text-lg font-semibold text-ttc-text">Modal</h3>
                 </slot>
                 <button
                   @click="close"
                   aria-label="Cerrar"
-                  class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors cursor-pointer"
+                  class="text-ttc-text-muted hover:text-ttc-text p-1.5 rounded-lg hover:bg-ttc-card-hover transition-colors cursor-pointer"
                 >
                   <IconoirCancel class="w-5 h-5" />
                 </button>
@@ -50,7 +50,7 @@
               </div>
 
               <!-- Footer -->
-              <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 shrink-0 empty:hidden [&>*]:m-0">
+              <div class="px-6 py-4 border-t border-ttc-border shrink-0 empty:hidden [&>*]:m-0">
                 <slot name="footer" />
               </div>
             </div>

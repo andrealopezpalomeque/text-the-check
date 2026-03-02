@@ -1,23 +1,23 @@
 <template>
-  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+  <div class="bg-ttc-card rounded-xl shadow-sm border border-ttc-border">
     <!-- Header with Toggle -->
-    <div class="px-3 py-3 border-b border-gray-200 dark:border-gray-700">
+    <div class="px-3 py-3 border-b border-ttc-border">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <IconSwapHorizontal class="w-5 h-5 text-gray-500 dark:text-gray-400" />
-          <h3 class="font-display text-base font-semibold text-gray-900 dark:text-white">
+          <IconSwapHorizontal class="w-5 h-5 text-ttc-text-muted" />
+          <h3 class="font-display text-base font-semibold text-ttc-text">
             Para Saldar Deudas
           </h3>
         </div>
 
         <!-- Simplification Toggle -->
         <div class="flex items-center gap-2">
-          <span class="text-xs text-gray-500 dark:text-gray-400">Simplificar</span>
+          <span class="text-xs text-ttc-text-muted">Simplificar</span>
           <button
             @click="$emit('toggle-simplify')"
             :class="[
               'relative inline-flex h-5 w-9 items-center rounded-full transition-colors',
-              simplified ? 'bg-blue-600' : 'bg-gray-300 dark:bg-gray-600'
+              simplified ? 'bg-blue-600' : 'bg-ttc-border'
             ]"
           >
             <span
@@ -38,7 +38,7 @@
       </p>
 
       <!-- Normal explanation text when simplified has effect -->
-      <p v-else-if="simplified" class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+      <p v-else-if="simplified" class="text-xs text-ttc-text-muted mt-1">
         Transferencias reducidas al minimo. No se muestra desglose por gasto.
       </p>
     </div>
@@ -48,12 +48,12 @@
       <div class="w-14 h-14 mx-auto mb-3 bg-positive-100 dark:bg-positive-900/30 rounded-full flex items-center justify-center">
         <IconCheck class="w-7 h-7 text-positive-600 dark:text-positive-400" />
       </div>
-      <p class="text-gray-600 dark:text-gray-400 font-medium">Todos al dia</p>
-      <p class="text-sm text-gray-500 dark:text-gray-500 mt-1">No hay deudas pendientes</p>
+      <p class="text-ttc-text-muted font-medium">Todos al dia</p>
+      <p class="text-sm text-ttc-text-muted mt-1">No hay deudas pendientes</p>
     </div>
 
     <!-- Settlement Items -->
-    <div v-else class="divide-y divide-gray-100 dark:divide-gray-700">
+    <div v-else class="divide-y divide-ttc-border">
       <SettlementItem
         v-for="(settlement, index) in settlements"
         :key="`${settlement.fromUserId}-${settlement.toUserId}-${index}`"

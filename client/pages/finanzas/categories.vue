@@ -12,21 +12,21 @@
       <template #body>
         <div class="flex flex-col gap-4">
           <div class="flex flex-col gap-2">
-            <label for="edit-name" class="text-sm font-medium text-gray-400">Nombre*</label>
+            <label for="edit-name" class="text-sm font-medium text-ttc-text-muted">Nombre*</label>
             <input
               id="edit-name"
               v-model="editForm.name"
               type="text"
               @blur="editTouched.name = true"
-              class="w-full px-4 py-3 rounded-lg bg-gray-700 border focus:outline-none"
-              :class="editTouched.name && !editForm.name ? 'border-red-500 ring-2 ring-red-500' : 'border-gray-600 focus:border-primary'"
+              class="w-full px-4 py-3 rounded-lg bg-ttc-input border focus:outline-none"
+              :class="editTouched.name && !editForm.name ? 'border-red-500 ring-2 ring-red-500' : 'border-ttc-border focus:border-primary'"
               placeholder="Nombre de la categoría"
             />
             <span v-if="editTouched.name && !editForm.name" class="text-xs text-red-400">Este campo es obligatorio</span>
           </div>
 
           <div class="flex flex-col gap-2">
-            <label for="edit-color" class="text-sm font-medium text-gray-400">Color</label>
+            <label for="edit-color" class="text-sm font-medium text-ttc-text-muted">Color</label>
             <div class="flex items-center gap-3">
               <input
                 id="edit-color"
@@ -37,7 +37,7 @@
               <input
                 v-model="editForm.color"
                 type="text"
-                class="flex-1 px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 focus:border-primary focus:outline-none uppercase"
+                class="flex-1 px-4 py-3 rounded-lg bg-ttc-input border border-ttc-border focus:border-primary focus:outline-none uppercase"
                 placeholder="#FFFFFF"
                 maxlength="7"
               />
@@ -73,29 +73,29 @@
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 class="text-2xl font-bold text-left">Categorías</h1>
-          <p class="text-gray-400 text-sm mt-1">Administrá las categorías de tus gastos</p>
+          <p class="text-ttc-text-muted text-sm mt-1">Administrá las categorías de tus gastos</p>
         </div>
       </div>
 
       <!-- Add New Category Form -->
-      <div class="bg-ttc-surface rounded-xl border border-gray-600 shadow-sm shadow-white/5 p-4">
+      <div class="bg-ttc-surface rounded-xl border border-ttc-border shadow-sm shadow-white/5 p-4">
         <h2 class="text-lg font-semibold mb-4">Nueva Categoría</h2>
         <div class="flex flex-col sm:flex-row gap-4">
           <div class="flex-1">
-            <label for="new-name" class="block text-sm font-medium text-gray-400 mb-2">Nombre*</label>
+            <label for="new-name" class="block text-sm font-medium text-ttc-text-muted mb-2">Nombre*</label>
             <input
               id="new-name"
               v-model="newCategory.name"
               type="text"
               @blur="newTouched.name = true"
-              class="w-full px-4 py-3 rounded-lg bg-gray-700 border focus:outline-none"
-              :class="newTouched.name && !newCategory.name ? 'border-red-500 ring-2 ring-red-500' : 'border-gray-600 focus:border-primary'"
+              class="w-full px-4 py-3 rounded-lg bg-ttc-input border focus:outline-none"
+              :class="newTouched.name && !newCategory.name ? 'border-red-500 ring-2 ring-red-500' : 'border-ttc-border focus:border-primary'"
               placeholder="Nombre de la categoría"
             />
             <span v-if="newTouched.name && !newCategory.name" class="text-xs text-red-400">Este campo es obligatorio</span>
           </div>
           <div class="w-full sm:w-auto sm:shrink-0">
-            <label for="new-color" class="block text-sm font-medium text-gray-400 mb-2">Color</label>
+            <label for="new-color" class="block text-sm font-medium text-ttc-text-muted mb-2">Color</label>
             <div class="flex items-center gap-2">
               <input
                 id="new-color"
@@ -106,14 +106,14 @@
               <input
                 v-model="newCategory.color"
                 type="text"
-                class="w-24 px-3 py-3 rounded-lg bg-gray-700 border border-gray-600 focus:border-primary focus:outline-none uppercase text-sm"
+                class="w-24 px-3 py-3 rounded-lg bg-ttc-input border border-ttc-border focus:border-primary focus:outline-none uppercase text-sm"
                 placeholder="#FFFFFF"
                 maxlength="7"
               />
             </div>
           </div>
           <div class="flex flex-col shrink-0">
-            <label class="hidden sm:block text-sm font-medium text-gray-400 mb-2 invisible">Acción</label>
+            <label class="hidden sm:block text-sm font-medium text-ttc-text-muted mb-2 invisible">Acción</label>
             <button
               @click="addCategory"
               :disabled="!newCategory.name || !newCategory.color || isAdding"
@@ -129,7 +129,7 @@
 
       <!-- Loading State -->
       <div v-if="isLoading" class="flex flex-col gap-4 skeleton-shimmer">
-        <div v-for="i in 5" :key="i" class="h-16 w-full bg-gray-700 rounded-lg"></div>
+        <div v-for="i in 5" :key="i" class="h-16 w-full bg-ttc-input rounded-lg"></div>
       </div>
 
       <!-- Categories List -->
@@ -137,11 +137,11 @@
         <div
           v-for="category in categories"
           :key="category.id"
-          class="bg-ttc-surface rounded-xl border border-gray-600 shadow-sm shadow-white/5 p-4 flex items-center justify-between gap-4"
+          class="bg-ttc-surface rounded-xl border border-ttc-border shadow-sm shadow-white/5 p-4 flex items-center justify-between gap-4"
         >
           <div class="flex items-center gap-4">
             <div
-              class="w-10 h-10 rounded-lg shrink-0 border border-gray-500"
+              class="w-10 h-10 rounded-lg shrink-0 border border-ttc-border"
               :style="{ backgroundColor: category.color }"
             ></div>
             <span class="font-medium">{{ category.name }}</span>
@@ -150,14 +150,14 @@
           <div class="flex items-center gap-2">
             <button
               @click="openEditModal(category)"
-              class="p-2 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-gray-600/50 transition-colors"
+              class="p-2 rounded-lg text-ttc-text-muted hover:text-ttc-text hover:bg-ttc-card-hover transition-colors"
               title="Editar"
             >
               <MdiPencil />
             </button>
             <button
               @click="openDeleteConfirm(category)"
-              class="p-2 rounded-lg text-gray-400 hover:text-danger hover:bg-danger/10 transition-colors"
+              class="p-2 rounded-lg text-ttc-text-muted hover:text-danger hover:bg-danger/10 transition-colors"
               title="Eliminar"
             >
               <MdiDelete />
@@ -166,7 +166,7 @@
         </div>
 
         <!-- Empty State -->
-        <div v-if="categories.length === 0" class="py-10 text-center text-gray-500">
+        <div v-if="categories.length === 0" class="py-10 text-center text-ttc-text-dim">
           <MdiTagOff class="text-5xl mx-auto mb-3 opacity-30" />
           <p>No hay categorías</p>
           <p class="text-sm mt-1">Agregá una categoría usando el formulario de arriba</p>

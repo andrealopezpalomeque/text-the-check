@@ -8,21 +8,21 @@
     <div v-if="isLoading" class="flex flex-col gap-4 skeleton-shimmer">
       <!-- Header Skeleton -->
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-3">
-        <div class="h-8 w-48 bg-gray-700 rounded"></div>
+        <div class="h-8 w-48 bg-ttc-input rounded"></div>
         <div class="flex gap-3">
-          <div class="h-16 w-40 bg-gray-700 rounded-lg"></div>
-          <div class="h-16 w-40 bg-gray-700 rounded-lg"></div>
-          <div class="h-16 w-40 bg-gray-700 rounded-lg"></div>
+          <div class="h-16 w-40 bg-ttc-input rounded-lg"></div>
+          <div class="h-16 w-40 bg-ttc-input rounded-lg"></div>
+          <div class="h-16 w-40 bg-ttc-input rounded-lg"></div>
         </div>
       </div>
       <!-- Table Skeleton -->
       <div class="hidden md:block px-3">
-        <div class="h-12 w-full bg-gray-700 rounded mb-2"></div>
-        <div v-for="i in 5" :key="i" class="h-16 w-full bg-gray-700/50 rounded mb-2"></div>
+        <div class="h-12 w-full bg-ttc-input rounded mb-2"></div>
+        <div v-for="i in 5" :key="i" class="h-16 w-full bg-ttc-surface rounded mb-2"></div>
       </div>
       <!-- Mobile Skeleton -->
       <div class="md:hidden px-3 space-y-4">
-        <div v-for="i in 3" :key="i" class="h-40 w-full bg-gray-700 rounded-lg"></div>
+        <div v-for="i in 3" :key="i" class="h-40 w-full bg-ttc-input rounded-lg"></div>
       </div>
     </div>
 
@@ -33,7 +33,7 @@
         <div class="flex items-center justify-between">
           <div>
             <h1 class="text-2xl font-bold">Pagos Fijos</h1>
-            <p class="text-sm text-gray-500">
+            <p class="text-sm text-ttc-text-dim">
               {{ recurrents.length }} pago{{ recurrents.length !== 1 ? 's' : '' }}
             </p>
           </div>
@@ -43,8 +43,8 @@
       <!-- Header & Summary -->
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-3">
         <!-- Month Navigation & Title -->
-        <div class="flex items-center justify-between w-full md:w-auto bg-ttc-surface rounded-xl p-1 border border-gray-600 shadow-sm shadow-white/5">
-          <button @click="changeMonthRange(3)" class="p-2 rounded-lg hover:bg-gray-700 transition-colors" aria-label="Meses anteriores">
+        <div class="flex items-center justify-between w-full md:w-auto bg-ttc-surface rounded-xl p-1 border border-ttc-border shadow-sm shadow-white/5">
+          <button @click="changeMonthRange(3)" class="p-2 rounded-lg hover:bg-ttc-input transition-colors" aria-label="Meses anteriores">
             <MdiChevronLeft class="text-xl" />
           </button>
           <h2 class="text-lg font-semibold px-4">
@@ -54,7 +54,7 @@
             @click="changeMonthRange(-3)"
             class="p-2 rounded-lg transition-colors"
             :disabled="isCurrentPeriod"
-            :class="isCurrentPeriod ? 'opacity-30 cursor-not-allowed' : 'hover:bg-gray-700'"
+            :class="isCurrentPeriod ? 'opacity-30 cursor-not-allowed' : 'hover:bg-ttc-input'"
             aria-label="Meses siguientes"
           >
             <MdiChevronRight class="text-xl" />
@@ -65,17 +65,17 @@
         <div class="flex flex-wrap gap-4 md:gap-6">
           <div class="flex items-center gap-3">
             <MdiCashCheck class="text-success text-2xl" />
-            <span class="text-lg font-semibold text-white">{{ formatPrice(currentMonthTotals.paid) }}</span>
+            <span class="text-lg font-semibold text-ttc-text">{{ formatPrice(currentMonthTotals.paid) }}</span>
           </div>
 
           <div class="flex items-center gap-3">
             <MdiCashRemove class="text-danger text-2xl" />
-            <span class="text-lg font-semibold text-white">{{ formatPrice(currentMonthTotals.unpaid) }}</span>
+            <span class="text-lg font-semibold text-ttc-text">{{ formatPrice(currentMonthTotals.unpaid) }}</span>
           </div>
 
           <div class="flex items-center gap-3">
-            <MdiCalendarMonth class="text-gray-300 text-2xl" />
-            <span class="text-lg font-semibold text-white">{{ formatPrice(currentMonthTotals.paid + currentMonthTotals.unpaid) }}</span>
+            <MdiCalendarMonth class="text-ttc-text-muted text-2xl" />
+            <span class="text-lg font-semibold text-ttc-text">{{ formatPrice(currentMonthTotals.paid + currentMonthTotals.unpaid) }}</span>
           </div>
         </div>
       </div>
@@ -87,7 +87,7 @@
       <div class="hidden md:block overflow-x-auto px-3">
         <table class="w-full table-fixed">
           <thead class="text-center">
-            <tr class="border-b border-gray-600 h-12">
+            <tr class="border-b border-ttc-border h-12">
               <th scope="col" class="text-start font-semibold">Pago</th>
               <th scope="col" class="w-28 font-semibold">Monto</th>
               <th scope="col" class="w-14 font-semibold">Día</th>
@@ -98,7 +98,7 @@
                 :class="month.key === currentMonthKey && month.year === $dayjs().format('YYYY') ? 'text-primary' : ''"
               >
                 {{ month.display }}
-                <span v-if="month.year !== currentYear" class="text-xs text-gray-500"
+                <span v-if="month.year !== currentYear" class="text-xs text-ttc-text-dim"
                   >'{{ month.year.substring(2) }}</span
                 >
               </th>
@@ -109,7 +109,7 @@
             <tr
               v-for="payment in recurrents"
               :key="payment.id"
-              class="border-b border-gray-700 hover:bg-gray-700/50 cursor-pointer transition-colors"
+              class="border-b border-ttc-border hover:bg-ttc-surface cursor-pointer transition-colors"
               @click="showDetails(payment.id)"
             >
               <td class="text-start py-4">
@@ -120,7 +120,7 @@
                   ></div>
                   <div class="flex flex-col text-start">
                     <span class="font-medium">{{ payment.title }}</span>
-                    <span class="text-xs text-gray-500">
+                    <span class="text-xs text-ttc-text-dim">
                       <span :style="{ color: getDisplayCategoryColor(payment) }">{{ getDisplayCategoryName(payment) }}</span>
                       <span v-if="payment.description"> · {{ payment.description }}</span>
                     </span>
@@ -129,7 +129,7 @@
               </td>
               <td class="font-medium text-sm">{{ formatPrice(payment.amount) }}</td>
               <td>
-                <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-700 text-xs font-medium">
+                <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-ttc-input text-xs font-medium">
                   {{ payment.dueDateDay }}
                 </span>
               </td>
@@ -146,7 +146,7 @@
                         ? 'bg-success/15'
                         : isDelayed(payment.months[month.key].dueDate)
                         ? 'bg-danger/15'
-                        : 'bg-gray-700'
+                        : 'bg-ttc-input'
                     ]"
                     :disabled="togglingPayment === `${payment.id}-${month.key}`"
                     :aria-label="payment.months[month.key].isPaid ? 'Marcar como no pagado' : 'Marcar como pagado'"
@@ -157,7 +157,7 @@
                       v-else-if="isDelayed(payment.months[month.key].dueDate)"
                       class="text-danger text-xl"
                     />
-                    <MdiCircleOutline v-else class="text-gray-400 text-xl" />
+                    <MdiCircleOutline v-else class="text-ttc-text-muted text-xl" />
                   </button>
 
                   <!-- Amount -->
@@ -166,7 +166,7 @@
                 <button
                   v-else
                   @click.stop="createPaymentForMonth(payment.id, month.key, false, month.year)"
-                  class="text-gray-400 hover:text-primary px-2 py-1 rounded transition-colors"
+                  class="text-ttc-text-muted hover:text-primary px-2 py-1 rounded transition-colors"
                 >
                   <MdiPlusCircleOutline class="text-xl" />
                 </button>
@@ -175,7 +175,7 @@
               <!-- Actions -->
               <td>
                 <div class="flex justify-center">
-                  <button @click.stop="showEdit(payment.id)" class="p-2 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-gray-600/50 transition-colors" :aria-label="`Editar ${payment.title}`">
+                  <button @click.stop="showEdit(payment.id)" class="p-2 rounded-lg text-ttc-text-muted hover:text-ttc-text hover:bg-ttc-card-hover transition-colors" :aria-label="`Editar ${payment.title}`">
                     <MdiPencil />
                   </button>
                 </div>
@@ -185,10 +185,10 @@
             <!-- Empty State -->
             <tr v-if="recurrents.length === 0">
               <td colspan="100%" class="py-16 text-center">
-                <MdiCashOff class="text-6xl mx-auto mb-4 text-gray-500" />
-                <p class="text-lg font-medium text-white mb-2">No tenés pagos fijos</p>
-                <p class="text-sm text-gray-400 mb-6 max-w-md mx-auto">Agrega tus pagos fijos como Netflix, internet, alquiler y mas para llevar un control mensual de tus gastos.</p>
-                <button @click="showNewPaymentModal" class="px-6 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary/80 transition-colors">Agregar Primer Pago</button>
+                <MdiCashOff class="text-6xl mx-auto mb-4 text-ttc-text-dim" />
+                <p class="text-lg font-medium text-ttc-text mb-2">No tenés pagos fijos</p>
+                <p class="text-sm text-ttc-text-muted mb-6 max-w-md mx-auto">Agrega tus pagos fijos como Netflix, internet, alquiler y mas para llevar un control mensual de tus gastos.</p>
+                <button @click="showNewPaymentModal" class="px-6 py-2.5 bg-primary text-ttc-text rounded-lg font-medium hover:bg-primary/80 transition-colors">Agregar Primer Pago</button>
               </td>
             </tr>
           </tbody>
@@ -199,10 +199,10 @@
         <div
           v-for="payment in recurrents"
           :key="payment.id"
-          class="bg-ttc-surface rounded-xl border border-gray-600 shadow-sm shadow-white/5 overflow-hidden"
+          class="bg-ttc-surface rounded-xl border border-ttc-border shadow-sm shadow-white/5 overflow-hidden"
         >
           <!-- Payment Header -->
-          <div class="p-4 border-b border-gray-600 flex items-center gap-3 cursor-pointer" @click="showDetails(payment.id)">
+          <div class="p-4 border-b border-ttc-border flex items-center gap-3 cursor-pointer" @click="showDetails(payment.id)">
             <div
               class="w-2 h-10 rounded-full shrink-0"
               :style="{ backgroundColor: getDisplayCategoryColor(payment) }"
@@ -210,7 +210,7 @@
 
             <div class="flex-1 min-w-0">
               <h3 class="font-medium truncate">{{ payment.title }}</h3>
-              <p class="text-xs text-gray-500 line-clamp-1">
+              <p class="text-xs text-ttc-text-dim line-clamp-1">
                 <span :style="{ color: getDisplayCategoryColor(payment) }">{{ getDisplayCategoryName(payment) }}</span>
                 <span v-if="payment.description"> · {{ payment.description }}</span>
               </p>
@@ -218,7 +218,7 @@
 
             <div class="text-right shrink-0">
               <span class="font-medium block">{{ formatPrice(payment.amount) }}</span>
-              <span class="text-xs text-gray-500">Día: {{ payment.dueDateDay }}</span>
+              <span class="text-xs text-ttc-text-dim">Día: {{ payment.dueDateDay }}</span>
             </div>
           </div>
 
@@ -231,7 +231,7 @@
             >
               <span
                 class="text-xs mb-1"
-                :class="month.key === currentMonthKey && month.year === $dayjs().format('YYYY') ? 'text-primary font-bold' : 'text-gray-500'"
+                :class="month.key === currentMonthKey && month.year === $dayjs().format('YYYY') ? 'text-primary font-bold' : 'text-ttc-text-dim'"
               >{{ month.display }}</span>
 
               <div v-if="payment.months[month.key]" class="flex flex-col items-center">
@@ -243,7 +243,7 @@
                       ? 'bg-success/15'
                       : isDelayed(payment.months[month.key].dueDate)
                       ? 'bg-danger/15'
-                      : 'bg-gray-700'
+                      : 'bg-ttc-input'
                   ]"
                   :disabled="togglingPayment === `${payment.id}-${month.key}`"
                   :aria-label="payment.months[month.key].isPaid ? 'Marcar como no pagado' : 'Marcar como pagado'"
@@ -254,7 +254,7 @@
                     v-else-if="isDelayed(payment.months[month.key].dueDate)"
                     class="text-danger text-xl"
                   />
-                  <MdiCircleOutline v-else class="text-gray-400 text-xl" />
+                  <MdiCircleOutline v-else class="text-ttc-text-muted text-xl" />
                 </button>
 
                 <span class="text-xs mt-1">{{ formatPrice(payment.months[month.key].amount) }}</span>
@@ -263,17 +263,17 @@
               <button
                 v-else
                 @click="createPaymentForMonth(payment.id, month.key, false, month.year)"
-                class="inline-flex items-center justify-center h-10 w-10 rounded-full bg-gray-700"
+                class="inline-flex items-center justify-center h-10 w-10 rounded-full bg-ttc-input"
                 aria-label="Agregar pago para este mes"
               >
-                <MdiPlusCircleOutline class="text-gray-400 text-xl" />
+                <MdiPlusCircleOutline class="text-ttc-text-muted text-xl" />
               </button>
             </div>
           </div>
 
           <!-- Actions -->
-          <div class="flex justify-end p-2 border-t border-gray-600">
-            <button @click="showEdit(payment.id)" class="p-2 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-gray-600/50 transition-colors" :aria-label="`Editar ${payment.title}`">
+          <div class="flex justify-end p-2 border-t border-ttc-border">
+            <button @click="showEdit(payment.id)" class="p-2 rounded-lg text-ttc-text-muted hover:text-ttc-text hover:bg-ttc-card-hover transition-colors" :aria-label="`Editar ${payment.title}`">
               <MdiPencil />
             </button>
           </div>
@@ -281,10 +281,10 @@
 
         <!-- Empty State -->
         <div v-if="recurrents.length === 0" class="py-16 text-center">
-          <MdiCashOff class="text-6xl mx-auto mb-4 text-gray-500" />
-          <p class="text-lg font-medium text-white mb-2">No tenés pagos fijos</p>
-          <p class="text-sm text-gray-400 mb-6 max-w-sm mx-auto">Agrega tus pagos fijos como Netflix, internet, alquiler y mas para llevar un control mensual de tus gastos.</p>
-          <button @click="showNewPaymentModal" class="px-6 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary/80 transition-colors">Agregar Primer Pago</button>
+          <MdiCashOff class="text-6xl mx-auto mb-4 text-ttc-text-dim" />
+          <p class="text-lg font-medium text-ttc-text mb-2">No tenés pagos fijos</p>
+          <p class="text-sm text-ttc-text-muted mb-6 max-w-sm mx-auto">Agrega tus pagos fijos como Netflix, internet, alquiler y mas para llevar un control mensual de tus gastos.</p>
+          <button @click="showNewPaymentModal" class="px-6 py-2.5 bg-primary text-ttc-text rounded-lg font-medium hover:bg-primary/80 transition-colors">Agregar Primer Pago</button>
         </div>
       </div>
     </div>

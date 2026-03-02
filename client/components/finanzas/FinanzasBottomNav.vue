@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 md:hidden"
+    class="fixed bottom-0 left-0 right-0 z-50 bg-ttc-card border-t border-ttc-border md:hidden"
     :style="{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }"
   >
     <div class="flex items-center justify-around h-16">
@@ -11,7 +11,7 @@
           'relative flex flex-col items-center justify-center w-16 h-full transition-colors',
           route.path === '/finanzas'
             ? 'text-blue-600 dark:text-blue-400'
-            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+            : 'text-ttc-text-muted hover:text-ttc-text'
         ]"
       >
         <IconCalendarCheck class="w-6 h-6" />
@@ -29,7 +29,7 @@
           'relative flex flex-col items-center justify-center w-16 h-full transition-colors',
           route.path === '/finanzas/one-time'
             ? 'text-blue-600 dark:text-blue-400'
-            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+            : 'text-ttc-text-muted hover:text-ttc-text'
         ]"
       >
         <IconReceiptText class="w-6 h-6" />
@@ -59,7 +59,7 @@
           'relative flex flex-col items-center justify-center w-16 h-full transition-colors',
           isSummaryActive
             ? 'text-blue-600 dark:text-blue-400'
-            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+            : 'text-ttc-text-muted hover:text-ttc-text'
         ]"
       >
         <IconChartBar class="w-6 h-6" />
@@ -77,7 +77,7 @@
           'relative flex flex-col items-center justify-center w-16 h-full transition-colors',
           route.path === '/finanzas/categories'
             ? 'text-blue-600 dark:text-blue-400'
-            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+            : 'text-ttc-text-muted hover:text-ttc-text'
         ]"
       >
         <IconTagMultiple class="w-6 h-6" />

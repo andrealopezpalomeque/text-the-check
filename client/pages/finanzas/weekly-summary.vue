@@ -1,16 +1,16 @@
 <template>
   <div class="weekly-summary-page">
     <!-- View Toggle Tabs -->
-    <div class="flex gap-1 bg-gray-800 rounded-lg p-1 mx-3 mt-3 mb-4">
+    <div class="flex gap-1 bg-ttc-card rounded-lg p-1 mx-3 mt-3 mb-4">
       <NuxtLink
         to="/finanzas/summary"
-        class="flex-1 text-center py-2 px-4 rounded-md text-sm font-medium transition-colors text-gray-400 hover:text-gray-200"
+        class="flex-1 text-center py-2 px-4 rounded-md text-sm font-medium transition-colors text-ttc-text-muted hover:text-ttc-text"
       >
         Mensual
       </NuxtLink>
       <NuxtLink
         to="/finanzas/weekly-summary"
-        class="flex-1 text-center py-2 px-4 rounded-md text-sm font-medium transition-colors bg-blue-600 text-white"
+        class="flex-1 text-center py-2 px-4 rounded-md text-sm font-medium transition-colors bg-ttc-primary text-white"
       >
         Semanal
       </NuxtLink>
@@ -19,54 +19,54 @@
     <!-- Page Header -->
     <div class="flex flex-col gap-2 p-3 mb-6">
       <h1 class="text-2xl font-bold">Resumen Semanal</h1>
-      <p class="text-sm text-gray-400">Tu resumen de pagos de esta semana y progreso del mes</p>
+      <p class="text-sm text-ttc-text-muted">Tu resumen de pagos de esta semana y progreso del mes</p>
     </div>
 
     <!-- Loading Skeleton -->
     <div v-if="isLoading" class="grid grid-cols-1 lg:grid-cols-2 gap-6 p-3 skeleton-shimmer">
-      <div class="bg-ttc-surface rounded-xl border border-gray-600 p-4">
-        <div class="h-6 w-40 bg-gray-700 rounded mb-4"></div>
+      <div class="bg-ttc-surface rounded-xl border border-ttc-border p-4">
+        <div class="h-6 w-40 bg-ttc-input rounded mb-4"></div>
         <div class="space-y-3">
-          <div v-for="i in 3" :key="i" class="h-14 bg-gray-700/50 rounded-lg"></div>
+          <div v-for="i in 3" :key="i" class="h-14 bg-ttc-surface rounded-lg"></div>
         </div>
       </div>
-      <div class="bg-ttc-surface rounded-xl border border-gray-600 p-4">
-        <div class="h-6 w-48 bg-gray-700 rounded mb-4"></div>
+      <div class="bg-ttc-surface rounded-xl border border-ttc-border p-4">
+        <div class="h-6 w-48 bg-ttc-input rounded mb-4"></div>
         <div class="space-y-3">
-          <div v-for="i in 3" :key="i" class="h-14 bg-gray-700/50 rounded-lg"></div>
+          <div v-for="i in 3" :key="i" class="h-14 bg-ttc-surface rounded-lg"></div>
         </div>
       </div>
-      <div class="lg:col-span-2 bg-ttc-surface rounded-xl border border-gray-600 p-4">
-        <div class="h-6 w-44 bg-gray-700 rounded mb-4"></div>
-        <div class="h-8 bg-gray-700/50 rounded-full"></div>
+      <div class="lg:col-span-2 bg-ttc-surface rounded-xl border border-ttc-border p-4">
+        <div class="h-6 w-44 bg-ttc-input rounded mb-4"></div>
+        <div class="h-8 bg-ttc-surface rounded-full"></div>
       </div>
     </div>
 
     <!-- Content -->
     <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-6 p-3">
       <!-- Card 1: Semana Pasada -->
-      <div class="bg-ttc-surface rounded-xl border border-gray-600 shadow-sm shadow-white/5 p-4">
+      <div class="bg-ttc-surface rounded-xl border border-ttc-border shadow-sm shadow-white/5 p-4">
         <h2 class="text-lg font-semibold mb-3 flex items-center">
           <MdiCalendarWeek class="mr-2 text-primary" />
           Semana Pasada
         </h2>
 
         <div class="flex gap-3 mb-4">
-          <div class="flex-1 p-2 bg-gray-700/40 rounded-lg text-center">
-            <span class="text-xs text-gray-400">Pagos</span>
+          <div class="flex-1 p-2 bg-ttc-surface rounded-lg text-center">
+            <span class="text-xs text-ttc-text-muted">Pagos</span>
             <p class="text-lg font-bold">{{ duePastWeek.length }}</p>
           </div>
-          <div class="flex-1 p-2 bg-gray-700/40 rounded-lg text-center">
-            <span class="text-xs text-gray-400">Pagados</span>
+          <div class="flex-1 p-2 bg-ttc-surface rounded-lg text-center">
+            <span class="text-xs text-ttc-text-muted">Pagados</span>
             <p class="text-lg font-bold text-success">{{ duePastWeek.filter(p => p.isPaidThisMonth).length }}</p>
           </div>
-          <div class="flex-1 p-2 bg-gray-700/40 rounded-lg text-center">
-            <span class="text-xs text-gray-400">Pendientes</span>
+          <div class="flex-1 p-2 bg-ttc-surface rounded-lg text-center">
+            <span class="text-xs text-ttc-text-muted">Pendientes</span>
             <p class="text-lg font-bold text-warning">{{ duePastWeek.filter(p => !p.isPaidThisMonth).length }}</p>
           </div>
         </div>
 
-        <div v-if="duePastWeek.length === 0" class="flex flex-col items-center justify-center py-8 text-gray-400">
+        <div v-if="duePastWeek.length === 0" class="flex flex-col items-center justify-center py-8 text-ttc-text-muted">
           <MdiCheckCircle class="text-3xl mb-2 text-success" />
           <p class="text-sm">No hubo pagos la semana pasada</p>
         </div>
@@ -75,7 +75,7 @@
           <div
             v-for="payment in duePastWeek"
             :key="payment.id"
-            class="flex items-center justify-between p-3 bg-gray-700/40 rounded-lg cursor-pointer hover:bg-gray-600/50 transition-colors"
+            class="flex items-center justify-between p-3 bg-ttc-surface rounded-lg cursor-pointer hover:bg-ttc-card-hover transition-colors"
             @click="navigateTo('/fijos')"
           >
             <div class="flex items-center gap-3">
@@ -85,7 +85,7 @@
               ></div>
               <div>
                 <p class="font-medium text-sm">{{ payment.title }}</p>
-                <p class="text-xs text-gray-400">Venció el {{ payment.dueDateDay }}</p>
+                <p class="text-xs text-ttc-text-muted">Venció el {{ payment.dueDateDay }}</p>
               </div>
             </div>
             <div class="flex items-center gap-2">
@@ -102,28 +102,28 @@
       </div>
 
       <!-- Card 2: Semana Entrante -->
-      <div class="bg-ttc-surface rounded-xl border border-gray-600 shadow-sm shadow-white/5 p-4">
+      <div class="bg-ttc-surface rounded-xl border border-ttc-border shadow-sm shadow-white/5 p-4">
         <h2 class="text-lg font-semibold mb-3 flex items-center">
           <MdiCreditCardClock class="mr-2 text-primary" />
           Semana Entrante
         </h2>
 
         <div class="flex gap-3 mb-4">
-          <div class="flex-1 p-2 bg-gray-700/40 rounded-lg text-center">
-            <span class="text-xs text-gray-400">Pagos</span>
+          <div class="flex-1 p-2 bg-ttc-surface rounded-lg text-center">
+            <span class="text-xs text-ttc-text-muted">Pagos</span>
             <p class="text-lg font-bold">{{ dueNextWeek.length }}</p>
           </div>
-          <div class="flex-1 p-2 bg-gray-700/40 rounded-lg text-center">
-            <span class="text-xs text-gray-400">Pagados</span>
+          <div class="flex-1 p-2 bg-ttc-surface rounded-lg text-center">
+            <span class="text-xs text-ttc-text-muted">Pagados</span>
             <p class="text-lg font-bold text-success">{{ dueNextWeek.filter(p => p.isPaidThisMonth).length }}</p>
           </div>
-          <div class="flex-1 p-2 bg-gray-700/40 rounded-lg text-center">
-            <span class="text-xs text-gray-400">Pendientes</span>
+          <div class="flex-1 p-2 bg-ttc-surface rounded-lg text-center">
+            <span class="text-xs text-ttc-text-muted">Pendientes</span>
             <p class="text-lg font-bold text-warning">{{ dueNextWeek.filter(p => !p.isPaidThisMonth).length }}</p>
           </div>
         </div>
 
-        <div v-if="dueNextWeek.length === 0" class="flex flex-col items-center justify-center py-8 text-gray-400">
+        <div v-if="dueNextWeek.length === 0" class="flex flex-col items-center justify-center py-8 text-ttc-text-muted">
           <MdiCheckCircle class="text-3xl mb-2 text-success" />
           <p class="text-sm">No hay pagos la semana entrante</p>
         </div>
@@ -132,7 +132,7 @@
           <div
             v-for="payment in dueNextWeek"
             :key="payment.id"
-            class="flex items-center justify-between p-3 bg-gray-700/40 rounded-lg cursor-pointer hover:bg-gray-600/50 transition-colors"
+            class="flex items-center justify-between p-3 bg-ttc-surface rounded-lg cursor-pointer hover:bg-ttc-card-hover transition-colors"
             @click="navigateTo('/fijos')"
           >
             <div class="flex items-center gap-3">
@@ -142,7 +142,7 @@
               ></div>
               <div>
                 <p class="font-medium text-sm">{{ payment.title }}</p>
-                <p class="text-xs text-gray-400">Vence el {{ payment.dueDateDay }}</p>
+                <p class="text-xs text-ttc-text-muted">Vence el {{ payment.dueDateDay }}</p>
               </div>
             </div>
             <div class="flex items-center gap-2">
@@ -159,68 +159,68 @@
       </div>
 
       <!-- Card 3: Total Pendiente -->
-      <div class="lg:col-span-2 bg-ttc-surface rounded-xl border border-gray-600 shadow-sm shadow-white/5 p-4">
+      <div class="lg:col-span-2 bg-ttc-surface rounded-xl border border-ttc-border shadow-sm shadow-white/5 p-4">
         <h2 class="text-lg font-semibold mb-2 flex items-center">
           <MdiCashClock class="mr-2 text-primary" />
           Total Pendiente
         </h2>
         <p class="text-3xl font-bold text-warning">{{ formatPrice(totalUnpaidAmount) }}</p>
-        <p class="text-sm text-gray-400 mt-1">
+        <p class="text-sm text-ttc-text-muted mt-1">
           Total necesario para estar al día ({{ totalUnpaidCount }} pago{{ totalUnpaidCount !== 1 ? 's' : '' }})
         </p>
       </div>
 
       <!-- Card 4: Mes Actual -->
-      <div class="lg:col-span-2 bg-ttc-surface rounded-xl border border-gray-600 shadow-sm shadow-white/5 p-4">
+      <div class="lg:col-span-2 bg-ttc-surface rounded-xl border border-ttc-border shadow-sm shadow-white/5 p-4">
         <h2 class="text-lg font-semibold mb-4 flex items-center">
           <MdiCalendarMonth class="mr-2 text-primary" />
           Mes Actual
         </h2>
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <div class="flex flex-col p-3 bg-gray-700/40 rounded-lg">
-            <span class="text-xs text-gray-400">Pagados</span>
+          <div class="flex flex-col p-3 bg-ttc-surface rounded-lg">
+            <span class="text-xs text-ttc-text-muted">Pagados</span>
             <span class="text-xl font-bold text-success">{{ stats.paidThisMonth }}</span>
-            <span class="text-xs text-gray-500">completados</span>
+            <span class="text-xs text-ttc-text-dim">completados</span>
           </div>
-          <div class="flex flex-col p-3 bg-gray-700/40 rounded-lg">
-            <span class="text-xs text-gray-400">Pendientes</span>
+          <div class="flex flex-col p-3 bg-ttc-surface rounded-lg">
+            <span class="text-xs text-ttc-text-muted">Pendientes</span>
             <span class="text-xl font-bold text-warning">{{ stats.unpaidThisMonth }}</span>
-            <span class="text-xs text-gray-500">por pagar</span>
+            <span class="text-xs text-ttc-text-dim">por pagar</span>
           </div>
-          <div class="flex flex-col p-3 bg-gray-700/40 rounded-lg">
-            <span class="text-xs text-gray-400">Total Pagado</span>
+          <div class="flex flex-col p-3 bg-ttc-surface rounded-lg">
+            <span class="text-xs text-ttc-text-muted">Total Pagado</span>
             <span class="text-xl font-bold">{{ formatPrice(stats.totalPaidAmount) }}</span>
-            <span class="text-xs text-gray-500">este mes</span>
+            <span class="text-xs text-ttc-text-dim">este mes</span>
           </div>
-          <div class="flex flex-col p-3 bg-gray-700/40 rounded-lg">
-            <span class="text-xs text-gray-400">Gastos Unicos</span>
+          <div class="flex flex-col p-3 bg-ttc-surface rounded-lg">
+            <span class="text-xs text-ttc-text-muted">Gastos Unicos</span>
             <span class="text-xl font-bold">{{ stats.oneTimeCount }}</span>
-            <span class="text-xs text-gray-500">{{ formatPrice(stats.oneTimeAmount) }}</span>
+            <span class="text-xs text-ttc-text-dim">{{ formatPrice(stats.oneTimeAmount) }}</span>
           </div>
         </div>
       </div>
 
       <!-- Card 5: AI Insight -->
-      <div v-if="weeklySummaryStore.getAiInsight" class="lg:col-span-2 bg-ttc-surface rounded-xl border border-gray-600 shadow-sm shadow-white/5 p-4">
+      <div v-if="weeklySummaryStore.getAiInsight" class="lg:col-span-2 bg-ttc-surface rounded-xl border border-ttc-border shadow-sm shadow-white/5 p-4">
         <h2 class="text-lg font-semibold mb-2 flex items-center">
           <MdiLightbulbOn class="mr-2 text-primary" />
           Resumen IA
         </h2>
-        <p class="text-gray-300 whitespace-pre-line">{{ weeklySummaryStore.getAiInsight }}</p>
+        <p class="text-ttc-text whitespace-pre-line">{{ weeklySummaryStore.getAiInsight }}</p>
       </div>
 
       <!-- Card 6: Progreso del Mes -->
-      <div class="lg:col-span-2 bg-ttc-surface rounded-xl border border-gray-600 shadow-sm shadow-white/5 p-4">
+      <div class="lg:col-span-2 bg-ttc-surface rounded-xl border border-ttc-border shadow-sm shadow-white/5 p-4">
         <h2 class="text-lg font-semibold mb-2 flex items-center">
           <MdiProgressCheck class="mr-2 text-primary" />
           Progreso del Mes
         </h2>
-        <p class="text-sm text-gray-400 mb-4">
+        <p class="text-sm text-ttc-text-muted mb-4">
           {{ stats.paidThisMonth }} de {{ stats.paidThisMonth + stats.unpaidThisMonth }} pagos completados
         </p>
 
         <div
-          class="w-full h-6 bg-gray-700 rounded-full overflow-hidden"
+          class="w-full h-6 bg-ttc-input rounded-full overflow-hidden"
           role="progressbar"
           :aria-valuenow="progressPercent"
           aria-valuemin="0"
@@ -234,8 +234,8 @@
           ></div>
         </div>
         <div class="flex justify-between mt-2 text-sm">
-          <span class="text-gray-400">{{ progressPercent }}% completado</span>
-          <span class="text-gray-400">
+          <span class="text-ttc-text-muted">{{ progressPercent }}% completado</span>
+          <span class="text-ttc-text-muted">
             {{ formatPrice(stats.totalPaidAmount) }} pagado
           </span>
         </div>

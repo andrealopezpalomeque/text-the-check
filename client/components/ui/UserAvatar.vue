@@ -26,7 +26,7 @@
     <span
       v-if="showName && name"
       :class="[
-        'font-medium text-gray-900 dark:text-white break-words',
+        'font-medium text-ttc-text break-words',
         nameSizeClasses
       ]"
     >

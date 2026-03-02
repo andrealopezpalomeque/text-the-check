@@ -1,5 +1,5 @@
 <template>
-  <div class="px-3 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors overflow-hidden">
+  <div class="px-3 py-3 hover:bg-ttc-card-hover transition-colors overflow-hidden">
     <div class="flex items-start gap-2">
       <!-- Category icon -->
       <CategoryIcon :category="expense.category" size="md" />
@@ -9,10 +9,10 @@
         <!-- Description and amount row -->
         <div class="flex items-start justify-between gap-2">
           <div class="min-w-0 flex-1">
-            <p class="text-sm font-medium text-gray-900 dark:text-white truncate">
+            <p class="text-sm font-medium text-ttc-text truncate">
               {{ expense.description }}
             </p>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+            <p class="text-xs text-ttc-text-muted mt-0.5">
               Pago: <span class="font-medium">{{ expense.userName }}</span>
               <span class="mx-1">-</span>
               <span>{{ formatRelativeTime(expense.timestamp) }}</span>
@@ -25,14 +25,14 @@
             <div class="flex items-center gap-0.5">
               <button
                 @click.stop="$emit('edit', expense)"
-                class="p-1.5 text-gray-300 dark:text-gray-600 hover:text-blue-500 dark:hover:text-blue-400 active:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 active:bg-blue-100 dark:active:bg-blue-900/30 rounded-lg transition-colors"
+                class="p-1.5 text-ttc-text-dim hover:text-ttc-primary active:text-ttc-primary hover:bg-blue-900/20 active:bg-blue-900/30 rounded-lg transition-colors"
                 title="Editar gasto"
               >
                 <IconPencil class="w-4 h-4" />
               </button>
               <button
                 @click.stop="$emit('delete', expense)"
-                class="p-1.5 text-gray-300 dark:text-gray-600 hover:text-red-500 dark:hover:text-red-400 active:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 active:bg-red-100 dark:active:bg-red-900/30 rounded-lg transition-colors"
+                class="p-1.5 text-ttc-text-dim hover:text-red-400 active:text-red-400 hover:bg-red-900/20 active:bg-red-900/30 rounded-lg transition-colors"
                 title="Eliminar gasto"
               >
                 <IconTrash class="w-4 h-4" />
@@ -43,10 +43,10 @@
             <div class="text-right flex-shrink-0">
               <!-- Show user's share prominently if in personal view -->
               <template v-if="showUserShare && userShare > 0">
-                <p class="text-sm font-semibold text-gray-900 dark:text-white font-mono tabular-nums whitespace-nowrap">
+                <p class="text-sm font-semibold text-ttc-text font-mono tabular-nums whitespace-nowrap">
                   {{ formatCurrency(userShare) }}
                 </p>
-                <p class="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                <p class="text-xs text-ttc-text-muted whitespace-nowrap">
                   tu parte
                 </p>
               </template>
@@ -58,7 +58,7 @@
                 />
                 <p
                   v-if="expense.originalCurrency && expense.originalCurrency !== 'ARS'"
-                  class="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap"
+                  class="text-xs text-ttc-text-muted whitespace-nowrap"
                 >
                   {{ formatCurrencyByCode(expense.originalAmount ?? 0, expense.originalCurrency) }}
                 </p>
@@ -69,11 +69,11 @@
 
         <!-- Participants info -->
         <div class="mt-1.5 flex items-center flex-wrap gap-x-2 gap-y-1 text-xs">
-          <span class="text-gray-500 dark:text-gray-400">
+          <span class="text-ttc-text-muted">
             Dividido entre:
-            <span class="text-gray-700 dark:text-gray-300">{{ participantsDisplay }}</span>
+            <span class="text-ttc-text">{{ participantsDisplay }}</span>
           </span>
-          <span class="text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded-full font-medium whitespace-nowrap">
+          <span class="text-ttc-text-muted bg-ttc-input px-1.5 py-0.5 rounded-full font-medium whitespace-nowrap">
             {{ formatCurrency(perPersonAmount) }} c/u
           </span>
         </div>

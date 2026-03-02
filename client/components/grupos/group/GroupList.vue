@@ -1,13 +1,13 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20 md:pb-0">
+  <div class="min-h-screen bg-ttc-bg pb-20 md:pb-0">
     <div class="container mx-auto px-4 py-6">
       <!-- Header -->
       <div class="flex items-center justify-between mb-8">
         <div>
-          <h1 class="font-display text-2xl font-bold text-gray-900 dark:text-white">
+          <h1 class="font-display text-2xl font-bold text-ttc-text">
             Mis Grupos
           </h1>
-          <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          <p class="text-sm text-ttc-text-muted mt-1">
             Seleccioná un grupo para ver sus gastos
           </p>
         </div>
@@ -15,13 +15,13 @@
         <NuxtLink
           v-if="user"
           to="/profile"
-          class="flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg px-3 py-2 transition-colors"
+          class="flex items-center gap-2 hover:bg-ttc-card-hover rounded-lg px-3 py-2 transition-colors"
         >
           <img
             v-if="user.photoURL"
             :src="user.photoURL"
             :alt="user.displayName || 'User'"
-            class="w-9 h-9 rounded-full ring-2 ring-gray-200 dark:ring-gray-700"
+            class="w-9 h-9 rounded-full ring-2 ring-ttc-border"
           />
           <div
             v-else
@@ -36,18 +36,18 @@
 
       <!-- Empty State -->
       <div v-if="groupStore.groups.length === 0" class="text-center py-16">
-        <div class="w-20 h-20 mx-auto mb-6 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
-          <IconGroup class="w-10 h-10 text-gray-400 dark:text-gray-500" />
+        <div class="w-20 h-20 mx-auto mb-6 bg-ttc-card rounded-full flex items-center justify-center">
+          <IconGroup class="w-10 h-10 text-ttc-text-muted" />
         </div>
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+        <h2 class="text-xl font-semibold text-ttc-text mb-2">
           No tenés grupos todavía
         </h2>
-        <p class="text-gray-500 dark:text-gray-400 mb-6 max-w-sm mx-auto">
+        <p class="text-ttc-text-muted mb-6 max-w-sm mx-auto">
           Creá un grupo para empezar a dividir gastos con tus amigos
         </p>
         <button
           @click="$emit('create')"
-          class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors"
+          class="inline-flex items-center gap-2 px-6 py-3 bg-ttc-primary hover:bg-ttc-primary-light text-white font-medium rounded-xl transition-colors"
         >
           <IconPlus class="w-5 h-5" />
           Crear grupo
@@ -61,28 +61,28 @@
           v-for="group in groupStore.groups"
           :key="group.id"
           @click="groupStore.enterGroup(group.id)"
-          class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 text-left hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-md transition-all group"
+          class="bg-ttc-card rounded-xl border border-ttc-border p-5 text-left hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-md transition-all group"
         >
           <div class="flex items-center justify-between">
             <div class="flex-1 min-w-0">
-              <h3 class="font-semibold text-gray-900 dark:text-white truncate text-lg">
+              <h3 class="font-semibold text-ttc-text truncate text-lg">
                 {{ group.name }}
               </h3>
-              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              <p class="text-sm text-ttc-text-muted mt-1">
                 {{ getMemberCount(group) }} {{ getMemberCount(group) === 1 ? 'miembro' : 'miembros' }}
               </p>
             </div>
-            <IconChevronRight class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-blue-500 transition-colors flex-shrink-0 ml-3" />
+            <IconChevronRight class="w-5 h-5 text-ttc-text-muted group-hover:text-blue-500 transition-colors flex-shrink-0 ml-3" />
           </div>
         </button>
 
         <!-- Create Group Card -->
         <button
           @click="$emit('create')"
-          class="rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 p-5 text-center hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all flex flex-col items-center justify-center min-h-[88px]"
+          class="rounded-xl border-2 border-dashed border-ttc-border p-5 text-center hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all flex flex-col items-center justify-center min-h-[88px]"
         >
-          <IconPlus class="w-6 h-6 text-gray-400 dark:text-gray-500 mb-1" />
-          <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Crear grupo</span>
+          <IconPlus class="w-6 h-6 text-ttc-text-muted mb-1" />
+          <span class="text-sm font-medium text-ttc-text-muted">Crear grupo</span>
         </button>
       </div>
     </div>

@@ -3,8 +3,8 @@
     <!-- Balance row (clickable header) -->
     <button
       @click="toggleExpand"
-      class="w-full px-3 py-3 flex items-center justify-between gap-2 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors text-left overflow-hidden"
-      :class="{ 'bg-gray-50 dark:bg-gray-700/30': isExpanded }"
+      class="w-full px-3 py-3 flex items-center justify-between gap-2 hover:bg-ttc-card-hover transition-colors text-left overflow-hidden"
+      :class="{ 'bg-ttc-bg': isExpanded }"
     >
       <div class="flex items-center gap-2 min-w-0 flex-1">
         <!-- Chevron indicator -->
@@ -14,8 +14,8 @@
         />
 
         <!-- User avatar -->
-        <div v-if="isGhost" class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 bg-gray-100 dark:bg-gray-700 border border-dashed border-gray-300 dark:border-gray-500">
-          <IconAccountOutline class="w-4 h-4 text-gray-400 dark:text-gray-500" />
+        <div v-if="isGhost" class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 bg-ttc-input border border-dashed border-ttc-border">
+          <IconAccountOutline class="w-4 h-4 text-ttc-text-muted" />
         </div>
         <UserAvatar
           v-else
@@ -27,12 +27,12 @@
 
         <!-- Name with (vos) / ghost marker -->
         <div class="min-w-0 flex-1">
-          <p class="text-sm font-medium text-gray-900 dark:text-white truncate">
+          <p class="text-sm font-medium text-ttc-text truncate">
             {{ displayName }}
-            <span v-if="isCurrentUser" class="text-gray-500 dark:text-gray-400 font-normal">
+            <span v-if="isCurrentUser" class="text-ttc-text-muted font-normal">
               (vos)
             </span>
-            <span v-else-if="isGhost" class="text-gray-400 dark:text-gray-500 font-normal text-xs">
+            <span v-else-if="isGhost" class="text-ttc-text-muted font-normal text-xs">
               (sin cuenta)
             </span>
           </p>
@@ -48,7 +48,7 @@
           size="sm"
           bold
         />
-        <p class="text-xs text-gray-500 dark:text-gray-400">
+        <p class="text-xs text-ttc-text-muted">
           <span v-if="balance.net > 0">le deben</span>
           <span v-else-if="balance.net < 0">debe</span>
           <span v-else>al dia</span>
@@ -69,7 +69,7 @@
         v-if="isExpanded"
         class="px-4 pb-3 overflow-hidden"
       >
-        <div class="ml-7 pl-4 border-l-2 border-gray-200 dark:border-gray-600 space-y-2">
+        <div class="ml-7 pl-4 border-l-2 border-ttc-border space-y-2">
           <div
             v-for="(item, idx) in breakdown"
             :key="idx"
@@ -77,10 +77,10 @@
           >
             <div class="flex items-center gap-2 min-w-0">
               <CategoryIcon :category="item.expense.category" size="sm" />
-              <span class="truncate text-gray-700 dark:text-gray-300">
+              <span class="truncate text-ttc-text">
                 {{ item.expense.description }}
               </span>
-              <span class="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
+              <span class="text-xs text-ttc-text-muted flex-shrink-0">
                 (pago {{ getFirstName(item.paidBy) }})
               </span>
             </div>
@@ -92,7 +92,7 @@
               class="flex-shrink-0 ml-2"
             />
           </div>
-          <div v-if="breakdown.length === 0" class="text-sm text-gray-500 dark:text-gray-400 py-2">
+          <div v-if="breakdown.length === 0" class="text-sm text-ttc-text-muted py-2">
             Sin gastos asociados
           </div>
         </div>

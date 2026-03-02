@@ -1,6 +1,6 @@
 <template>
-  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-    <h2 class="font-display text-sm font-semibold text-gray-500 dark:text-gray-400 text-center mb-2">
+  <div class="bg-ttc-card rounded-xl shadow-sm border border-ttc-border p-6">
+    <h2 class="font-display text-sm font-semibold text-ttc-text-muted text-center mb-2">
       Tu Balance
     </h2>
 
@@ -15,7 +15,7 @@
       >
         {{ balance >= 0 ? '+' : '-' }}{{ formatCurrency(Math.abs(balance)) }}
       </p>
-      <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+      <p class="text-sm text-ttc-text-muted mt-1">
         {{ balanceLabel }}
       </p>
     </div>
@@ -41,7 +41,7 @@ const balanceColorClass = computed(() => {
   } else if (props.balance < 0) {
     return 'text-negative-600 dark:text-negative-400'
   }
-  return 'text-gray-600 dark:text-gray-400'
+  return 'text-ttc-text-muted'
 })
 
 const balanceLabel = computed(() => {

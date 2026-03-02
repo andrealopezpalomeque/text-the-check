@@ -16,6 +16,10 @@
   --color-text-muted: #7B8FA6;
   --color-text-dim: #4A5A6E;
   --color-danger: #EF4444;
+  --color-success: #22C55E;
+  --color-warning: #F59E0B;
+  --color-input: #1E2736;
+  --color-card-hover: #1F2937;
   /* Chat bubble backgrounds (pre-mixed for reliable rendering) */
   --color-bubble-user-primary: #1E3254;
   --color-bubble-user-accent: #153B2E;
@@ -39,6 +43,10 @@
   --color-text-muted: #5A6B80;
   --color-text-dim: #8A96A8;
   --color-danger: #DC2626;
+  --color-success: #16A34A;
+  --color-warning: #D97706;
+  --color-input: #F1F5F9;
+  --color-card-hover: #F1F5F9;
   /* Chat bubble backgrounds (pre-mixed for reliable rendering) */
   --color-bubble-user-primary: #D6E5F6;
   --color-bubble-user-accent: #D1F0E4;

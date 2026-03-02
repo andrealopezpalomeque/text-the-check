@@ -3,13 +3,13 @@
     <div class="flex items-center justify-between">
       <div class="flex-1">
         <div class="flex items-center gap-3">
-          <h1 class="font-display text-2xl font-bold text-gray-900 dark:text-white">
+          <h1 class="font-display text-2xl font-bold text-ttc-text">
             Text The Check
           </h1>
           <!-- Mode Toggle: Switch to Finanzas -->
           <button
             @click="switchToFinanzas"
-            class="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-gray-500 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-md transition-colors"
+            class="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-ttc-text-muted hover:text-emerald-400 hover:bg-emerald-900/20 rounded-md transition-colors"
           >
             <IconWallet class="w-3.5 h-3.5" />
             <span>Finanzas</span>
@@ -19,7 +19,7 @@
         <div class="mt-1 flex items-center gap-2">
           <button
             @click="groupStore.backToGroupList()"
-            class="flex items-center gap-1.5 text-gray-600 dark:text-gray-300 text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            class="flex items-center gap-1.5 text-ttc-text text-sm font-medium hover:text-ttc-primary transition-colors"
           >
             <IconGrid class="w-4 h-4" />
             <span>{{ groupStore.selectedGroup?.name || 'Cargando...' }}</span>
@@ -28,18 +28,18 @@
           <!-- Invite Link Button (inline with group name) -->
           <button
             @click="shareInviteLink"
-            class="inline-flex items-center gap-1 ml-2 px-2 py-0.5 text-xs font-medium text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-md transition-colors"
+            class="inline-flex items-center gap-1 ml-2 px-2 py-0.5 text-xs font-medium text-ttc-text-muted hover:text-indigo-400 hover:bg-indigo-900/20 rounded-md transition-colors"
             title="Invitar al grupo"
           >
             <IconShare class="w-3.5 h-3.5" />
-            <span v-if="inviteCopied" class="text-green-600 dark:text-green-400">Copiado!</span>
+            <span v-if="inviteCopied" class="text-green-400">Copiado!</span>
           </button>
 
           <!-- Mobile Report Button (inline with group name, only show with 3+ expenses) -->
           <NuxtLink
             v-if="showReportButton"
             to="/grupos/report"
-            class="md:hidden inline-flex items-center gap-1 ml-2 px-2 py-0.5 text-xs font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 rounded-md transition-colors"
+            class="md:hidden inline-flex items-center gap-1 ml-2 px-2 py-0.5 text-xs font-medium text-indigo-400 bg-indigo-900/20 hover:bg-indigo-900/30 rounded-md transition-colors"
           >
             <IconChartBox class="w-3.5 h-3.5" />
             <span>Reporte</span>
@@ -50,14 +50,14 @@
       <!-- Desktop actions (hidden on mobile since we have bottom nav) -->
       <div class="hidden md:flex items-center gap-4">
         <!-- Desktop Tab Navigation -->
-        <nav class="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+        <nav class="flex items-center bg-ttc-surface rounded-lg p-1">
           <button
             @click="switchTab('inicio')"
             :class="[
               'flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors',
               activeTab === 'inicio'
-                ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm'
-                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                ? 'bg-ttc-card text-ttc-primary shadow-sm'
+                : 'text-ttc-text-muted hover:text-ttc-text'
             ]"
           >
             <IconHome class="w-4 h-4" />
@@ -68,8 +68,8 @@
             :class="[
               'flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors',
               activeTab === 'grupo'
-                ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm'
-                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                ? 'bg-ttc-card text-ttc-primary shadow-sm'
+                : 'text-ttc-text-muted hover:text-ttc-text'
             ]"
           >
             <IconGroup class="w-4 h-4" />
@@ -81,7 +81,7 @@
         <NuxtLink
           v-if="showReportButton"
           to="/grupos/report"
-          class="flex items-center gap-1.5 px-3 py-2 text-sm text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors"
+          class="flex items-center gap-1.5 px-3 py-2 text-sm text-indigo-400 hover:bg-indigo-900/20 rounded-lg transition-colors"
           title="Ver reporte del viaje"
         >
           <IconChartBox class="w-5 h-5" />
@@ -90,7 +90,7 @@
         <!-- Add Expense Button -->
         <button
           @click="handleAddExpense"
-          class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+          class="flex items-center gap-2 bg-ttc-primary hover:bg-ttc-primary-light active:bg-ttc-primary text-white px-4 py-2 rounded-lg font-medium transition-colors"
         >
           <IconPlus class="w-5 h-5" />
           <span>Agregar Gasto</span>
@@ -100,13 +100,13 @@
         <NuxtLink
           v-if="user"
           to="/profile"
-          class="flex items-center gap-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg px-3 py-2 transition-colors"
+          class="flex items-center gap-3 hover:bg-ttc-card-hover rounded-lg px-3 py-2 transition-colors"
         >
         <img
           v-if="user.photoURL"
           :src="user.photoURL"
           :alt="user.displayName || 'User'"
-          class="w-10 h-10 rounded-full ring-2 ring-gray-200 dark:ring-gray-700"
+          class="w-10 h-10 rounded-full ring-2 ring-ttc-border"
         />
         <div
           v-else
@@ -117,10 +117,10 @@
           </span>
         </div>
         <div>
-          <p class="text-sm font-medium text-gray-900 dark:text-white">
+          <p class="text-sm font-medium text-ttc-text">
             {{ user.displayName }}
           </p>
-          <p class="text-xs text-gray-500 dark:text-gray-400">
+          <p class="text-xs text-ttc-text-muted">
             Mi perfil
           </p>
         </div>

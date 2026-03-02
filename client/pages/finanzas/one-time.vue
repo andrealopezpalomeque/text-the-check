@@ -19,16 +19,16 @@
     <div v-if="isLoading" class="flex flex-col gap-4 skeleton-shimmer">
       <!-- Header Skeleton -->
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-3">
-        <div class="h-8 w-48 bg-gray-700 rounded"></div>
+        <div class="h-8 w-48 bg-ttc-input rounded"></div>
         <div class="flex gap-3">
-          <div class="h-16 w-40 bg-gray-700 rounded-lg"></div>
-          <div class="h-16 w-40 bg-gray-700 rounded-lg"></div>
-          <div class="h-16 w-40 bg-gray-700 rounded-lg"></div>
+          <div class="h-16 w-40 bg-ttc-input rounded-lg"></div>
+          <div class="h-16 w-40 bg-ttc-input rounded-lg"></div>
+          <div class="h-16 w-40 bg-ttc-input rounded-lg"></div>
         </div>
       </div>
       <!-- Cards Skeleton -->
       <div class="px-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div v-for="i in 6" :key="i" class="h-44 bg-gray-700 rounded-lg"></div>
+        <div v-for="i in 6" :key="i" class="h-44 bg-ttc-input rounded-lg"></div>
       </div>
     </div>
 
@@ -39,7 +39,7 @@
         <div class="flex items-center justify-between">
           <div>
             <h1 class="text-2xl font-bold">Pagos Únicos</h1>
-            <p class="text-sm text-gray-500">
+            <p class="text-sm text-ttc-text-dim">
               {{ payments.length }} pago{{ payments.length !== 1 ? 's' : '' }} este mes
             </p>
           </div>
@@ -49,10 +49,10 @@
       <!-- Month Navigation & Summary -->
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 px-3">
         <!-- Month Navigation -->
-        <div class="flex items-center justify-between w-full md:w-auto bg-ttc-surface rounded-xl p-1 border border-gray-600 shadow-sm shadow-white/5">
+        <div class="flex items-center justify-between w-full md:w-auto bg-ttc-surface rounded-xl p-1 border border-ttc-border shadow-sm shadow-white/5">
           <button
             @click="changeMonth(1)"
-            class="p-2 rounded-lg hover:bg-gray-700 transition-colors"
+            class="p-2 rounded-lg hover:bg-ttc-input transition-colors"
             aria-label="Mes anterior"
           >
             <MdiChevronLeft class="text-xl" />
@@ -63,7 +63,7 @@
           <button
             @click="changeMonth(-1)"
             class="p-2 rounded-lg transition-colors"
-            :class="isCurrentMonth ? 'opacity-30 cursor-not-allowed' : 'hover:bg-gray-700'"
+            :class="isCurrentMonth ? 'opacity-30 cursor-not-allowed' : 'hover:bg-ttc-input'"
             :disabled="isCurrentMonth"
             aria-label="Mes siguiente"
           >
@@ -75,17 +75,17 @@
         <div class="flex flex-wrap gap-4 md:gap-6">
           <div class="flex items-center gap-3">
             <MdiCashCheck class="text-success text-2xl" />
-            <span class="text-lg font-semibold text-white">{{ formatPrice(monthTotals.paid) }}</span>
+            <span class="text-lg font-semibold text-ttc-text">{{ formatPrice(monthTotals.paid) }}</span>
           </div>
 
           <div class="flex items-center gap-3">
             <MdiCashRemove class="text-danger text-2xl" />
-            <span class="text-lg font-semibold text-white">{{ formatPrice(monthTotals.unpaid) }}</span>
+            <span class="text-lg font-semibold text-ttc-text">{{ formatPrice(monthTotals.unpaid) }}</span>
           </div>
 
           <div class="flex items-center gap-3">
-            <MdiCalculator class="text-gray-300 text-2xl" />
-            <span class="text-lg font-semibold text-white">{{ formatPrice(monthTotals.paid + monthTotals.unpaid) }}</span>
+            <MdiCalculator class="text-ttc-text text-2xl" />
+            <span class="text-lg font-semibold text-ttc-text">{{ formatPrice(monthTotals.paid + monthTotals.unpaid) }}</span>
           </div>
         </div>
       </div>
@@ -99,11 +99,11 @@
           v-if="payments.length === 0"
           class="flex flex-col items-center justify-center py-16 text-center"
         >
-          <div class="w-20 h-20 rounded-full bg-gray-800 flex items-center justify-center mb-4">
-            <MdiCashOff class="text-4xl text-gray-600" />
+          <div class="w-20 h-20 rounded-full bg-ttc-card flex items-center justify-center mb-4">
+            <MdiCashOff class="text-4xl text-ttc-text-dim" />
           </div>
-          <h3 class="text-lg font-medium text-gray-300 mb-1">Aún no hay pagos</h3>
-          <p class="text-sm text-gray-500 mb-6 max-w-xs">
+          <h3 class="text-lg font-medium text-ttc-text mb-1">Aún no hay pagos</h3>
+          <p class="text-sm text-ttc-text-dim mb-6 max-w-xs">
             Registrá tus gastos únicos como compras, facturas o servicios de {{ currentMonth }}.
           </p>
           <button
@@ -120,14 +120,14 @@
           <div
             v-for="payment in payments"
             :key="payment.id"
-            class="rounded-xl p-4 bg-ttc-surface cursor-pointer transition-all duration-200 border border-gray-600 shadow-sm shadow-white/5 hover:shadow-md hover:shadow-white/10 group"
+            class="rounded-xl p-4 bg-ttc-surface cursor-pointer transition-all duration-200 border border-ttc-border shadow-sm shadow-white/5 hover:shadow-md hover:shadow-white/10 group"
             @click="showDetails(payment.id)"
           >
             <!-- Card Header -->
             <div class="flex items-start justify-between mb-3">
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2">
-                  <h3 class="font-semibold text-gray-100 truncate">{{ payment.title }}</h3>
+                  <h3 class="font-semibold text-ttc-text truncate">{{ payment.title }}</h3>
                   <!-- WhatsApp Indicator -->
                   <span
                     v-if="payment.isWhatsapp"
@@ -158,32 +158,32 @@
                     ? 'bg-success/15'
                     : isDelayed(payment.dueDate)
                     ? 'bg-danger/15'
-                    : 'bg-gray-700'
+                    : 'bg-ttc-input'
                 "
               >
                 <MdiCheck v-if="payment.isPaid" class="text-success text-xl" />
                 <MdiClockOutline v-else-if="isDelayed(payment.dueDate)" class="text-danger text-xl" />
-                <MdiCircleOutline v-else class="text-gray-500 text-xl" />
+                <MdiCircleOutline v-else class="text-ttc-text-dim text-xl" />
               </div>
             </div>
 
             <!-- Description -->
-            <p v-if="payment.description" class="text-xs text-gray-400 line-clamp-1 mb-3">
+            <p v-if="payment.description" class="text-xs text-ttc-text-muted line-clamp-1 mb-3">
               {{ payment.description }}
             </p>
 
             <!-- Amount & Date -->
             <div class="flex justify-between items-end mb-4">
               <div>
-                <p class="text-2xl font-bold text-white">{{ formatPrice(payment.amount) }}</p>
+                <p class="text-2xl font-bold text-ttc-text">{{ formatPrice(payment.amount) }}</p>
               </div>
               <div class="text-right">
-                <p class="text-xs text-gray-400">{{ formatDate(payment.dueDate || payment.createdAt) }}</p>
+                <p class="text-xs text-ttc-text-muted">{{ formatDate(payment.dueDate || payment.createdAt) }}</p>
               </div>
             </div>
 
             <!-- Actions -->
-            <div class="flex justify-between items-center pt-3 border-t border-gray-600/50">
+            <div class="flex justify-between items-center pt-3 border-t border-ttc-border/50">
               <div class="flex items-center gap-2">
                 <button
                   @click.stop="togglePaymentStatus(payment.id, !payment.isPaid)"
@@ -210,7 +210,7 @@
               </div>
               <button
                 @click.stop="showEdit(payment.id)"
-                class="p-2 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-gray-600/50 transition-colors"
+                class="p-2 rounded-lg text-ttc-text-muted hover:text-ttc-text hover:bg-ttc-card-hover transition-colors"
                 aria-label="Editar pago"
               >
                 <MdiPencil class="text-lg" />

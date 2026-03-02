@@ -23,12 +23,16 @@ module.exports = {
         'ttc-text-muted': 'var(--color-text-muted)',
         'ttc-text-dim': 'var(--color-text-dim)',
         'ttc-danger': 'var(--color-danger)',
+        'ttc-success': 'var(--color-success)',
+        'ttc-warning': 'var(--color-warning)',
+        'ttc-input': 'var(--color-input)',
+        'ttc-card-hover': 'var(--color-card-hover)',
         'ttc-bubble-user-primary': 'var(--color-bubble-user-primary)',
         'ttc-bubble-user-accent': 'var(--color-bubble-user-accent)',
         'ttc-bubble-bot': 'var(--color-bubble-bot)',
         'ttc-toggle-primary': 'var(--color-toggle-primary)',
         'ttc-toggle-accent': 'var(--color-toggle-accent)',
-        // App colors (used by grupos & finanzas components with dark: variant)
+        // Semantic app colors (mapped to CSS variables for theme switching)
         positive: {
           50: '#f0fdf4',
           100: '#dcfce7',
@@ -38,19 +42,6 @@ module.exports = {
           700: '#15803d',
           900: '#14532d',
         },
-        primary: {
-          DEFAULT: '#3b82f6',
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
-        },
         negative: {
           50: '#fef2f2',
           100: '#fee2e2',
@@ -59,6 +50,20 @@ module.exports = {
           600: '#dc2626',
           700: '#b91c1c',
           900: '#7f1d1d',
+        },
+        // primary now routes through the CSS variable so it follows the theme
+        primary: {
+          DEFAULT: 'var(--color-primary)',
+          light: 'var(--color-primary-light)',
+        },
+        success: {
+          DEFAULT: 'var(--color-success)',
+        },
+        warning: {
+          DEFAULT: 'var(--color-warning)',
+        },
+        danger: {
+          DEFAULT: 'var(--color-danger)',
         },
       },
       fontFamily: {

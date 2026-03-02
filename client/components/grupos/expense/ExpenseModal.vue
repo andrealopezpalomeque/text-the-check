@@ -16,22 +16,22 @@
           <Transition name="slide-up">
             <div
               v-if="isOpen"
-              class="relative bg-white dark:bg-gray-800 w-full md:max-w-md md:rounded-xl rounded-t-2xl shadow-xl max-h-[90vh] md:max-h-[85vh] overflow-y-auto"
+              class="relative bg-ttc-card w-full md:max-w-md md:rounded-xl rounded-t-2xl shadow-xl max-h-[90vh] md:max-h-[85vh] overflow-y-auto"
               :style="{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }"
             >
               <!-- Handle bar (mobile only) -->
               <div class="flex justify-center pt-3 pb-2 md:hidden">
-                <div class="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full" />
+                <div class="w-10 h-1 bg-ttc-border rounded-full" />
               </div>
 
               <!-- Header -->
-              <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+              <div class="flex items-center justify-between px-6 py-4 border-b border-ttc-border">
+                <h3 class="text-lg font-semibold text-ttc-text">
                   {{ isEditMode ? 'Editar gasto' : 'Agregar gasto' }}
                 </h3>
                 <button
                   @click="handleClose"
-                  class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1"
+                  class="text-ttc-text-muted hover:text-ttc-text p-1"
                 >
                   <IconClose class="w-6 h-6" />
                 </button>
@@ -41,12 +41,12 @@
               <form @submit.prevent="handleSubmit" class="p-6">
                 <!-- Currency -->
                 <div class="mb-4">
-                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label class="block text-sm font-medium text-ttc-text mb-1">
                     Moneda
                   </label>
                   <select
                     v-model="form.currency"
-                    class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    class="w-full px-3 py-2.5 border border-ttc-border rounded-lg bg-ttc-input text-ttc-text focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="ARS">Pesos argentinos (ARS)</option>
                     <option value="USD">Dolares (USD)</option>
@@ -57,7 +57,7 @@
 
                 <!-- Amount -->
                 <div class="mb-4">
-                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label class="block text-sm font-medium text-ttc-text mb-1">
                     Monto *
                   </label>
                   <input
@@ -68,16 +68,16 @@
                     step="0.01"
                     required
                     :placeholder="currencyPlaceholder"
-                    class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg font-mono"
+                    class="w-full px-3 py-2.5 border border-ttc-border rounded-lg bg-ttc-input text-ttc-text placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg font-mono"
                   />
-                  <p v-if="form.currency !== 'ARS' && form.amount" class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  <p v-if="form.currency !== 'ARS' && form.amount" class="text-xs text-ttc-text-muted mt-1">
                     Aprox. {{ formatCurrency(convertToARS(form.amount, form.currency)) }}
                   </p>
                 </div>
 
                 <!-- Description -->
                 <div class="mb-4">
-                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label class="block text-sm font-medium text-ttc-text mb-1">
                     Descripcion *
                   </label>
                   <input
@@ -86,18 +86,18 @@
                     required
                     maxlength="200"
                     placeholder="Almuerzo en el centro"
-                    class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    class="w-full px-3 py-2.5 border border-ttc-border rounded-lg bg-ttc-input text-ttc-text placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
 
                 <!-- Category -->
                 <div class="mb-4">
-                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label class="block text-sm font-medium text-ttc-text mb-1">
                     Categoria
                   </label>
                   <select
                     v-model="form.category"
-                    class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    class="w-full px-3 py-2.5 border border-ttc-border rounded-lg bg-ttc-input text-ttc-text focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="food">Comida</option>
                     <option value="transport">Transporte</option>
@@ -110,14 +110,14 @@
 
                 <!-- Participants -->
                 <div class="mb-6">
-                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label class="block text-sm font-medium text-ttc-text mb-2">
                     Quienes participan en este gasto?
                   </label>
-                  <div class="space-y-1 max-h-40 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-lg p-2">
+                  <div class="space-y-1 max-h-40 overflow-y-auto border border-ttc-border rounded-lg p-2">
                     <label
                       v-for="user in users"
                       :key="user.id"
-                      class="flex items-center gap-2 p-2 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded cursor-pointer"
+                      class="flex items-center gap-2 p-2 hover:bg-ttc-card-hover rounded cursor-pointer"
                     >
                       <input
                         v-model="form.participants"
@@ -125,10 +125,10 @@
                         :value="user.id"
                         class="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
                       />
-                      <span class="text-gray-700 dark:text-gray-300 text-sm">{{ user.name }}</span>
+                      <span class="text-ttc-text text-sm">{{ user.name }}</span>
                     </label>
                   </div>
-                  <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  <p class="text-xs text-ttc-text-muted mt-1">
                     Selecciona las personas que compartiran este gasto
                   </p>
                 </div>
@@ -143,7 +143,7 @@
                   <button
                     type="button"
                     @click="handleClose"
-                    class="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
+                    class="flex-1 px-4 py-3 border border-ttc-border text-ttc-text rounded-xl hover:bg-ttc-card-hover transition-colors font-medium"
                   >
                     Cancelar
                   </button>

@@ -16,31 +16,31 @@
           <Transition name="slide-up">
             <div
               v-if="isOpen"
-              class="relative bg-white dark:bg-gray-800 w-full md:max-w-md md:rounded-xl rounded-t-2xl shadow-xl"
+              class="relative bg-ttc-card w-full md:max-w-md md:rounded-xl rounded-t-2xl shadow-xl"
               :style="{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }"
             >
               <!-- Handle bar (mobile only) -->
               <div class="flex justify-center pt-3 pb-2 md:hidden">
-                <div class="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full" />
+                <div class="w-10 h-1 bg-ttc-border rounded-full" />
               </div>
 
               <!-- Header -->
-              <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+              <div class="flex items-center justify-between px-6 py-4 border-b border-ttc-border">
                 <div class="flex items-center gap-3">
                   <button
                     v-if="step === 2"
                     @click="step = 1"
-                    class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1"
+                    class="text-ttc-text-muted hover:text-ttc-text p-1"
                   >
                     <IconArrowLeft class="w-5 h-5" />
                   </button>
-                  <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                  <h3 class="text-lg font-semibold text-ttc-text">
                     {{ step === 1 ? 'Crear grupo' : 'Agregar miembros' }}
                   </h3>
                 </div>
                 <button
                   @click="handleClose"
-                  class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1"
+                  class="text-ttc-text-muted hover:text-ttc-text p-1"
                 >
                   <IconClose class="w-6 h-6" />
                 </button>
@@ -48,7 +48,7 @@
 
               <!-- Step 1: Group Name -->
               <div v-if="step === 1" class="p-6">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label class="block text-sm font-medium text-ttc-text mb-2">
                   Nombre del grupo
                 </label>
                 <input
@@ -57,7 +57,7 @@
                   type="text"
                   placeholder="Ej: Viaje a Bariloche"
                   maxlength="100"
-                  class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  class="w-full px-3 py-2.5 border border-ttc-border rounded-lg bg-ttc-input text-ttc-text focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   @keydown.enter="goToStep2"
                 />
                 <button
@@ -71,7 +71,7 @@
 
               <!-- Step 2: Add Members -->
               <div v-else class="p-6">
-                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                <p class="text-sm text-ttc-text-muted mb-4">
                   Agregá miembros por nombre. Cuando se unan al grupo, pueden reclamar su cuenta.
                 </p>
 
@@ -82,13 +82,13 @@
                     v-model="memberName"
                     type="text"
                     placeholder="Nombre del miembro"
-                    class="flex-1 px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    class="flex-1 px-3 py-2.5 border border-ttc-border rounded-lg bg-ttc-input text-ttc-text focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     :disabled="submitting"
                   />
                   <button
                     type="submit"
                     :disabled="!memberName.trim() || submitting"
-                    class="px-4 py-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed text-gray-700 dark:text-gray-300 font-medium rounded-lg transition-colors"
+                    class="px-4 py-2.5 bg-ttc-input hover:bg-ttc-card-hover disabled:opacity-50 disabled:cursor-not-allowed text-ttc-text font-medium rounded-lg transition-colors"
                   >
                     Agregar
                   </button>
@@ -99,13 +99,13 @@
                   <div
                     v-for="(member, index) in members"
                     :key="index"
-                    class="flex items-center justify-between px-3 py-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg"
+                    class="flex items-center justify-between px-3 py-2 bg-ttc-bg rounded-lg"
                   >
                     <div class="flex items-center gap-2">
-                      <div class="w-7 h-7 rounded-full bg-gray-200 dark:bg-gray-600 border border-dashed border-gray-300 dark:border-gray-500 flex items-center justify-center">
-                        <span class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ getInitials(member) }}</span>
+                      <div class="w-7 h-7 rounded-full bg-ttc-input border border-dashed border-ttc-border flex items-center justify-center">
+                        <span class="text-xs font-medium text-ttc-text-muted">{{ getInitials(member) }}</span>
                       </div>
-                      <span class="text-sm font-medium text-gray-900 dark:text-white">{{ member }}</span>
+                      <span class="text-sm font-medium text-ttc-text">{{ member }}</span>
                     </div>
                     <button
                       @click="removeMember(index)"
@@ -133,7 +133,7 @@
                   v-if="members.length > 0"
                   @click="members = []; handleCreate()"
                   :disabled="submitting"
-                  class="w-full mt-2 py-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+                  class="w-full mt-2 py-2 text-sm text-ttc-text-muted hover:text-ttc-text transition-colors"
                 >
                   Omitir y crear solo
                 </button>

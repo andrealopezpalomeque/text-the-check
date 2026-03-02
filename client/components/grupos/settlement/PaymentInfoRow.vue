@@ -1,10 +1,10 @@
 <template>
-  <div class="flex items-center justify-between bg-gray-50 dark:bg-gray-700/50 rounded-lg px-3 py-2">
+  <div class="flex items-center justify-between bg-ttc-bg rounded-lg px-3 py-2">
     <div class="min-w-0">
-      <p class="text-xs text-gray-500 dark:text-gray-400">{{ label }}</p>
+      <p class="text-xs text-ttc-text-muted">{{ label }}</p>
       <p
         :class="[
-          'text-sm text-gray-900 dark:text-white truncate',
+          'text-sm text-ttc-text truncate',
           mono ? 'font-mono' : ''
         ]"
       >

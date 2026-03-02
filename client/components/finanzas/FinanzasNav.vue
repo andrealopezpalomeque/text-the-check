@@ -1,16 +1,16 @@
 <template>
-  <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+  <header class="bg-ttc-card border-b border-ttc-border">
     <div class="max-w-7xl mx-auto px-4 sm:px-6">
       <!-- Top bar with app name and mode toggle -->
       <div class="flex items-center justify-between h-14">
         <div class="flex items-center gap-3">
-          <h1 class="font-display text-lg font-bold text-gray-900 dark:text-white">
+          <h1 class="font-display text-lg font-bold text-ttc-text">
             Text The Check
           </h1>
           <!-- Mode Toggle -->
           <button
             @click="switchToGrupos"
-            class="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors"
+            class="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-ttc-text-muted hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors"
           >
             <IconGroup class="w-3.5 h-3.5" />
             <span>Grupos</span>
@@ -20,7 +20,7 @@
         <!-- Profile link -->
         <NuxtLink
           to="/profile"
-          class="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+          class="flex items-center gap-2 text-ttc-text hover:text-ttc-text transition-colors"
         >
           <IconUser class="w-5 h-5" />
           <span class="text-sm hidden sm:inline">Perfil</span>
@@ -77,7 +77,7 @@ const switchToGrupos = () => {
 
 <style scoped>
 .nav-tab {
-  @apply py-3 px-4 text-gray-500 dark:text-gray-400 border-b-2 border-transparent font-medium text-sm whitespace-nowrap;
+  @apply py-3 px-4 text-ttc-text-muted border-b-2 border-transparent font-medium text-sm whitespace-nowrap;
   transition: color 0.2s, border-color 0.2s;
 }
 

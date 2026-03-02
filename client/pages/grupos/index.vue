@@ -9,15 +9,15 @@
   </div>
 
   <!-- Full-page loading state - show until all data is ready -->
-  <div v-else-if="!isDataReady" class="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+  <div v-else-if="!isDataReady" class="min-h-screen bg-ttc-bg flex items-center justify-center">
     <div class="text-center">
-      <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 dark:border-white mb-4"></div>
-      <p class="text-gray-600 dark:text-gray-400">Cargando...</p>
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-ttc-text mb-4"></div>
+      <p class="text-ttc-text-muted">Cargando...</p>
     </div>
   </div>
 
   <!-- Main dashboard - only show when data is ready -->
-  <div v-else class="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20 md:pb-0">
+  <div v-else class="min-h-screen bg-ttc-bg pb-20 md:pb-0">
     <div class="container mx-auto px-4 py-6">
       <!-- Header -->
       <AppHeader />

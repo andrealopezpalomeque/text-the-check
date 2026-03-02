@@ -1,9 +1,9 @@
 <template>
-  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+  <div class="bg-ttc-card rounded-xl shadow-sm border border-ttc-border">
     <!-- Header -->
-    <div class="px-3 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center gap-2">
-      <IconCurrencyUsd class="w-5 h-5 text-gray-500 dark:text-gray-400" />
-      <h3 class="font-display text-base font-semibold text-gray-900 dark:text-white flex-1">
+    <div class="px-3 py-3 border-b border-ttc-border flex items-center gap-2">
+      <IconCurrencyUsd class="w-5 h-5 text-ttc-text-muted" />
+      <h3 class="font-display text-base font-semibold text-ttc-text flex-1">
         Balances del Grupo
       </h3>
       <button
@@ -16,7 +16,7 @@
     </div>
 
     <!-- Balance Items -->
-    <div class="divide-y divide-gray-100 dark:divide-gray-700">
+    <div class="divide-y divide-ttc-border">
       <BalanceItem
         v-for="balance in sortedBalances"
         :key="balance.userId"

@@ -1,14 +1,14 @@
 <template>
-  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+  <div class="bg-ttc-card rounded-xl shadow-sm border border-ttc-border">
     <!-- Header -->
-    <div class="px-3 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center gap-2">
-      <IconClipboardList class="w-5 h-5 text-gray-500 dark:text-gray-400" />
-      <h3 class="font-display text-base font-semibold text-gray-900 dark:text-white">
+    <div class="px-3 py-3 border-b border-ttc-border flex items-center gap-2">
+      <IconClipboardList class="w-5 h-5 text-ttc-text-muted" />
+      <h3 class="font-display text-base font-semibold text-ttc-text">
         {{ title }}
       </h3>
       <span
         v-if="showCount"
-        class="text-xs text-gray-500 dark:text-gray-400 ml-auto"
+        class="text-xs text-ttc-text-muted ml-auto"
       >
         {{ items.length }} {{ items.length === 1 ? 'item' : 'items' }}
       </span>
@@ -16,10 +16,10 @@
 
     <!-- Empty State -->
     <div v-if="items.length === 0" class="p-8 text-center">
-      <div class="w-14 h-14 mx-auto mb-3 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
+      <div class="w-14 h-14 mx-auto mb-3 bg-ttc-input rounded-full flex items-center justify-center">
         <IconReceipt class="w-7 h-7 text-gray-400" />
       </div>
-      <p class="text-gray-600 dark:text-gray-400 text-sm">
+      <p class="text-ttc-text-muted text-sm">
         {{ emptyMessage }}
       </p>
       <button
@@ -32,7 +32,7 @@
     </div>
 
     <!-- Items List -->
-    <div v-else class="divide-y divide-gray-100 dark:divide-gray-700">
+    <div v-else class="divide-y divide-ttc-border">
       <template v-for="item in displayedItems" :key="getKey(item)">
         <ExpenseItem
           v-if="isExpense(item)"
@@ -52,7 +52,7 @@
     <!-- Show More Button -->
     <div
       v-if="hasMore"
-      class="px-3 py-3 border-t border-gray-100 dark:border-gray-700"
+      class="px-3 py-3 border-t border-ttc-border"
     >
       <button
         @click="showAll = !showAll"

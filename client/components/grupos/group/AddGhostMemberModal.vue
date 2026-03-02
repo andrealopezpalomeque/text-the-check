@@ -16,22 +16,22 @@
           <Transition name="slide-up">
             <div
               v-if="isOpen"
-              class="relative bg-white dark:bg-gray-800 w-full md:max-w-sm md:rounded-xl rounded-t-2xl shadow-xl"
+              class="relative bg-ttc-card w-full md:max-w-sm md:rounded-xl rounded-t-2xl shadow-xl"
               :style="{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }"
             >
               <!-- Handle bar (mobile only) -->
               <div class="flex justify-center pt-3 pb-2 md:hidden">
-                <div class="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full" />
+                <div class="w-10 h-1 bg-ttc-border rounded-full" />
               </div>
 
               <!-- Header -->
-              <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+              <div class="flex items-center justify-between px-6 py-4 border-b border-ttc-border">
+                <h3 class="text-lg font-semibold text-ttc-text">
                   Agregar miembro
                 </h3>
                 <button
                   @click="handleClose"
-                  class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1"
+                  class="text-ttc-text-muted hover:text-ttc-text p-1"
                 >
                   <IconClose class="w-6 h-6" />
                 </button>
@@ -39,12 +39,12 @@
 
               <!-- Form -->
               <form @submit.prevent="handleSubmit" class="p-6">
-                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                <p class="text-sm text-ttc-text-muted mb-4">
                   Agregá a alguien por nombre para dividir gastos. Cuando se una al grupo, puede reclamar su cuenta.
                 </p>
 
                 <div class="mb-4">
-                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label class="block text-sm font-medium text-ttc-text mb-1">
                     Nombre
                   </label>
                   <input
@@ -52,7 +52,7 @@
                     v-model="name"
                     type="text"
                     placeholder="Ej: Juan"
-                    class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    class="w-full px-3 py-2.5 border border-ttc-border rounded-lg bg-ttc-input text-ttc-text focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     :disabled="submitting"
                   />
                 </div>

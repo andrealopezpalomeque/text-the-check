@@ -3,8 +3,8 @@
     <!-- Settlement row (clickable header) -->
     <button
       @click="toggleExpand"
-      class="w-full px-3 py-3 flex items-center gap-1.5 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors text-left overflow-hidden"
-      :class="{ 'bg-gray-50 dark:bg-gray-700/30': isExpanded }"
+      class="w-full px-3 py-3 flex items-center gap-1.5 hover:bg-ttc-card-hover transition-colors text-left overflow-hidden"
+      :class="{ 'bg-ttc-bg': isExpanded }"
     >
       <!-- Chevron indicator -->
       <IconChevronRight
@@ -65,9 +65,9 @@
         class="px-4 pt-2 pb-4 overflow-hidden"
       >
         <!-- Constrained width on desktop for better readability -->
-        <div class="ml-5 pl-4 border-l-2 border-gray-200 dark:border-gray-600 space-y-4 md:max-w-md">
+        <div class="ml-5 pl-4 border-l-2 border-ttc-border space-y-4 md:max-w-md">
           <!-- Simplified mode: no expense breakdown available -->
-          <div v-if="simplified" class="text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 rounded-lg px-3 py-2">
+          <div v-if="simplified" class="text-sm text-ttc-text-muted bg-ttc-bg rounded-lg px-3 py-2">
             <p>Con simplificacion activada, las transferencias se calculan para minimizar la cantidad de pagos.</p>
             <p class="mt-1">Desactiva "Simplificar" para ver el desglose por gasto.</p>
           </div>
@@ -75,7 +75,7 @@
           <!-- Normal mode: Expense breakdown with selection -->
           <div v-else>
             <div class="flex items-center justify-between mb-2">
-              <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+              <p class="text-xs font-medium text-ttc-text-muted uppercase tracking-wide">
                 Selecciona que pagar
               </p>
               <!-- Select all toggle -->
@@ -91,17 +91,17 @@
               <label
                 v-for="(item, idx) in breakdown"
                 :key="idx"
-                class="flex items-center gap-2 text-sm py-1.5 px-2 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                class="flex items-center gap-2 text-sm py-1.5 px-2 rounded-lg cursor-pointer hover:bg-ttc-card-hover transition-colors"
                 :class="{ 'bg-blue-50 dark:bg-blue-900/20': selectedExpenseIds.has(item.expense.id) }"
               >
                 <input
                   type="checkbox"
                   :checked="selectedExpenseIds.has(item.expense.id)"
                   @change="toggleExpenseSelection(item.expense.id)"
-                  class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
+                  class="w-4 h-4 rounded border-ttc-border text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
                 />
                 <CategoryIcon :category="item.expense.category" size="sm" />
-                <span class="truncate text-gray-700 dark:text-gray-300 flex-1 min-w-0">
+                <span class="truncate text-ttc-text flex-1 min-w-0">
                   {{ item.expense.description }}
                 </span>
                 <AmountDisplay
@@ -110,13 +110,13 @@
                   class="flex-shrink-0"
                 />
               </label>
-              <div v-if="breakdown.length === 0" class="text-sm text-gray-500 dark:text-gray-400">
+              <div v-if="breakdown.length === 0" class="text-sm text-ttc-text-muted">
                 Sin desglose disponible
               </div>
             </div>
             <!-- Payments already made (shows why settlement < expense total) -->
-            <div v-if="paymentsMade.length > 0" class="mt-3 pt-2 border-t border-gray-200 dark:border-gray-600">
-              <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+            <div v-if="paymentsMade.length > 0" class="mt-3 pt-2 border-t border-ttc-border">
+              <p class="text-xs font-medium text-ttc-text-muted uppercase tracking-wide mb-1">
                 Pagos realizados
               </p>
               <div class="space-y-1">
@@ -125,7 +125,7 @@
                   :key="payment.id"
                   class="flex items-center justify-between text-sm py-1"
                 >
-                  <span class="text-gray-600 dark:text-gray-400">
+                  <span class="text-ttc-text-muted">
                     {{ formatDate(payment.createdAt) }}
                   </span>
                   <span class="text-positive-600 dark:text-positive-400 font-medium">
@@ -134,7 +134,7 @@
                 </div>
               </div>
               <!-- Show the math: expenses - payments = remaining -->
-              <div class="mt-2 pt-2 border-t border-dashed border-gray-200 dark:border-gray-600 text-xs text-gray-500 dark:text-gray-400">
+              <div class="mt-2 pt-2 border-t border-dashed border-ttc-border text-xs text-ttc-text-muted">
                 <div class="flex justify-between">
                   <span>Total gastos:</span>
                   <span>{{ formatAmount(Math.round(totalExpenseDebt)) }}</span>
@@ -143,7 +143,7 @@
                   <span>Ya pagado:</span>
                   <span>-{{ formatAmount(totalPaid) }}</span>
                 </div>
-                <div class="flex justify-between font-medium text-gray-700 dark:text-gray-300 mt-1">
+                <div class="flex justify-between font-medium text-ttc-text mt-1">
                   <span>Pendiente:</span>
                   <span>{{ formatAmount(settlement.amount) }}</span>
                 </div>
@@ -151,8 +151,8 @@
             </div>
 
             <!-- Selected total -->
-            <div v-if="breakdown.length > 0" class="mt-3 pt-2 border-t border-gray-200 dark:border-gray-600 flex items-center justify-between">
-              <span class="text-sm text-gray-600 dark:text-gray-400">
+            <div v-if="breakdown.length > 0" class="mt-3 pt-2 border-t border-ttc-border flex items-center justify-between">
+              <span class="text-sm text-ttc-text-muted">
                 Total seleccionado:
               </span>
               <AmountDisplay
@@ -165,8 +165,8 @@
           </div>
 
           <!-- Payment info -->
-          <div class="pt-3 border-t border-gray-200 dark:border-gray-600">
-            <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2 flex items-center gap-1">
+          <div class="pt-3 border-t border-ttc-border">
+            <p class="text-xs font-medium text-ttc-text-muted uppercase tracking-wide mb-2 flex items-center gap-1">
               <IconCreditCard class="w-4 h-4" />
               Datos de pago de {{ creditorFirstName }}
             </p>
@@ -199,37 +199,37 @@
 
               <!-- Bank name -->
               <div v-if="creditor?.paymentInfo?.bankName" class="px-3 py-2">
-                <p class="text-xs text-gray-500 dark:text-gray-400">Banco/Plataforma</p>
-                <p class="text-sm text-gray-900 dark:text-white">
+                <p class="text-xs text-ttc-text-muted">Banco/Plataforma</p>
+                <p class="text-sm text-ttc-text">
                   {{ creditor.paymentInfo.bankName }}
                 </p>
               </div>
             </div>
 
             <!-- No payment info -->
-            <div v-else class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 rounded-lg px-3 py-2">
+            <div v-else class="flex items-center gap-2 text-sm text-ttc-text-muted bg-ttc-bg rounded-lg px-3 py-2">
               <IconInformation class="w-4 h-4 flex-shrink-0" />
               <span>{{ creditorFirstName }} no agrego datos de pago aun</span>
             </div>
           </div>
 
           <!-- Record Payment Section -->
-          <div class="pt-3 border-t border-gray-200 dark:border-gray-600">
+          <div class="pt-3 border-t border-ttc-border">
             <!-- Confirmation state -->
             <div v-if="showPaymentConfirm" class="space-y-3">
-              <p class="text-sm text-gray-700 dark:text-gray-300">
+              <p class="text-sm text-ttc-text">
                 Registrar pago de <span class="font-semibold">{{ formatAmount(paymentAmount) }}</span>
                 de {{ debtorFirstName }} a {{ creditorFirstName }}?
               </p>
 
               <!-- Amount input -->
               <div class="flex items-center gap-2">
-                <label class="text-xs text-gray-500 dark:text-gray-400">Monto:</label>
+                <label class="text-xs text-ttc-text-muted">Monto:</label>
                 <input
                   v-model.number="paymentAmount"
                   type="number"
                   min="1"
-                  class="flex-1 px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  class="flex-1 px-3 py-1.5 text-sm border border-ttc-border rounded-lg bg-ttc-input text-ttc-text focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
@@ -246,7 +246,7 @@
                 <button
                   @click="cancelPayment"
                   :disabled="isSubmitting"
-                  class="px-3 py-2 bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 text-gray-700 dark:text-gray-200 text-sm font-medium rounded-lg transition-colors"
+                  class="px-3 py-2 bg-ttc-input hover:bg-ttc-card-hover text-ttc-text text-sm font-medium rounded-lg transition-colors"
                 >
                   Cancelar
                 </button>

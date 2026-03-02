@@ -1,16 +1,16 @@
 <template>
   <div class="summary-page">
     <!-- View Toggle Tabs -->
-    <div class="flex gap-1 bg-gray-800 rounded-lg p-1 mx-3 mt-3 mb-4">
+    <div class="flex gap-1 bg-ttc-card rounded-lg p-1 mx-3 mt-3 mb-4">
       <NuxtLink
         to="/finanzas/summary"
-        class="flex-1 text-center py-2 px-4 rounded-md text-sm font-medium transition-colors bg-blue-600 text-white"
+        class="flex-1 text-center py-2 px-4 rounded-md text-sm font-medium transition-colors bg-ttc-primary text-white"
       >
         Mensual
       </NuxtLink>
       <NuxtLink
         to="/finanzas/weekly-summary"
-        class="flex-1 text-center py-2 px-4 rounded-md text-sm font-medium transition-colors text-gray-400 hover:text-gray-200"
+        class="flex-1 text-center py-2 px-4 rounded-md text-sm font-medium transition-colors text-ttc-text-muted hover:text-ttc-text"
       >
         Semanal
       </NuxtLink>
@@ -20,11 +20,11 @@
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-3 mb-6">
       <h1 class="text-2xl font-bold">Resumen Financiero</h1>
       <div class="flex items-center gap-2">
-        <span class="text-sm text-gray-500">Rango de fechas:</span>
+        <span class="text-sm text-ttc-text-dim">Rango de fechas:</span>
         <select
           v-model="monthsToDisplay"
           @change="async () => await updateCharts()"
-          class="px-3 py-1.5 rounded-lg border border-gray-600 bg-gray-800 focus:ring-2 focus:ring-primary focus:border-transparent"
+          class="px-3 py-1.5 rounded-lg border border-ttc-border bg-ttc-card focus:ring-2 focus:ring-primary focus:border-transparent"
         >
           <option value="3">Últimos 3 meses</option>
           <option value="6">Últimos 6 meses</option>
@@ -35,31 +35,31 @@
     <!-- Loading Skeleton -->
     <div v-if="isLoading" class="grid grid-cols-1 lg:grid-cols-2 gap-6 p-3 skeleton-shimmer">
       <!-- Chart Skeleton 1 -->
-      <div class="bg-gray-800 rounded-lg border border-gray-700 p-4">
-        <div class="h-6 w-48 bg-gray-700 rounded mb-2"></div>
-        <div class="h-4 w-64 bg-gray-700/50 rounded mb-4"></div>
-        <div class="h-[350px] bg-gray-700/30 rounded"></div>
+      <div class="bg-ttc-card rounded-lg border border-ttc-border p-4">
+        <div class="h-6 w-48 bg-ttc-input rounded mb-2"></div>
+        <div class="h-4 w-64 bg-ttc-surface rounded mb-4"></div>
+        <div class="h-[350px] bg-ttc-surface rounded"></div>
       </div>
       <!-- Chart Skeleton 2 -->
-      <div class="bg-gray-800 rounded-lg border border-gray-700 p-4">
-        <div class="h-6 w-48 bg-gray-700 rounded mb-2"></div>
-        <div class="h-4 w-64 bg-gray-700/50 rounded mb-4"></div>
-        <div class="h-[350px] bg-gray-700/30 rounded"></div>
+      <div class="bg-ttc-card rounded-lg border border-ttc-border p-4">
+        <div class="h-6 w-48 bg-ttc-input rounded mb-2"></div>
+        <div class="h-4 w-64 bg-ttc-surface rounded mb-4"></div>
+        <div class="h-[350px] bg-ttc-surface rounded"></div>
       </div>
       <!-- Stats Skeleton -->
-      <div class="bg-gray-800 rounded-lg border border-gray-700 p-4">
-        <div class="h-6 w-36 bg-gray-700 rounded mb-2"></div>
-        <div class="h-4 w-52 bg-gray-700/50 rounded mb-4"></div>
+      <div class="bg-ttc-card rounded-lg border border-ttc-border p-4">
+        <div class="h-6 w-36 bg-ttc-input rounded mb-2"></div>
+        <div class="h-4 w-52 bg-ttc-surface rounded mb-4"></div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div v-for="i in 6" :key="i" class="h-24 bg-gray-700/50 rounded-lg"></div>
+          <div v-for="i in 6" :key="i" class="h-24 bg-ttc-surface rounded-lg"></div>
         </div>
       </div>
       <!-- Breakdown Skeleton -->
-      <div class="bg-gray-800 rounded-lg border border-gray-700 p-4">
-        <div class="h-6 w-44 bg-gray-700 rounded mb-2"></div>
-        <div class="h-4 w-56 bg-gray-700/50 rounded mb-4"></div>
+      <div class="bg-ttc-card rounded-lg border border-ttc-border p-4">
+        <div class="h-6 w-44 bg-ttc-input rounded mb-2"></div>
+        <div class="h-4 w-56 bg-ttc-surface rounded mb-4"></div>
         <div class="space-y-4">
-          <div v-for="i in 5" :key="i" class="h-14 bg-gray-700/50 rounded"></div>
+          <div v-for="i in 5" :key="i" class="h-14 bg-ttc-surface rounded"></div>
         </div>
       </div>
     </div>
@@ -67,36 +67,36 @@
     <!-- Content -->
     <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-6 p-3">
       <!-- Monthly Spending Trends -->
-      <div class="bg-gray-800 rounded-lg shadow-sm border border-gray-700 p-4">
+      <div class="bg-ttc-card rounded-lg shadow-sm border border-ttc-border p-4">
         <h2 class="text-lg font-semibold mb-2 flex items-center">
           <MdiChartLine class="mr-2 text-primary" />
           Tendencias de Gastos Mensuales
         </h2>
-        <p class="text-sm text-gray-500 mb-4">Compará tus gastos fijos y únicos por mes</p>
+        <p class="text-sm text-ttc-text-dim mb-4">Compará tus gastos fijos y únicos por mes</p>
         <div class="relative h-[350px]">
           <canvas id="monthlyTrendsChart"></canvas>
         </div>
       </div>
 
       <!-- Spending Distribution -->
-      <div class="bg-gray-800 rounded-lg shadow-sm border border-gray-700 p-4">
+      <div class="bg-ttc-card rounded-lg shadow-sm border border-ttc-border p-4">
         <h2 class="text-lg font-semibold mb-2 flex items-center">
           <MdiChartPie class="mr-2 text-primary" />
           Distribución de Gastos
         </h2>
         <div class="flex justify-between items-center mb-4">
-          <p class="text-sm text-gray-500">Mirá cómo se distribuye tu dinero por categoría</p>
+          <p class="text-sm text-ttc-text-dim">Mirá cómo se distribuye tu dinero por categoría</p>
           <select
             v-model="selectedMonth"
             @change="updateCategoryPieChart"
-            class="px-2 py-1 text-sm rounded-lg border border-gray-600 bg-gray-800 focus:ring-2 focus:ring-primary focus:border-transparent"
+            class="px-2 py-1 text-sm rounded-lg border border-ttc-border bg-ttc-card focus:ring-2 focus:ring-primary focus:border-transparent"
           >
             <option v-for="month in availableMonths" :key="month.value" :value="month.value">
               {{ month.label }}
             </option>
           </select>
         </div>
-        <div v-if="!categoryDataExists" class="flex flex-col items-center justify-center h-[350px] text-gray-400">
+        <div v-if="!categoryDataExists" class="flex flex-col items-center justify-center h-[350px] text-ttc-text-muted">
           <MdiChartDonut class="text-5xl mb-3" />
           <p>No hay datos de pagos para este mes</p>
         </div>
@@ -106,57 +106,57 @@
       </div>
 
       <!-- Key Statistics -->
-      <div class="bg-gray-800 rounded-lg shadow-sm border border-gray-700 p-4">
+      <div class="bg-ttc-card rounded-lg shadow-sm border border-ttc-border p-4">
         <h2 class="text-lg font-semibold mb-2 flex items-center">
           <MdiChartMultiple class="mr-2 text-primary" />
           Estadísticas Clave
         </h2>
-        <p class="text-sm text-gray-500 mb-4">Tus datos financieros de un vistazo</p>
+        <p class="text-sm text-ttc-text-dim mb-4">Tus datos financieros de un vistazo</p>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Average Monthly Spend -->
-          <div class="flex flex-col p-3 bg-gray-700/40 rounded-lg">
-            <span class="text-xs text-gray-400">Gasto Mensual Promedio</span>
-            <span class="text-xl font-bold text-white">{{ formatPrice(stats.averageMonthlySpend) }}</span>
+          <div class="flex flex-col p-3 bg-ttc-surface rounded-lg">
+            <span class="text-xs text-ttc-text-muted">Gasto Mensual Promedio</span>
+            <span class="text-xl font-bold text-ttc-text">{{ formatPrice(stats.averageMonthlySpend) }}</span>
             <div class="text-sm mt-1">
               <span :class="stats.monthOverMonthChange >= 0 ? 'text-danger' : 'text-success'">
                 {{ stats.monthOverMonthChange >= 0 ? "↑" : "↓" }} {{ Math.abs(stats.monthOverMonthChange).toFixed(1) }}%
               </span>
-              <span class="text-gray-400 ml-1">vs mes anterior</span>
+              <span class="text-ttc-text-muted ml-1">vs mes anterior</span>
             </div>
           </div>
 
           <!-- Peak Spending Month -->
-          <div class="flex flex-col p-3 bg-gray-700/40 rounded-lg">
-            <span class="text-xs text-gray-400">Mes con Mayor Gasto</span>
-            <span class="text-xl font-bold text-white">{{ stats.peakSpendingMonth || "N/A" }}</span>
-            <span class="text-sm text-gray-400">{{ formatPrice(stats.peakSpendingAmount) }}</span>
+          <div class="flex flex-col p-3 bg-ttc-surface rounded-lg">
+            <span class="text-xs text-ttc-text-muted">Mes con Mayor Gasto</span>
+            <span class="text-xl font-bold text-ttc-text">{{ stats.peakSpendingMonth || "N/A" }}</span>
+            <span class="text-sm text-ttc-text-muted">{{ formatPrice(stats.peakSpendingAmount) }}</span>
           </div>
 
           <!-- Recurring vs One-time -->
-          <div class="flex flex-col p-3 bg-gray-700/40 rounded-lg">
-            <span class="text-xs text-gray-400">Fijos vs Únicos</span>
+          <div class="flex flex-col p-3 bg-ttc-surface rounded-lg">
+            <span class="text-xs text-ttc-text-muted">Fijos vs Únicos</span>
             <div class="flex items-center gap-2">
-              <span class="text-xl font-bold text-white">{{ stats.recurringPercentage }}%</span>
-              <span class="text-sm text-gray-400">fijos</span>
+              <span class="text-xl font-bold text-ttc-text">{{ stats.recurringPercentage }}%</span>
+              <span class="text-sm text-ttc-text-muted">fijos</span>
             </div>
-            <div class="w-full h-2 bg-gray-600 rounded-full mt-2 overflow-hidden">
+            <div class="w-full h-2 bg-ttc-border rounded-full mt-2 overflow-hidden">
               <div class="h-full bg-primary rounded-full" :style="`width: ${stats.recurringPercentage}%`"></div>
             </div>
           </div>
 
           <!-- Avg One-time Transaction -->
-          <div class="flex flex-col p-3 bg-gray-700/40 rounded-lg">
-            <span class="text-xs text-gray-400">Promedio Pago Único</span>
-            <span class="text-xl font-bold text-white">{{ formatPrice(stats.avgOneTimeTransaction) }}</span>
-            <span class="text-sm text-gray-400">por transacción</span>
+          <div class="flex flex-col p-3 bg-ttc-surface rounded-lg">
+            <span class="text-xs text-ttc-text-muted">Promedio Pago Único</span>
+            <span class="text-xl font-bold text-ttc-text">{{ formatPrice(stats.avgOneTimeTransaction) }}</span>
+            <span class="text-sm text-ttc-text-muted">por transacción</span>
           </div>
 
           <!-- Top Expense Category -->
-          <div class="flex flex-col p-3 bg-gray-700/40 rounded-lg">
-            <span class="text-xs text-gray-400">Categoría Principal</span>
+          <div class="flex flex-col p-3 bg-ttc-surface rounded-lg">
+            <span class="text-xs text-ttc-text-muted">Categoría Principal</span>
             <div class="flex items-center gap-2">
-              <span class="text-xl font-bold text-white">{{ getCategoryDisplayLabel(stats.topCategory) }}</span>
+              <span class="text-xl font-bold text-ttc-text">{{ getCategoryDisplayLabel(stats.topCategory) }}</span>
               <span
                 v-if="stats.topCategoryTrend !== 0"
                 :class="stats.topCategoryTrend >= 0 ? 'text-danger' : 'text-success'"
@@ -165,14 +165,14 @@
                 {{ stats.topCategoryTrend >= 0 ? "↑" : "↓" }} {{ Math.abs(stats.topCategoryTrend).toFixed(0) }}%
               </span>
             </div>
-            <span class="text-sm text-gray-400">{{ stats.topCategoryPercentage }}% del gasto total</span>
+            <span class="text-sm text-ttc-text-muted">{{ stats.topCategoryPercentage }}% del gasto total</span>
           </div>
 
           <!-- Payment Completion Rate -->
-          <div class="flex flex-col p-3 bg-gray-700/40 rounded-lg">
-            <span class="text-xs text-gray-400">Tasa de Pagos Completados</span>
-            <span class="text-xl font-bold text-white">{{ stats.paymentCompletionRate }}%</span>
-            <div class="w-full h-2 bg-gray-600 rounded-full mt-2 overflow-hidden">
+          <div class="flex flex-col p-3 bg-ttc-surface rounded-lg">
+            <span class="text-xs text-ttc-text-muted">Tasa de Pagos Completados</span>
+            <span class="text-xl font-bold text-ttc-text">{{ stats.paymentCompletionRate }}%</span>
+            <div class="w-full h-2 bg-ttc-border rounded-full mt-2 overflow-hidden">
               <div
                 class="h-full rounded-full"
                 :class="
@@ -190,14 +190,14 @@
       </div>
 
       <!-- Payment Breakdown -->
-      <div class="bg-gray-800 rounded-lg shadow-sm border border-gray-700 p-4">
+      <div class="bg-ttc-card rounded-lg shadow-sm border border-ttc-border p-4">
         <h2 class="text-lg font-semibold mb-2 flex items-center">
           <MdiCreditCardOutline class="mr-2 text-primary" />
           Desglose de Pagos
         </h2>
-        <p class="text-sm text-gray-500 mb-4">Mirá tus mayores gastos de {{ selectedMonthName }}</p>
+        <p class="text-sm text-ttc-text-dim mb-4">Mirá tus mayores gastos de {{ selectedMonthName }}</p>
 
-        <div v-if="!topPayments.length" class="flex flex-col items-center justify-center h-[350px] text-gray-400">
+        <div v-if="!topPayments.length" class="flex flex-col items-center justify-center h-[350px] text-ttc-text-muted">
           <MdiCreditCardOff class="text-5xl mb-3" />
           <p>No hay datos de pagos para este mes</p>
         </div>
@@ -209,12 +209,12 @@
                   <div class="w-2 h-10 rounded-full mr-3" :style="{ backgroundColor: getDisplayCategoryColor(payment) }"></div>
                   <div>
                     <p class="font-medium">{{ payment.title }}</p>
-                    <p class="text-xs text-gray-500">{{ payment.isRecurring ? "Fijo" : "Único" }}</p>
+                    <p class="text-xs text-ttc-text-dim">{{ payment.isRecurring ? "Fijo" : "Único" }}</p>
                   </div>
                 </div>
                 <p class="font-semibold">{{ formatPrice(payment.amount) }}</p>
               </div>
-              <div class="w-full h-2 bg-gray-600 rounded-full overflow-hidden">
+              <div class="w-full h-2 bg-ttc-border rounded-full overflow-hidden">
                 <div
                   class="h-full bg-primary rounded-full"
                   :style="`width: ${(payment.amount / topPayments[0].amount) * 100}%`"

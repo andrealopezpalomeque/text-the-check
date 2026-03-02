@@ -16,7 +16,7 @@
           <Transition name="scale">
             <div
               v-if="modelValue"
-              class="relative bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-sm w-full p-6"
+              class="relative bg-ttc-card rounded-xl shadow-xl max-w-sm w-full p-6"
             >
               <!-- Icon -->
               <div
@@ -29,12 +29,12 @@
               </div>
 
               <!-- Title -->
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white text-center mb-2">
+              <h3 class="text-lg font-semibold text-ttc-text text-center mb-2">
                 {{ title }}
               </h3>
 
               <!-- Message -->
-              <p class="text-gray-600 dark:text-gray-400 text-center mb-6">
+              <p class="text-ttc-text-muted text-center mb-6">
                 {{ message }}
               </p>
 
@@ -43,7 +43,7 @@
                 <button
                   type="button"
                   @click="handleCancel"
-                  class="flex-1 px-4 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
+                  class="flex-1 px-4 py-2.5 border border-ttc-border text-ttc-text rounded-lg hover:bg-ttc-card-hover transition-colors font-medium"
                 >
                   {{ cancelText }}
                 </button>
@@ -101,7 +101,7 @@ const confirmButtonClass = computed(() => {
   if (props.variant === 'danger') {
     return 'bg-red-600 hover:bg-red-700 text-white'
   }
-  return 'bg-blue-600 hover:bg-blue-700 text-white'
+  return 'bg-ttc-primary hover:bg-ttc-primary-light text-white'
 })
 
 const handleConfirm = () => {

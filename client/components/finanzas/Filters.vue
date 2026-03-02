@@ -9,12 +9,12 @@
       <div class="flex items-center gap-3 w-full sm:w-auto">
         <div class="relative w-full sm:w-64">
           <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-            <IcSharpSearch class="text-gray-400 text-lg" />
+            <IcSharpSearch class="text-ttc-text-muted text-lg" />
           </div>
           <input
             type="text"
             @input="(value) => $emit('onSearch', value.target.value)"
-            class="w-full h-10 rounded-md bg-ttc-surface border border-gray-600 pl-10 text-white placeholder:text-gray-500 focus:ring-2 focus:ring-primary focus:border-transparent"
+            class="w-full h-10 rounded-md bg-ttc-surface border border-ttc-border pl-10 text-white placeholder:text-ttc-text-dim focus:ring-2 focus:ring-primary focus:border-transparent"
             placeholder="Buscar pagos..."
           >
         </div>
@@ -22,7 +22,7 @@
         <!-- Filter Button -->
         <Tooltip ref="tooltipFilter">
           <button
-            class="h-10 w-10 flex items-center justify-center bg-ttc-surface hover:bg-gray-700 rounded-md border border-gray-600 text-white transition-colors"
+            class="h-10 w-10 flex items-center justify-center bg-ttc-surface hover:bg-ttc-card-hover rounded-md border border-ttc-border text-white transition-colors"
             @click="toggleTooltip"
             aria-label="Opciones de filtro"
           >
@@ -31,14 +31,14 @@
           
           <!-- Filter Dropdown Content -->
           <template #content>
-            <div class="bg-ttc-surface border border-gray-600 rounded-lg shadow-lg overflow-hidden">
+            <div class="bg-ttc-surface border border-ttc-border rounded-lg shadow-lg overflow-hidden">
               <div
                 v-for="filter in filters"
                 :key="filter.name"
                 @click="selectFilter(filter)"
                 :class="[
-                  'flex justify-between items-center p-3 cursor-pointer hover:bg-gray-700 transition-colors', 
-                  selectedFilter.name === filter.name ? 'bg-gray-700' : '',
+                  'flex justify-between items-center p-3 cursor-pointer hover:bg-ttc-card-hover transition-colors', 
+                  selectedFilter.name === filter.name ? 'bg-ttc-input' : '',
                   filter.class
                 ]"
               >
