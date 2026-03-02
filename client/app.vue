@@ -31,6 +31,13 @@ const groupStore = useGroupStore()
 const { mode } = useAppMode()
 const { initTheme } = useTheme()
 
+// Finanzas stores
+const finCategoryStore = useFinanzasCategoryStore()
+const finRecurrentStore = useFinanzasRecurrentStore()
+const finPaymentStore = useFinanzasPaymentStore()
+const finTemplateStore = useFinanzasTemplateStore()
+const finWeeklySummaryStore = useFinanzasWeeklySummaryStore()
+
 onMounted(() => {
   initTheme()
 })
@@ -54,6 +61,19 @@ const initializeData = async () => {
   }
 }
 
+// Initialize finanzas data when authenticated
+const initializeFinanzasData = async () => {
+  if (!firestoreUser.value) return
+
+  await Promise.all([
+    finCategoryStore.fetchCategories(),
+    finRecurrentStore.fetchRecurrentPayments(),
+    finRecurrentStore.fetchPaymentInstances(6, false, true),
+    finWeeklySummaryStore.fetchSummary()
+  ])
+  finRecurrentStore.processData(6)
+}
+
 // Watch for auth loading to complete and enforce access control
 watch(authLoading, (loading) => {
   if (import.meta.server) return
@@ -71,11 +91,19 @@ watch(authLoading, (loading) => {
 // Watch for auth changes
 watch(isAuthenticated, async (authenticated) => {
   if (authenticated) {
-    await initializeData()
+    await Promise.all([initializeData(), initializeFinanzasData()])
   } else {
+    // Grupos cleanup
     expenseStore.stopListeners()
     paymentStore.stopListeners()
     groupStore.clearGroups()
+
+    // Finanzas cleanup
+    finCategoryStore.clearState()
+    finRecurrentStore.clearState()
+    finPaymentStore.clearState()
+    finTemplateStore.clearState()
+    finWeeklySummaryStore.clearState()
 
     if (import.meta.client && route.path !== '/login' && route.path !== '/') {
       navigateTo('/login', { replace: true })

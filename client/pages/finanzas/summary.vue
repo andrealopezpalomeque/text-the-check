@@ -250,7 +250,8 @@ Chart.register(...registerables);
 definePageMeta({
   layout: "finanzas",
   ssr: false,
-  middleware: ["auth"]
+  middleware: ["auth"],
+  keepalive: true
 });
 
 // ----- Define Useful Properties ---------
@@ -844,9 +845,6 @@ async function fetchData() {
 
 // ----- Initialize Data ---------
 onMounted(async () => {
-  // Ensure categories are loaded first
-  await categoryStore.fetchCategories();
-
   await fetchData();
 });
 

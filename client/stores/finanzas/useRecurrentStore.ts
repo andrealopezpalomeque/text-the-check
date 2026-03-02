@@ -125,7 +125,7 @@ export const useFinanzasRecurrentStore = defineStore("finanzas-recurrent", {
         return false;
       }
 
-      if (!forceRefresh && this.recurrentPayments.length > 0) {
+      if (!forceRefresh && (this.isLoaded || this.recurrentPayments.length > 0)) {
         return true;
       }
 
@@ -161,6 +161,7 @@ export const useFinanzasRecurrentStore = defineStore("finanzas-recurrent", {
         return false;
       }
 
+      // Superset caching: if we already fetched >= monthsBack months, reuse the cache
       if (!forceRefresh && this.isLoaded && this.lastFetchedMonthsBack >= monthsBack) {
         if (!skipProcess) {
           this.processData(monthsBack);

@@ -186,7 +186,8 @@ import MdiTagOff from "~icons/mdi/tag-off";
 definePageMeta({
   layout: "finanzas",
   ssr: false,
-  middleware: ["auth"]
+  middleware: ["auth"],
+  keepalive: true
 });
 
 // ----- Stores ---------
@@ -196,7 +197,7 @@ const { getCategories, isLoading: storeLoading } = storeToRefs(categoryStore);
 // ----- Refs ---------
 const editModal = ref(null);
 const deleteConfirm = ref(null);
-const isLoading = ref(true);
+const isLoading = ref(!categoryStore.isLoaded);
 const isAdding = ref(false);
 const isSaving = ref(false);
 const categoryToDelete = ref(null);
@@ -302,8 +303,10 @@ async function confirmDelete() {
 
 // ----- Initial Data Load ---------
 onMounted(async () => {
-  await categoryStore.fetchCategories();
-  isLoading.value = false;
+  if (!categoryStore.isLoaded) {
+    await categoryStore.fetchCategories()
+  }
+  isLoading.value = false
 });
 
 // ----- Meta ---------

@@ -309,7 +309,8 @@ import MdiLoading from "~icons/mdi/loading";
 definePageMeta({
   layout: "finanzas",
   ssr: false,
-  middleware: ["auth"]
+  middleware: ["auth"],
+  keepalive: true
 });
 
 // ----- FAB Navigation State ---------
@@ -336,7 +337,7 @@ function getDisplayCategoryName(payment) {
 }
 
 // ----- Define Refs ---------
-const isLoading = ref(true);
+const isLoading = ref(!recurrentStore.isDataLoaded);
 const activeRecurrentId = ref(null);
 const editPayment = ref(null);
 const newPaymentModal = ref(null);
@@ -576,13 +577,17 @@ async function fetchData() {
 
 // ----- Initial Data Load ---------
 onMounted(async () => {
-  // Ensure categories are loaded first
-  await categoryStore.fetchCategories();
-
-  await fetchData();
-
-  // Apply default sorting - unpaid first
-  orderRecurrents({ name: "unpaid_first", order: "asc" });
+  if (recurrentStore.isDataLoaded) {
+    const monthsBack = monthsOffset.value + monthsToShow.value
+    recurrentStore.processData(monthsBack)
+    recurrents.value = [...getProcessedRecurrents.value]
+    isLoading.value = false
+    orderRecurrents({ name: "unpaid_first", order: "asc" })
+  } else {
+    await categoryStore.fetchCategories()
+    await fetchData()
+    orderRecurrents({ name: "unpaid_first", order: "asc" })
+  }
 });
 
 // ----- Watchers ---------

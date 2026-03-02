@@ -257,7 +257,8 @@ import MdiCalendarMonth from '~icons/mdi/calendar-month';
 definePageMeta({
   layout: "finanzas",
   ssr: false,
-  middleware: ['auth']
+  middleware: ['auth'],
+  keepalive: true
 });
 
 const { $dayjs } = useNuxtApp();
@@ -417,8 +418,6 @@ const progressBarColor = computed(() => {
 async function fetchData() {
   isLoading.value = true;
   try {
-    await categoryStore.fetchCategories();
-
     await Promise.all([
       paymentStore.fetchPayments({
         startDate: now.startOf('month').toDate(),

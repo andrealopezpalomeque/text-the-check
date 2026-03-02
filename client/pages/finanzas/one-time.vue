@@ -249,7 +249,8 @@ import MdiFilePdfBox from "~icons/mdi/file-pdf-box";
 definePageMeta({
   layout: "finanzas",
   ssr: false,
-  middleware: ["auth"]
+  middleware: ["auth"],
+  keepalive: true
 });
 
 // ----- FAB Navigation State ---------
@@ -529,24 +530,30 @@ function applySortOrder(orderCriteria) {
   });
 }
 
+// ----- Keyboard Shortcut ---------
+const handleKeydown = (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return
+  if (e.key.toLowerCase() === 'n' && !e.metaKey && !e.ctrlKey) {
+    showNewPayment()
+  }
+}
+
 // ----- Initialize Data ---------
 onMounted(async () => {
-  // Ensure categories are loaded first
-  await categoryStore.fetchCategories();
-
   await fetchData();
+  window.addEventListener('keydown', handleKeydown)
+});
 
-  // Keyboard shortcut: Press 'N' to add new payment
-  const handleKeydown = (e) => {
-    // Ignore if user is typing in an input/textarea or modal is open
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
-    if (e.key.toLowerCase() === 'n' && !e.metaKey && !e.ctrlKey) {
-      showNewPayment();
-    }
-  };
+onActivated(() => {
+  window.addEventListener('keydown', handleKeydown)
+})
 
-  window.addEventListener('keydown', handleKeydown);
-  onUnmounted(() => window.removeEventListener('keydown', handleKeydown));
+onDeactivated(() => {
+  window.removeEventListener('keydown', handleKeydown)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeydown)
 });
 
 watch(getPayments, () => {
