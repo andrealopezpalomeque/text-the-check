@@ -43,10 +43,17 @@ interface User {
   [key: string]: unknown
 }
 
+interface GhostMember {
+  id: string
+  name: string
+  createdBy: string
+}
+
 interface Group {
   id: string
   name: string
   members: string[]
+  ghostMembers?: GhostMember[]
   createdBy: string
   [key: string]: unknown
 }
@@ -1080,14 +1087,11 @@ export default class GruposHandler {
   // ─── Balance calculation ────────────────────────────────────────
 
   private async getBalanceMessage(groupId: string): Promise<string> {
-    console.log(`[DEBUG /balance] groupId="${groupId}"`)
     const members = await this.getGroupMembers(groupId)
-    console.log(`[DEBUG /balance] members=${members.length}:`, members.map(m => m.id))
     if (members.length === 0) return formatNoGroupError()
 
     const expenses = await this.getAllExpensesByGroup(groupId)
     const payments = await this.getPaymentsByGroup(groupId)
-    console.log(`[DEBUG /balance] expenses=${expenses.length}, payments=${payments.length}`)
 
     const balances = new Map<string, { paid: number; share: number; paymentAdj: number }>()
     members.forEach(u => balances.set(u.id, { paid: 0, share: 0, paymentAdj: 0 }))
@@ -1233,15 +1237,32 @@ export default class GruposHandler {
       const groupDoc = await db.collection('ttc_group').doc(groupId).get()
       if (!groupDoc.exists) return []
 
-      const memberIds = (groupDoc.data() as Group).members || []
-      if (memberIds.length === 0) return []
+      const groupData = groupDoc.data() as Group
+      const memberIds = groupData.members || []
 
       const members: User[] = []
-      for (let i = 0; i < memberIds.length; i += 10) {
-        const chunk = memberIds.slice(i, i + 10)
-        const snapshot = await db.collection('ttc_user').where('__name__', 'in', chunk).get()
-        snapshot.docs.forEach(doc => { members.push({ id: doc.id, ...doc.data() } as User) })
+      if (memberIds.length > 0) {
+        for (let i = 0; i < memberIds.length; i += 10) {
+          const chunk = memberIds.slice(i, i + 10)
+          const snapshot = await db.collection('ttc_user').where('__name__', 'in', chunk).get()
+          snapshot.docs.forEach(doc => { members.push({ id: doc.id, ...doc.data() } as User) })
+        }
       }
+
+      // Append ghost members (non-registered placeholders added by name)
+      const ghostMembers = groupData.ghostMembers
+      if (ghostMembers && ghostMembers.length > 0) {
+        for (const ghost of ghostMembers) {
+          members.push({
+            id: ghost.id,
+            name: ghost.name,
+            phone: '',
+            email: null,
+            aliases: [ghost.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')],
+          })
+        }
+      }
+
       return members
     } catch (error) {
       console.error('Error getting group members:', error)
