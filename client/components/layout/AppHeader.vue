@@ -96,6 +96,9 @@
           <span>Agregar Gasto</span>
         </button>
 
+        <!-- Theme Toggle -->
+        <ThemeToggle />
+
         <!-- Profile link -->
         <NuxtLink
           v-if="user"

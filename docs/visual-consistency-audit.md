@@ -1,7 +1,7 @@
 # Visual Consistency Audit: Finanzas vs Grupos
 
 **Date:** 2026-03-02
-**Status:** Phase 1 in progress
+**Status:** Phase 1.5 complete — theme toggle available app-wide
 
 ## 1. TAILWIND CONFIG
 
@@ -200,6 +200,41 @@ The codebase runs **two different theming approaches simultaneously**:
 3. Migrate Finanzas pages to CSS variable tokens
 4. Migrate Grupos components to CSS variable tokens
 5. Fix shared components (AppHeader, FinanzasBottomNav, ConfirmDialog)
+
+### Phase 1.5: Extend Theme System App-Wide (COMPLETED)
+
+**Context:** Phase 1 migrated components to `ttc-*` tokens, but the theme toggle only existed on the landing page. This phase makes the toggle available throughout the app and hardens the theme mechanism.
+
+**What was done:**
+1. **Audited theme composable** (`composables/useTheme.js`) — confirmed it already syncs both `.dark` class and `data-theme` attribute on `<html>`. Persistence via `localStorage('ttc-theme')`, defaults to dark.
+2. **Added flash prevention** — inline `<head>` script in `nuxt.config.ts` reads localStorage and applies theme before Vue mounts. Set default `htmlAttrs` to `class: 'dark'` and `data-theme: 'dark'`.
+3. **Verified CSS token coverage** — all 18 `ttc-*` tokens confirmed defined in both `:root` (dark) and `[data-theme="light"]`. 100% coverage, no gaps.
+4. **Extended toggle UI:**
+   - Added `<ThemeToggle />` to `AppHeader.vue` (Grupos desktop nav)
+   - Added `<ThemeToggle />` to `FinanzasNav.vue` (Finanzas desktop nav)
+   - Bottom navs skipped (no room with 4 tabs + FAB)
+   - Fixed remaining `dark:` pairs in `FinanzasNav.vue` scoped styles and `FinanzasBottomNav.vue`
+5. **Flagged light-mode breakage** — ~120 remaining hardcoded gray instances across 15 files (see below)
+
+**Files still breaking in light mode (Phase 3 scope):**
+
+| File | Severity | Instances |
+|------|----------|-----------|
+| `PaymentsManagePayment.vue` | HIGH | ~25 — dark-only form inputs |
+| `RecurrentsManagePayment.vue` | HIGH | ~18 — dark-only form inputs |
+| `profile.vue` | HIGH | ~40 — cards, forms, labels |
+| `join.vue` | HIGH | ~20 — join flow UI |
+| `PaymentsDetails.vue` | MEDIUM | ~5 — skeleton, table header |
+| `RecurrentsDetails.vue` | MEDIUM | ~5 — table header, labels |
+| `PaymentInfoModal.vue` | MEDIUM | ~10 — dark: pairs |
+| `PaymentsTemplateList.vue` | LOW | 1 — swipe delete bg |
+| `ConfirmDialogue.vue` | LOW | 1 — text-gray-400 |
+| `privacy.vue` | LOW | 3 — static page text |
+| `report.vue` | LOW | chart colors + print styles |
+| `LogoutButton.vue` | LOW | dark: pair |
+| `AmountDisplay.vue` | LOW | dark: pair |
+| `CategoryIcon.vue` | LOW | dark: pair |
+| `SettlementItem.vue` | LOW | disabled state |
 
 ### Phase 2: Fix Typography (High Impact)
 6. Add `font-nunito` to all page headings

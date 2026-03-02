@@ -65,7 +65,15 @@ export default defineNuxtConfig({
       ],
       htmlAttrs: {
         lang: 'es',
+        class: 'dark',
+        'data-theme': 'dark',
       },
+      script: [
+        {
+          innerHTML: `(function(){var t=localStorage.getItem('ttc-theme')||'dark';document.documentElement.setAttribute('data-theme',t);if(t==='dark'){document.documentElement.classList.add('dark')}else{document.documentElement.classList.remove('dark')}})()`,
+          type: 'text/javascript',
+        },
+      ],
       link: [
         { rel: 'icon', type: 'image/png', href: '/favicon.png' },
         { rel: 'canonical', href: 'https://textthecheck.app' },

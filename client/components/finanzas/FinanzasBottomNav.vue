@@ -10,7 +10,7 @@
         :class="[
           'relative flex flex-col items-center justify-center w-16 h-full transition-colors',
           route.path === '/finanzas'
-            ? 'text-blue-600 dark:text-blue-400'
+            ? 'text-ttc-primary'
             : 'text-ttc-text-muted hover:text-ttc-text'
         ]"
       >
@@ -18,7 +18,7 @@
         <span class="text-xs mt-1 font-medium">Fijos</span>
         <div
           v-if="route.path === '/finanzas'"
-          class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-blue-600 dark:bg-blue-400 rounded-full"
+          class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-ttc-primary rounded-full"
         />
       </NuxtLink>
 
@@ -28,7 +28,7 @@
         :class="[
           'relative flex flex-col items-center justify-center w-16 h-full transition-colors',
           route.path === '/finanzas/one-time'
-            ? 'text-blue-600 dark:text-blue-400'
+            ? 'text-ttc-primary'
             : 'text-ttc-text-muted hover:text-ttc-text'
         ]"
       >
@@ -36,7 +36,7 @@
         <span class="text-xs mt-1 font-medium">Únicos</span>
         <div
           v-if="route.path === '/finanzas/one-time'"
-          class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-blue-600 dark:bg-blue-400 rounded-full"
+          class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-ttc-primary rounded-full"
         />
       </NuxtLink>
 
@@ -46,7 +46,7 @@
         class="relative flex items-center justify-center -mt-4"
       >
         <div
-          class="w-14 h-14 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 rounded-full flex items-center justify-center shadow-lg transition-colors"
+          class="w-14 h-14 bg-ttc-primary hover:bg-ttc-primary-light active:bg-ttc-primary rounded-full flex items-center justify-center shadow-lg transition-colors"
         >
           <IconPlus class="w-7 h-7 text-white" />
         </div>
@@ -58,7 +58,7 @@
         :class="[
           'relative flex flex-col items-center justify-center w-16 h-full transition-colors',
           isSummaryActive
-            ? 'text-blue-600 dark:text-blue-400'
+            ? 'text-ttc-primary'
             : 'text-ttc-text-muted hover:text-ttc-text'
         ]"
       >
@@ -66,7 +66,7 @@
         <span class="text-xs mt-1 font-medium">Resumen</span>
         <div
           v-if="isSummaryActive"
-          class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-blue-600 dark:bg-blue-400 rounded-full"
+          class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-ttc-primary rounded-full"
         />
       </NuxtLink>
 
@@ -76,7 +76,7 @@
         :class="[
           'relative flex flex-col items-center justify-center w-16 h-full transition-colors',
           route.path === '/finanzas/categories'
-            ? 'text-blue-600 dark:text-blue-400'
+            ? 'text-ttc-primary'
             : 'text-ttc-text-muted hover:text-ttc-text'
         ]"
       >
@@ -84,7 +84,7 @@
         <span class="text-xs mt-1 font-medium">Categorías</span>
         <div
           v-if="route.path === '/finanzas/categories'"
-          class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-blue-600 dark:bg-blue-400 rounded-full"
+          class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-ttc-primary rounded-full"
         />
       </NuxtLink>
     </div>

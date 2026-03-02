@@ -10,21 +10,26 @@
           <!-- Mode Toggle -->
           <button
             @click="switchToGrupos"
-            class="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-ttc-text-muted hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors"
+            class="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-ttc-text-muted hover:text-ttc-primary hover:bg-blue-900/20 rounded-md transition-colors"
           >
             <IconGroup class="w-3.5 h-3.5" />
             <span>Grupos</span>
           </button>
         </div>
 
-        <!-- Profile link -->
-        <NuxtLink
+        <div class="flex items-center gap-2">
+          <!-- Theme Toggle -->
+          <ThemeToggle />
+
+          <!-- Profile link -->
+          <NuxtLink
           to="/profile"
           class="flex items-center gap-2 text-ttc-text hover:text-ttc-text transition-colors"
         >
           <IconUser class="w-5 h-5" />
           <span class="text-sm hidden sm:inline">Perfil</span>
         </NuxtLink>
+        </div>
       </div>
 
       <!-- Navigation Tabs -->
@@ -82,10 +87,10 @@ const switchToGrupos = () => {
 }
 
 .nav-tab:hover {
-  @apply text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600;
+  @apply text-ttc-text border-ttc-border;
 }
 
 .nav-tab-active {
-  @apply text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-400 font-semibold;
+  @apply text-ttc-primary border-ttc-primary font-semibold;
 }
 </style>
