@@ -44,7 +44,7 @@ interface PaymentState {
   isLoaded: boolean;
   error: string | null;
   currentPayment: Payment | null;
-  lastFilters: PaymentFilters | null;
+  lastFiltersKey: string | null;
 }
 
 // Schema instance
@@ -58,7 +58,7 @@ export const useFinanzasPaymentStore = defineStore('finanzas-payment', {
     isLoaded: false,
     error: null,
     currentPayment: null,
-    lastFilters: null
+    lastFiltersKey: null
   }),
 
   getters: {
@@ -103,10 +103,12 @@ export const useFinanzasPaymentStore = defineStore('finanzas-payment', {
         return false;
       }
 
-      const filtersMatch = this.lastFilters &&
-        JSON.stringify(this.lastFilters) === JSON.stringify(filters);
+      // Serialize filters with Date→timestamp normalization for reliable comparison
+      const filtersKey = JSON.stringify(filters, (_, v) =>
+        v instanceof Date ? v.getTime() : v
+      );
 
-      if (!forceRefresh && this.isLoaded && filtersMatch) {
+      if (!forceRefresh && this.isLoaded && this.lastFiltersKey === filtersKey) {
         return true;
       }
 
@@ -167,7 +169,7 @@ export const useFinanzasPaymentStore = defineStore('finanzas-payment', {
         }
 
         this.isLoaded = true;
-        this.lastFilters = { ...filters };
+        this.lastFiltersKey = filtersKey;
 
         return true;
       } catch (error) {
@@ -345,7 +347,7 @@ export const useFinanzasPaymentStore = defineStore('finanzas-payment', {
       this.isLoaded = false;
       this.error = null;
       this.currentPayment = null;
-      this.lastFilters = null;
+      this.lastFiltersKey = null;
     },
 
     async refetchPayments(filters: PaymentFilters = {}) {

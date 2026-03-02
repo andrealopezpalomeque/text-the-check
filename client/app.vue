@@ -55,9 +55,11 @@ const initializeData = async () => {
   const members = groupStore.selectedGroupMembers
 
   if (groupId) {
-    expenseStore.initializeListeners(groupId)
-    paymentStore.initializeListeners(groupId)
-    userStore.fetchUsers(members, groupStore.selectedGroup?.ghostMembers)
+    await Promise.all([
+      expenseStore.initializeListeners(groupId),
+      paymentStore.initializeListeners(groupId),
+      userStore.fetchUsers(members, groupStore.selectedGroup?.ghostMembers)
+    ])
   }
 }
 
@@ -112,12 +114,14 @@ watch(isAuthenticated, async (authenticated) => {
 }, { immediate: true })
 
 // Watch for group changes and reinitialize data
-watch(() => groupStore.selectedGroupId, (newGroupId, oldGroupId) => {
+watch(() => groupStore.selectedGroupId, async (newGroupId, oldGroupId) => {
   if (newGroupId && newGroupId !== oldGroupId && isAuthenticated.value) {
     const members = groupStore.selectedGroupMembers
-    expenseStore.initializeListeners(newGroupId)
-    paymentStore.initializeListeners(newGroupId)
-    userStore.fetchUsers(members, groupStore.selectedGroup?.ghostMembers)
+    await Promise.all([
+      expenseStore.initializeListeners(newGroupId),
+      paymentStore.initializeListeners(newGroupId),
+      userStore.fetchUsers(members, groupStore.selectedGroup?.ghostMembers)
+    ])
   }
 })
 

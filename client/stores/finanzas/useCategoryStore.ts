@@ -21,23 +21,29 @@ export const useFinanzasCategoryStore = defineStore('finanzas-category', {
       return state.categories.filter(cat => !cat.deletedAt);
     },
 
-    getCategoryById: (state) => {
+    // O(1) lookup map, rebuilt only when categories change
+    categoryMap: (state): Map<string, ExpenseCategory> => {
+      const map = new Map<string, ExpenseCategory>();
+      state.categories.forEach(cat => map.set(cat.id, cat));
+      return map;
+    },
+
+    getCategoryById() {
       return (id: string): ExpenseCategory | undefined => {
-        return state.categories.find(cat => cat.id === id && !cat.deletedAt);
+        const cat = this.categoryMap.get(id);
+        return cat && !cat.deletedAt ? cat : undefined;
       };
     },
 
-    getCategoryColor: (state) => {
+    getCategoryColor() {
       return (id: string): string => {
-        const category = state.categories.find(cat => cat.id === id);
-        return category?.color || '#808080';
+        return this.categoryMap.get(id)?.color || '#808080';
       };
     },
 
-    getCategoryName: (state) => {
+    getCategoryName() {
       return (id: string): string => {
-        const category = state.categories.find(cat => cat.id === id);
-        return category?.name || 'Otros';
+        return this.categoryMap.get(id)?.name || 'Otros';
       };
     }
   },

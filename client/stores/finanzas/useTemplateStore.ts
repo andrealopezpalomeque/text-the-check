@@ -15,6 +15,7 @@ interface PaymentTemplate {
 interface TemplateState {
   templates: PaymentTemplate[];
   isLoading: boolean;
+  isLoaded: boolean;
   error: string | null;
 }
 
@@ -24,6 +25,7 @@ export const useFinanzasTemplateStore = defineStore('finanzas-template', {
   state: (): TemplateState => ({
     templates: [],
     isLoading: false,
+    isLoaded: false,
     error: null
   }),
 
@@ -35,12 +37,16 @@ export const useFinanzasTemplateStore = defineStore('finanzas-template', {
   },
 
   actions: {
-    async fetchTemplates() {
+    async fetchTemplates(forceRefresh = false) {
       const { firestoreUser } = useAuth();
 
       if (!firestoreUser.value) {
         this.error = 'Usuario no autenticado';
         return false;
+      }
+
+      if (!forceRefresh && this.isLoaded) {
+        return true;
       }
 
       this.isLoading = true;
@@ -50,6 +56,7 @@ export const useFinanzasTemplateStore = defineStore('finanzas-template', {
 
         if (result.success && result.data) {
           this.templates = result.data as PaymentTemplate[];
+          this.isLoaded = true;
           return true;
         } else {
           this.error = result.error || 'Error al obtener las plantillas';
@@ -152,6 +159,7 @@ export const useFinanzasTemplateStore = defineStore('finanzas-template', {
 
     clearState() {
       this.templates = [];
+      this.isLoaded = false;
       this.error = null;
     }
   }

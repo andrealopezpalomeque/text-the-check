@@ -69,6 +69,7 @@ interface RecurrentState {
   recurrentPayments: RecurrentPayment[];
   paymentInstances: PaymentInstance[];
   processedRecurrents: RecurrentWithMonths[];
+  monthlyTotals: { [month: string]: { paid: number; unpaid: number } };
   isLoaded: boolean;
   isLoading: boolean;
   error: string | null;
@@ -84,6 +85,7 @@ export const useFinanzasRecurrentStore = defineStore("finanzas-recurrent", {
     recurrentPayments: [],
     paymentInstances: [],
     processedRecurrents: [],
+    monthlyTotals: {},
     isLoaded: false,
     isLoading: false,
     error: null,
@@ -95,25 +97,7 @@ export const useFinanzasRecurrentStore = defineStore("finanzas-recurrent", {
     getPaymentInstances: (state) => state.paymentInstances,
     getProcessedRecurrents: (state) => state.processedRecurrents,
     isDataLoaded: (state) => state.isLoaded,
-    getMonthlyTotals: (state) => {
-      const totals: { [month: string]: { paid: number; unpaid: number } } = {};
-
-      state.processedRecurrents.forEach((recurrent) => {
-        Object.entries(recurrent.months).forEach(([month, data]) => {
-          if (!totals[month]) {
-            totals[month] = { paid: 0, unpaid: 0 };
-          }
-
-          if (data.isPaid) {
-            totals[month].paid += data.amount;
-          } else {
-            totals[month].unpaid += data.amount;
-          }
-        });
-      });
-
-      return totals;
-    }
+    getMonthlyTotals: (state) => state.monthlyTotals
   },
 
   actions: {
@@ -298,7 +282,23 @@ export const useFinanzasRecurrentStore = defineStore("finanzas-recurrent", {
         processedData.push(recurrentWithMonths);
       });
 
+      // Compute monthly totals in the same pass
+      const totals: { [month: string]: { paid: number; unpaid: number } } = {};
+      processedData.forEach((recurrent) => {
+        Object.entries(recurrent.months).forEach(([month, data]) => {
+          if (!totals[month]) {
+            totals[month] = { paid: 0, unpaid: 0 };
+          }
+          if (data.isPaid) {
+            totals[month].paid += data.amount;
+          } else {
+            totals[month].unpaid += data.amount;
+          }
+        });
+      });
+
       this.processedRecurrents = processedData;
+      this.monthlyTotals = totals;
     },
 
     generateDueDate(day: string, date: any) {
@@ -530,6 +530,7 @@ export const useFinanzasRecurrentStore = defineStore("finanzas-recurrent", {
       this.recurrentPayments = [];
       this.paymentInstances = [];
       this.processedRecurrents = [];
+      this.monthlyTotals = {};
       this.isLoaded = false;
       this.isLoading = false;
       this.error = null;
