@@ -24,6 +24,7 @@ export interface User {
   email: string | null    // nullable, populated via Google Auth
   aliases: string[]       // for @mention matching (lowercase)
   activeGroupId?: string | null  // currently selected group for WhatsApp expense logging
+  isGhost?: boolean       // true for ghost members (non-registered placeholders)
   createdAt?: Date
   // Legacy field for backwards compatibility during migration
   phoneNumber?: string

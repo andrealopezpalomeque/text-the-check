@@ -154,10 +154,12 @@ service cloud.firestore {
                     && request.resource.data.keys().hasAll(['name', 'members', 'createdBy'])
                     && request.resource.data.name is string
                     && request.resource.data.members is list
-                    && request.resource.data.createdBy is string;
+                    && request.resource.data.createdBy is string
+                    && (!request.resource.data.keys().hasAny(['ghostMembers']) || request.resource.data.ghostMembers is list);
 
       allow update: if isAuthenticated()
-                    && request.resource.data.keys().hasAll(['name', 'members', 'createdBy']);
+                    && request.resource.data.keys().hasAll(['name', 'members', 'createdBy'])
+                    && (!request.resource.data.keys().hasAny(['ghostMembers']) || request.resource.data.ghostMembers is list);
 
       allow delete: if false; // Groups should not be deleted casually
     }

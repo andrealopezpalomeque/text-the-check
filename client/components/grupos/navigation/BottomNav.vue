@@ -1,5 +1,6 @@
 <template>
   <nav
+    v-if="!groupStore.showGroupList"
     class="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 md:hidden"
     :style="{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }"
   >
@@ -80,6 +81,7 @@ import IconPlus from '~icons/mdi/plus'
 import IconUser from '~icons/mdi/account'
 
 const route = useRoute()
+const groupStore = useGroupStore()
 const { activeTab, switchTab, openExpenseModal } = useNavigationState()
 
 const isActive = (tab) => {

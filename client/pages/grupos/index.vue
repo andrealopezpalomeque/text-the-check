@@ -1,6 +1,15 @@
 <template>
+  <!-- Groups List View -->
+  <div v-if="groupStore.showGroupList">
+    <GroupList @create="showCreateModal = true" />
+    <CreateGroupModal
+      :is-open="showCreateModal"
+      @close="showCreateModal = false"
+    />
+  </div>
+
   <!-- Full-page loading state - show until all data is ready -->
-  <div v-if="!isDataReady" class="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+  <div v-else-if="!isDataReady" class="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
     <div class="text-center">
       <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 dark:border-white mb-4"></div>
       <p class="text-gray-600 dark:text-gray-400">Cargando...</p>
@@ -152,6 +161,8 @@ const paymentStore = usePaymentStore()
 const userStore = useUserStore()
 const groupStore = useGroupStore()
 const { activeTab, switchTab, openExpenseModal, openEditExpenseModal } = useNavigationState()
+
+const showCreateModal = ref(false)
 
 // Start with loading = true, only set to false when we KNOW data is ready
 // This prevents any flash of empty content during hydration

@@ -3,9 +3,16 @@
     <!-- Header -->
     <div class="px-3 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center gap-2">
       <IconCurrencyUsd class="w-5 h-5 text-gray-500 dark:text-gray-400" />
-      <h3 class="font-display text-base font-semibold text-gray-900 dark:text-white">
+      <h3 class="font-display text-base font-semibold text-gray-900 dark:text-white flex-1">
         Balances del Grupo
       </h3>
+      <button
+        @click="showAddGhostModal = true"
+        class="p-1.5 rounded-lg text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+        title="Agregar miembro sin cuenta"
+      >
+        <IconAccountPlus class="w-5 h-5" />
+      </button>
     </div>
 
     <!-- Balance Items -->
@@ -18,11 +25,20 @@
         :is-current-user="balance.userId === currentUserId"
       />
     </div>
+
+    <!-- Add Ghost Member Modal -->
+    <AddGhostMemberModal
+      :is-open="showAddGhostModal"
+      @close="showAddGhostModal = false"
+    />
   </div>
 </template>
 
 <script setup>
 import IconCurrencyUsd from '~icons/mdi/currency-usd'
+import IconAccountPlus from '~icons/mdi/account-plus'
+
+const showAddGhostModal = ref(false)
 
 const props = defineProps({
   balances: { type: Array, required: true },

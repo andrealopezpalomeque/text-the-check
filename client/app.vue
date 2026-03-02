@@ -41,14 +41,8 @@ const initializeData = async () => {
 
   await groupStore.fetchGroupsForUser(firestoreUser.value.id, firestoreUser.value.activeGroupId)
 
-  if (groupStore.groups.length === 0) {
-    // Don't redirect when on /login — login.vue manages its own post-auth navigation
-    // (e.g. merge flow, google-prompt flow). /setup still works for all other entry points.
-    if (route.path !== '/login') {
-      navigateTo('/setup', { replace: true })
-    }
-    return
-  }
+  // Always show group list after login — empty state is handled in GroupList
+  groupStore.showGroupList = true
 
   const groupId = groupStore.selectedGroupId
   const members = groupStore.selectedGroupMembers
@@ -56,7 +50,7 @@ const initializeData = async () => {
   if (groupId) {
     expenseStore.initializeListeners(groupId)
     paymentStore.initializeListeners(groupId)
-    userStore.fetchUsers(members)
+    userStore.fetchUsers(members, groupStore.selectedGroup?.ghostMembers)
   }
 }
 
@@ -95,9 +89,20 @@ watch(() => groupStore.selectedGroupId, (newGroupId, oldGroupId) => {
     const members = groupStore.selectedGroupMembers
     expenseStore.initializeListeners(newGroupId)
     paymentStore.initializeListeners(newGroupId)
-    userStore.fetchUsers(members)
+    userStore.fetchUsers(members, groupStore.selectedGroup?.ghostMembers)
   }
 })
+
+// Re-fetch users when ghost members change (added/removed/claimed via real-time sync)
+watch(() => groupStore.selectedGroupGhostMembers, (newGhosts, oldGhosts) => {
+  if (!isAuthenticated.value || !groupStore.selectedGroupId) return
+  // Only re-fetch if the ghost list actually changed
+  const newIds = newGhosts.map(g => g.id).join(',')
+  const oldIds = (oldGhosts || []).map(g => g.id).join(',')
+  if (newIds !== oldIds) {
+    userStore.fetchUsers(groupStore.selectedGroupMembers, newGhosts)
+  }
+}, { deep: true })
 
 // Cleanup on unmount
 onUnmounted(() => {

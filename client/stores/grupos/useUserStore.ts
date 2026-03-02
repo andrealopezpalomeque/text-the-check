@@ -9,7 +9,7 @@ import {
   doc,
   updateDoc
 } from 'firebase/firestore'
-import type { User, Balance, Settlement, PaymentInfo } from '~/types'
+import type { User, Balance, Settlement, PaymentInfo, GhostMember } from '~/types'
 
 interface UserState {
   users: User[]
@@ -47,15 +47,17 @@ export const useUserStore = defineStore('user', {
 
   actions: {
     /**
-     * Fetch all users or users by member IDs
+     * Fetch all users or users by member IDs, merging in ghost members
      * @param memberIds - Optional array of user IDs to filter by (for group members)
+     * @param ghostMembers - Optional ghost members to merge into the user list
      */
-    async fetchUsers(memberIds?: string[]) {
+    async fetchUsers(memberIds?: string[], ghostMembers?: GhostMember[]) {
       const { db } = useFirebase()
       this.loading = true
       this.error = null
       try {
         const usersRef = collection(db, 'ttc_user')
+        let realUsers: User[] = []
 
         // If memberIds provided and not empty, filter by those IDs
         if (memberIds && memberIds.length > 0) {
@@ -70,20 +72,30 @@ export const useUserStore = defineStore('user', {
               id: doc.id,
             })) as User[])
           }
-          const users = batches.flat().sort((a, b) => a.name.localeCompare(b.name))
-          this.users = users
-          this.allUsers = users
+          realUsers = batches.flat()
         } else {
           // Fetch all users
           const q = query(usersRef, orderBy('name'))
           const snapshot = await getDocs(q)
-          const users = snapshot.docs.map(doc => ({
+          realUsers = snapshot.docs.map(doc => ({
             ...doc.data(),
             id: doc.id,
           })) as User[]
-          this.users = users
-          this.allUsers = users
         }
+
+        // Merge ghost members as User-shaped objects
+        const ghostUsers: User[] = (ghostMembers || []).map(ghost => ({
+          id: ghost.id,
+          name: ghost.name,
+          phone: '',
+          email: null,
+          aliases: [ghost.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')],
+          isGhost: true,
+        }))
+
+        const users = [...realUsers, ...ghostUsers].sort((a, b) => a.name.localeCompare(b.name))
+        this.users = users
+        this.allUsers = users
       } catch (err: any) {
         console.error('Error fetching users:', err)
         this.error = err.message

@@ -290,6 +290,21 @@ export const getGroupMembers = async (groupId: string): Promise<User[]> => {
       })
     }
 
+    // Append ghost members if present
+    const ghostMembers = (groupDoc.data() as any).ghostMembers as Array<{ id: string; name: string; createdBy: string }> | undefined
+    if (ghostMembers && ghostMembers.length > 0) {
+      for (const ghost of ghostMembers) {
+        members.push({
+          id: ghost.id,
+          name: ghost.name,
+          phone: '',
+          email: null,
+          aliases: [ghost.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')],
+          isGhost: true
+        })
+      }
+    }
+
     return members
   } catch (error) {
     console.error('Error getting group members:', error)

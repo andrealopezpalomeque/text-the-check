@@ -16,9 +16,17 @@ export interface User {
   aliases: string[]       // For @mention matching (lowercase, e.g., ["pipi"])
   paymentInfo?: PaymentInfo // Payment details for settlements
   activeGroupId?: string | null  // Currently selected group for WhatsApp expense logging
+  isGhost?: boolean       // true for ghost members (added by name, not yet signed up)
   createdAt?: Date
   // Legacy field for backwards compatibility
   phoneNumber?: string
+}
+
+// Ghost member (added by name, not yet signed up)
+export interface GhostMember {
+  id: string          // 'ghost_<uuid>' prefix distinguishes from Firebase Auth UIDs
+  name: string
+  createdBy: string   // User ID of who added them
 }
 
 // Group for organizing expenses
@@ -26,6 +34,7 @@ export interface Group {
   id: string
   name: string
   members: string[]       // Array of user IDs
+  ghostMembers?: GhostMember[]  // Members added by name before signing up
   createdBy: string       // User ID of creator
   createdAt?: Date
   simplifySettlements?: boolean  // Group-level setting for settlement simplification

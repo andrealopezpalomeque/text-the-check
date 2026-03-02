@@ -14,19 +14,26 @@
         />
 
         <!-- User avatar -->
+        <div v-if="isGhost" class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 bg-gray-100 dark:bg-gray-700 border border-dashed border-gray-300 dark:border-gray-500">
+          <IconAccountOutline class="w-4 h-4 text-gray-400 dark:text-gray-500" />
+        </div>
         <UserAvatar
+          v-else
           :name="userName"
           :photo-url="null"
           size="sm"
           :variant="balance.net > 0 ? 'positive' : balance.net < 0 ? 'negative' : 'default'"
         />
 
-        <!-- Name with (vos) marker -->
+        <!-- Name with (vos) / ghost marker -->
         <div class="min-w-0 flex-1">
           <p class="text-sm font-medium text-gray-900 dark:text-white truncate">
             {{ displayName }}
             <span v-if="isCurrentUser" class="text-gray-500 dark:text-gray-400 font-normal">
               (vos)
+            </span>
+            <span v-else-if="isGhost" class="text-gray-400 dark:text-gray-500 font-normal text-xs">
+              (sin cuenta)
             </span>
           </p>
         </div>
@@ -96,6 +103,7 @@
 
 <script setup>
 import IconChevronRight from '~icons/mdi/chevron-right'
+import IconAccountOutline from '~icons/mdi/account-outline'
 
 const props = defineProps({
   balance: { type: Object, required: true },
@@ -106,8 +114,14 @@ const props = defineProps({
 const userStore = useUserStore()
 const isExpanded = ref(false)
 
+const user = computed(() => userStore.getUserById(props.balance.userId))
+
 const userName = computed(() => {
-  return userStore.getUserById(props.balance.userId)?.name || 'Usuario'
+  return user.value?.name || 'Usuario'
+})
+
+const isGhost = computed(() => {
+  return user.value?.isGhost === true
 })
 
 // Show first name only on mobile for better fit

@@ -15,30 +15,15 @@
             <span>Finanzas</span>
           </button>
         </div>
-        <!-- Group Selector with Report Button -->
+        <!-- Group Name (clickable back to groups list) -->
         <div class="mt-1 flex items-center gap-2">
-          <IconLocation class="w-4 h-4 text-gray-500 dark:text-gray-400" />
-          <select
-            v-if="groupStore.hasMultipleGroups"
-            :value="groupStore.selectedGroupId"
-            @change="handleGroupChange"
-            class="bg-transparent border-none text-gray-600 dark:text-gray-300 text-sm font-medium focus:ring-0 focus:outline-none cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors p-0"
+          <button
+            @click="groupStore.backToGroupList()"
+            class="flex items-center gap-1.5 text-gray-600 dark:text-gray-300 text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
           >
-            <option
-              v-for="group in groupStore.groups"
-              :key="group.id"
-              :value="group.id"
-              class="bg-white dark:bg-gray-800"
-            >
-              {{ group.name }}
-            </option>
-          </select>
-          <span
-            v-else
-            class="text-gray-600 dark:text-gray-300 text-sm font-medium"
-          >
-            {{ groupStore.selectedGroup?.name || 'Cargando...' }}
-          </span>
+            <IconGrid class="w-4 h-4" />
+            <span>{{ groupStore.selectedGroup?.name || 'Cargando...' }}</span>
+          </button>
 
           <!-- Invite Link Button (inline with group name) -->
           <button
@@ -146,7 +131,7 @@
 </template>
 
 <script setup>
-import IconLocation from '~icons/mdi/map-marker'
+import IconGrid from '~icons/mdi/view-grid'
 import IconPlus from '~icons/mdi/plus'
 import IconHome from '~icons/mdi/home'
 import IconGroup from '~icons/mdi/account-group'
@@ -198,10 +183,6 @@ const handleAddExpense = () => {
 const switchToFinanzas = () => {
   setMode('finanzas')
   navigateTo('/finanzas')
-}
-
-const handleGroupChange = (event) => {
-  groupStore.selectGroup(event.target.value)
 }
 
 const getUserInitials = (displayName) => {
