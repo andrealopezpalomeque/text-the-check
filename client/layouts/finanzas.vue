@@ -5,7 +5,7 @@
 
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 pb-20 md:pb-0">
-      <main>
+      <main class="pt-4">
         <slot />
       </main>
     </div>

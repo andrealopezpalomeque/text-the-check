@@ -27,10 +27,16 @@
           <!-- Profile link -->
           <NuxtLink
           to="/profile"
-          class="flex items-center gap-2 text-ttc-text hover:text-ttc-text transition-colors"
+          class="hidden md:flex items-center gap-2 text-ttc-text hover:text-ttc-text transition-colors"
         >
-          <IconUser class="w-5 h-5" />
-          <span class="text-sm hidden sm:inline">Perfil</span>
+          <img v-if="user?.photoURL" :src="user.photoURL" :alt="user.displayName || 'User'"
+            referrerpolicy="no-referrer"
+            class="w-6 h-6 rounded-full ring-1 ring-ttc-border" />
+          <div v-else class="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600
+            flex items-center justify-center">
+            <span class="text-white font-medium text-[9px]">{{ getUserInitials(user?.displayName) }}</span>
+          </div>
+          <span class="text-sm">{{ user?.displayName }}</span>
         </NuxtLink>
         </div>
       </div>
@@ -72,14 +78,20 @@
 
 <script setup>
 import IconGroup from '~icons/mdi/account-group'
-import IconUser from '~icons/mdi/account'
 
 const route = useRoute()
 const { setMode } = useAppMode()
+const { user } = useAuth()
 
 const switchToGrupos = () => {
   setMode('grupos')
   navigateTo('/grupos')
+}
+
+const getUserInitials = (displayName) => {
+  if (!displayName) return 'U'
+  const parts = String(displayName).trim().split(/\s+/).filter(Boolean)
+  return `${parts[0]?.[0] ?? 'U'}${parts[1]?.[0] ?? ''}`.toUpperCase()
 }
 </script>
 

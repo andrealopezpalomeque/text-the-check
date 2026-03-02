@@ -50,12 +50,13 @@
           <NuxtLink
             v-if="user"
             to="/profile"
-            class="flex items-center gap-2 text-ttc-text hover:text-ttc-text transition-colors"
+            class="hidden md:flex items-center gap-2 text-ttc-text hover:text-ttc-text transition-colors"
           >
             <img
               v-if="user.photoURL"
               :src="user.photoURL"
               :alt="user.displayName || 'User'"
+              referrerpolicy="no-referrer"
               class="w-6 h-6 rounded-full ring-1 ring-ttc-border"
             />
             <div
@@ -64,7 +65,7 @@
             >
               <span class="text-white font-medium text-[9px]">{{ getUserInitials(user.displayName) }}</span>
             </div>
-            <span class="text-sm hidden sm:inline">Perfil</span>
+            <span class="text-sm">{{ user.displayName }}</span>
           </NuxtLink>
         </div>
       </div>

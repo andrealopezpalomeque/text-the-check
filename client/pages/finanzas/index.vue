@@ -85,7 +85,7 @@
 
       <!-- Table View -->
       <div class="hidden md:block overflow-x-auto px-3">
-        <table class="w-full table-fixed">
+        <table class="w-full min-w-[800px]">
           <thead class="text-center">
             <tr class="border-b border-ttc-border h-12">
               <th scope="col" class="text-start font-semibold">Pago</th>
@@ -94,7 +94,7 @@
               <th
                 v-for="month in months"
                 :key="`${month.key}-${month.year}`"
-                class="font-semibold"
+                class="font-semibold whitespace-nowrap px-2"
                 :class="month.key === currentMonthKey && month.year === $dayjs().format('YYYY') ? 'text-primary' : ''"
               >
                 {{ month.display }}

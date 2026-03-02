@@ -4,7 +4,9 @@
     <AppHeader v-if="!groupStore.showGroupList" />
 
     <!-- Page Content -->
-    <slot />
+    <div :class="{ 'pt-6': !groupStore.showGroupList }">
+      <slot />
+    </div>
 
     <!-- Mobile Bottom Navigation -->
     <BottomNav />
