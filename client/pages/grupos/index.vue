@@ -9,10 +9,18 @@
   </div>
 
   <!-- Full-page loading state - show until all data is ready -->
-  <div v-else-if="!isDataReady" class="min-h-screen bg-ttc-bg flex items-center justify-center">
-    <div class="text-center">
-      <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-ttc-text mb-4"></div>
-      <p class="text-ttc-text-muted">Cargando...</p>
+  <div v-else-if="!isDataReady" class="min-h-screen bg-ttc-bg pb-20 md:pb-0">
+    <div class="container mx-auto px-4 py-6">
+      <div class="flex flex-col gap-4 skeleton-shimmer">
+        <div class="h-8 w-48 bg-ttc-input rounded"></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div v-for="i in 3" :key="i" class="h-24 bg-ttc-input rounded-xl"></div>
+        </div>
+        <div class="h-6 w-32 bg-ttc-input rounded mt-2"></div>
+        <div class="space-y-2">
+          <div v-for="i in 4" :key="i" class="h-14 bg-ttc-input rounded-lg"></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -51,7 +59,7 @@
               </p>
               <button
                 @click="switchTab('grupo')"
-                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+                class="px-4 py-2.5 bg-ttc-primary hover:bg-ttc-primary/90 text-white text-sm font-medium rounded-btn transition-colors"
               >
                 Ver en Grupo
               </button>

@@ -95,25 +95,18 @@
 
       <!-- Payments List -->
       <div class="px-3">
-        <div
+        <EmptyState
           v-if="payments.length === 0"
-          class="flex flex-col items-center justify-center py-16 text-center"
+          :icon="MdiCashOff"
+          title="Aún no hay pagos"
+          :description="`Registrá tus gastos únicos como compras, facturas o servicios de ${currentMonth}.`"
+          action-label="Agregar Primer Pago"
+          @action="showNewPayment"
         >
-          <div class="w-20 h-20 rounded-full bg-ttc-card flex items-center justify-center mb-4">
-            <MdiCashOff class="text-4xl text-ttc-text-dim" />
-          </div>
-          <h3 class="text-lg font-medium text-ttc-text mb-1">Aún no hay pagos</h3>
-          <p class="text-sm text-ttc-text-dim mb-6 max-w-xs">
-            Registrá tus gastos únicos como compras, facturas o servicios de {{ currentMonth }}.
-          </p>
-          <button
-            @click="showNewPayment"
-            class="px-5 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2 font-medium"
-          >
+          <template #action-icon>
             <MdiPlus class="text-lg" />
-            Agregar Primer Pago
-          </button>
-        </div>
+          </template>
+        </EmptyState>
 
         <!-- Payment Cards -->
         <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

@@ -82,7 +82,7 @@
               <button
                 v-if="breakdown.length > 1"
                 @click="toggleAll"
-                class="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+                class="text-xs text-ttc-primary hover:text-ttc-primary/80"
               >
                 {{ allSelected ? 'Deseleccionar todo' : 'Seleccionar todo' }}
               </button>
@@ -92,13 +92,13 @@
                 v-for="(item, idx) in breakdown"
                 :key="idx"
                 class="flex items-center gap-2 text-sm py-1.5 px-2 rounded-lg cursor-pointer hover:bg-ttc-card-hover transition-colors"
-                :class="{ 'bg-blue-50 dark:bg-blue-900/20': selectedExpenseIds.has(item.expense.id) }"
+                :class="{ 'bg-ttc-primary/10': selectedExpenseIds.has(item.expense.id) }"
               >
                 <input
                   type="checkbox"
                   :checked="selectedExpenseIds.has(item.expense.id)"
                   @change="toggleExpenseSelection(item.expense.id)"
-                  class="w-4 h-4 rounded border-ttc-border text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
+                  class="w-4 h-4 rounded border-ttc-border text-ttc-primary focus:ring-ttc-primary focus:ring-offset-0"
                 />
                 <CategoryIcon :category="item.expense.category" size="sm" />
                 <span class="truncate text-ttc-text flex-1 min-w-0">
@@ -159,7 +159,7 @@
                 :amount="selectedTotal"
                 size="sm"
                 bold
-                :class="selectedTotal > 0 ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400'"
+                :class="selectedTotal > 0 ? 'text-ttc-primary' : 'text-gray-400'"
               />
             </div>
           </div>
@@ -229,7 +229,7 @@
                   v-model.number="paymentAmount"
                   type="number"
                   min="1"
-                  class="flex-1 px-3 py-1.5 text-sm border border-ttc-border rounded-lg bg-ttc-input text-ttc-text focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  class="flex-1 px-3 py-1.5 text-sm border border-ttc-border rounded-btn bg-ttc-input text-ttc-text focus:ring-2 focus:ring-ttc-primary focus:border-transparent"
                 />
               </div>
 
@@ -257,7 +257,7 @@
             <button
               v-else-if="simplified"
               @click="startSimplifiedPayment"
-              class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+              class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-ttc-primary hover:bg-ttc-primary/90 text-white text-sm font-medium rounded-btn transition-colors"
             >
               <IconCash class="w-4 h-4" />
               Registrar pago de {{ formatAmount(settlement.amount) }}
@@ -268,9 +268,9 @@
               v-else
               @click="startPayment"
               :disabled="selectedTotal <= 0"
-              class="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-white text-sm font-medium rounded-lg transition-colors"
+              class="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-white text-sm font-medium rounded-btn transition-colors"
               :class="selectedTotal > 0
-                ? 'bg-blue-600 hover:bg-blue-700'
+                ? 'bg-ttc-primary hover:bg-ttc-primary/90'
                 : 'bg-gray-400 cursor-not-allowed'"
             >
               <IconCash class="w-4 h-4" />

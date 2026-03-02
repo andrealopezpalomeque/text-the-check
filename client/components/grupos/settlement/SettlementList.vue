@@ -17,7 +17,7 @@
             @click="$emit('toggle-simplify')"
             :class="[
               'relative inline-flex h-5 w-9 items-center rounded-full transition-colors',
-              simplified ? 'bg-blue-600' : 'bg-ttc-border'
+              simplified ? 'bg-ttc-primary' : 'bg-ttc-border'
             ]"
           >
             <span

@@ -35,24 +35,18 @@
       </div>
 
       <!-- Empty State -->
-      <div v-if="groupStore.groups.length === 0" class="text-center py-16">
-        <div class="w-20 h-20 mx-auto mb-6 bg-ttc-card rounded-full flex items-center justify-center">
-          <IconGroup class="w-10 h-10 text-ttc-text-muted" />
-        </div>
-        <h2 class="text-xl font-semibold text-ttc-text mb-2">
-          No tenés grupos todavía
-        </h2>
-        <p class="text-ttc-text-muted mb-6 max-w-sm mx-auto">
-          Creá un grupo para empezar a dividir gastos con tus amigos
-        </p>
-        <button
-          @click="$emit('create')"
-          class="inline-flex items-center gap-2 px-6 py-3 bg-ttc-primary hover:bg-ttc-primary-light text-white font-medium rounded-xl transition-colors"
-        >
+      <EmptyState
+        v-if="groupStore.groups.length === 0"
+        :icon="IconGroup"
+        title="No tenés grupos todavía"
+        description="Creá un grupo para empezar a dividir gastos con tus amigos"
+        action-label="Crear grupo"
+        @action="$emit('create')"
+      >
+        <template #action-icon>
           <IconPlus class="w-5 h-5" />
-          Crear grupo
-        </button>
-      </div>
+        </template>
+      </EmptyState>
 
       <!-- Groups Grid -->
       <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

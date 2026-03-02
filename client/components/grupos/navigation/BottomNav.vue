@@ -11,7 +11,7 @@
         :class="[
           'relative flex flex-col items-center justify-center w-16 h-full transition-colors',
           isActive('inicio')
-            ? 'text-blue-600 dark:text-blue-400'
+            ? 'text-ttc-primary'
             : 'text-ttc-text-muted hover:text-ttc-text'
         ]"
       >
@@ -19,7 +19,7 @@
         <span class="text-xs mt-1 font-medium">Inicio</span>
         <div
           v-if="isActive('inicio')"
-          class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-blue-600 dark:bg-blue-400 rounded-full"
+          class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-ttc-primary rounded-full"
         />
       </button>
 
@@ -29,7 +29,7 @@
         :class="[
           'relative flex flex-col items-center justify-center w-16 h-full transition-colors',
           isActive('grupo')
-            ? 'text-blue-600 dark:text-blue-400'
+            ? 'text-ttc-primary'
             : 'text-ttc-text-muted hover:text-ttc-text'
         ]"
       >
@@ -37,7 +37,7 @@
         <span class="text-xs mt-1 font-medium">Grupo</span>
         <div
           v-if="isActive('grupo')"
-          class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-blue-600 dark:bg-blue-400 rounded-full"
+          class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-ttc-primary rounded-full"
         />
       </button>
 
@@ -47,7 +47,7 @@
         class="relative flex items-center justify-center -mt-4"
       >
         <div
-          class="w-14 h-14 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 rounded-full flex items-center justify-center shadow-lg transition-colors"
+          class="w-14 h-14 bg-ttc-primary hover:bg-ttc-primary/90 active:bg-ttc-primary/80 rounded-full flex items-center justify-center shadow-lg transition-colors"
         >
           <IconPlus class="w-7 h-7 text-white" />
         </div>
@@ -59,7 +59,7 @@
         :class="[
           'relative flex flex-col items-center justify-center w-16 h-full transition-colors',
           isProfileActive
-            ? 'text-blue-600 dark:text-blue-400'
+            ? 'text-ttc-primary'
             : 'text-ttc-text-muted hover:text-ttc-text'
         ]"
       >
@@ -67,7 +67,7 @@
         <span class="text-xs mt-1 font-medium">Perfil</span>
         <div
           v-if="isProfileActive"
-          class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-blue-600 dark:bg-blue-400 rounded-full"
+          class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-ttc-primary rounded-full"
         />
       </NuxtLink>
     </div>

@@ -1,18 +1,18 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20 md:pb-0">
+  <div class="min-h-screen bg-ttc-bg pb-20 md:pb-0">
     <div class="container mx-auto px-4 py-6 max-w-2xl">
       <!-- Header -->
       <header class="mb-6">
         <div class="flex items-center gap-4">
           <NuxtLink
             :to="backRoute"
-            class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors inline-flex"
+            class="text-ttc-text-muted hover:text-ttc-text transition-colors inline-flex"
           >
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
           </NuxtLink>
-          <h1 class="font-display text-2xl font-bold text-gray-900 dark:text-white">
+          <h1 class="font-display text-2xl font-bold text-ttc-text">
             Mi Perfil
           </h1>
         </div>
@@ -23,15 +23,15 @@
         <template #fallback>
           <!-- SSR fallback - show loading state -->
           <div class="text-center py-12">
-            <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 dark:border-white"></div>
-            <p class="mt-4 text-gray-600 dark:text-gray-400">Cargando perfil...</p>
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-ttc-text"></div>
+            <p class="mt-4 text-ttc-text-muted">Cargando perfil...</p>
           </div>
         </template>
 
         <!-- Loading -->
         <div v-if="isLoading" class="text-center py-12">
-          <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 dark:border-white"></div>
-          <p class="mt-4 text-gray-600 dark:text-gray-400">Cargando perfil...</p>
+          <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-ttc-text"></div>
+          <p class="mt-4 text-ttc-text-muted">Cargando perfil...</p>
         </div>
 
         <!-- Error State -->
@@ -41,15 +41,15 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
           </div>
-          <p class="text-gray-600 dark:text-gray-400">Error al cargar el perfil</p>
+          <p class="text-ttc-text-muted">Error al cargar el perfil</p>
         </div>
 
         <!-- Profile Content -->
         <div v-else>
         <!-- User Info Card -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow mb-6">
-          <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <h2 class="font-display text-lg font-semibold text-gray-900 dark:text-white">
+        <div class="bg-ttc-card rounded-lg shadow mb-6">
+          <div class="px-6 py-4 border-b border-ttc-border">
+            <h2 class="font-display text-lg font-semibold text-ttc-text">
               Información personal
             </h2>
           </div>
@@ -58,7 +58,7 @@
             <div class="flex items-center gap-4">
               <div
                 v-if="user?.photoURL"
-                class="w-16 h-16 rounded-full overflow-hidden ring-2 ring-gray-200 dark:ring-gray-700"
+                class="w-16 h-16 rounded-full overflow-hidden ring-2 ring-ttc-border"
               >
                 <img :src="user.photoURL" :alt="firestoreUser.name" class="w-full h-full object-cover" />
               </div>
@@ -71,7 +71,7 @@
                 </span>
               </div>
               <div>
-                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                <h3 class="text-xl font-semibold text-ttc-text">
                   {{ firestoreUser.name }}
                 </h3>
                 <p class="text-gray-500 dark:text-gray-400 text-sm">
@@ -83,20 +83,20 @@
             <!-- Info Fields -->
             <div class="grid grid-cols-1 gap-4 pt-4">
               <div>
-                <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Email</label>
-                <p class="text-gray-900 dark:text-white">{{ firestoreUser.email || 'No configurado' }}</p>
+                <label class="text-sm font-medium text-ttc-text-muted">Email</label>
+                <p class="text-ttc-text">{{ firestoreUser.email || 'No configurado' }}</p>
               </div>
               <div>
-                <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Teléfono</label>
-                <p class="text-gray-900 dark:text-white font-mono">{{ firestoreUser.phone }}</p>
+                <label class="text-sm font-medium text-ttc-text-muted">Teléfono</label>
+                <p class="text-ttc-text font-mono">{{ firestoreUser.phone }}</p>
               </div>
               <div>
                 <div class="flex items-center justify-between">
-                  <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Alias (para @menciones)</label>
+                  <label class="text-sm font-medium text-ttc-text-muted">Alias (para @menciones)</label>
                   <button
                     v-if="!isEditingAliases"
                     @click="startEditingAliases"
-                    class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 p-1"
+                    class="text-ttc-primary hover:text-ttc-primary/80 p-1"
                     title="Editar aliases"
                   >
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -114,7 +114,7 @@
                   >
                     @{{ alias }}
                   </span>
-                  <span v-if="!firestoreUser.aliases?.length" class="text-gray-400 dark:text-gray-500 text-sm">
+                  <span v-if="!firestoreUser.aliases?.length" class="text-ttc-text-muted text-sm">
                     Sin aliases configurados
                   </span>
                 </div>
@@ -145,12 +145,12 @@
                       @keydown.enter.prevent="addAlias"
                       type="text"
                       placeholder="Nuevo alias + Enter"
-                      class="flex-1 px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      class="flex-1 px-3 py-1.5 text-sm border border-ttc-border rounded-btn bg-ttc-input text-ttc-text placeholder-gray-400 focus:ring-2 focus:ring-ttc-primary focus:border-transparent"
                     />
                     <button
                       @click="addAlias"
                       type="button"
-                      class="px-3 py-1.5 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                      class="px-3 py-1.5 text-sm bg-ttc-primary hover:bg-ttc-primary/90 text-white rounded-btn transition-colors"
                     >
                       Agregar
                     </button>
@@ -160,7 +160,7 @@
                     <button
                       type="button"
                       @click="cancelEditingAliases"
-                      class="flex-1 px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                      class="flex-1 px-3 py-1.5 text-sm border border-ttc-border text-ttc-text rounded-btn hover:bg-ttc-card-hover transition-colors"
                     >
                       Cancelar
                     </button>
@@ -168,7 +168,7 @@
                       type="button"
                       @click="saveAliases"
                       :disabled="savingAliases"
-                      class="flex-1 px-3 py-1.5 text-sm bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium rounded-lg transition-colors"
+                      class="flex-1 px-3 py-1.5 text-sm bg-ttc-primary hover:bg-ttc-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-btn transition-colors"
                     >
                       <span v-if="savingAliases">Guardando...</span>
                       <span v-else>Guardar</span>
@@ -181,9 +181,9 @@
         </div>
 
         <!-- WhatsApp Card -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow mb-6">
-          <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <h2 class="font-display text-lg font-semibold text-gray-900 dark:text-white">
+        <div class="bg-ttc-card rounded-lg shadow mb-6">
+          <div class="px-6 py-4 border-b border-ttc-border">
+            <h2 class="font-display text-lg font-semibold text-ttc-text">
               WhatsApp
             </h2>
           </div>
@@ -199,8 +199,8 @@
                 </span>
               </div>
               <div>
-                <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Numero vinculado</label>
-                <p class="text-gray-900 dark:text-white font-mono">+{{ whatsapp.linkedAccount.value?.phoneNumber }}</p>
+                <label class="text-sm font-medium text-ttc-text-muted">Numero vinculado</label>
+                <p class="text-ttc-text font-mono">+{{ whatsapp.linkedAccount.value?.phoneNumber }}</p>
               </div>
               <button
                 @click="whatsapp.unlinkAccount()"
@@ -213,32 +213,32 @@
 
             <!-- Not linked state -->
             <div v-else class="space-y-4">
-              <p class="text-gray-600 dark:text-gray-400 text-sm">
+              <p class="text-ttc-text-muted text-sm">
                 Vinculá tu WhatsApp para registrar gastos y dividir cuentas por mensaje.
               </p>
 
               <!-- Pending code display -->
               <div v-if="whatsapp.pendingCode.value" class="space-y-3">
-                <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
-                  <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Enviá este mensaje por WhatsApp:</p>
+                <div class="bg-ttc-bg rounded-lg p-4">
+                  <p class="text-sm text-ttc-text-muted mb-2">Enviá este mensaje por WhatsApp:</p>
                   <div class="flex items-center gap-3">
-                    <code class="flex-1 text-lg font-bold text-gray-900 dark:text-white tracking-wider">VINCULAR {{ whatsapp.pendingCode.value }}</code>
+                    <code class="flex-1 text-lg font-bold text-ttc-text tracking-wider">VINCULAR {{ whatsapp.pendingCode.value }}</code>
                     <button
                       @click="copyCode"
-                      class="shrink-0 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+                      class="shrink-0 px-3 py-1.5 bg-ttc-primary hover:bg-ttc-primary/90 text-white text-sm font-medium rounded-btn transition-colors"
                     >
                       {{ codeCopied ? 'Copiado' : 'Copiar' }}
                     </button>
                   </div>
                 </div>
                 <div class="flex items-center justify-between">
-                  <p v-if="whatsapp.countdown.value" class="text-sm text-gray-500 dark:text-gray-400">
+                  <p v-if="whatsapp.countdown.value" class="text-sm text-ttc-text-muted">
                     Expira en {{ whatsapp.countdown.value }}
                   </p>
                   <button
                     @click="whatsapp.generateCode()"
                     :disabled="whatsapp.isGenerating.value"
-                    class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium"
+                    class="text-ttc-primary hover:text-ttc-primary/80 text-sm font-medium"
                   >
                     Regenerar
                   </button>
@@ -266,15 +266,15 @@
         </div>
 
         <!-- Payment Info Card -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
-          <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-            <h2 class="font-display text-lg font-semibold text-gray-900 dark:text-white">
+        <div class="bg-ttc-card rounded-lg shadow">
+          <div class="px-6 py-4 border-b border-ttc-border flex items-center justify-between">
+            <h2 class="font-display text-lg font-semibold text-ttc-text">
               Información de pago
             </h2>
             <button
               v-if="!isEditing"
               @click="startEditing"
-              class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium"
+              class="text-ttc-primary hover:text-ttc-primary/80 text-sm font-medium"
             >
               Editar
             </button>
@@ -285,27 +285,27 @@
             <div v-if="!isEditing" class="space-y-4">
               <div v-if="hasPaymentInfo">
                 <div v-if="paymentForm.accountNumber" class="mb-4">
-                  <label class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  <label class="text-sm font-medium text-ttc-text-muted">
                     {{ paymentForm.accountType === 'cbu' ? 'CBU' : 'CVU' }}
                   </label>
-                  <p class="text-gray-900 dark:text-white font-mono text-sm">{{ paymentForm.accountNumber }}</p>
+                  <p class="text-ttc-text font-mono text-sm">{{ paymentForm.accountNumber }}</p>
                 </div>
                 <div v-if="paymentForm.alias" class="mb-4">
-                  <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Alias</label>
-                  <p class="text-gray-900 dark:text-white">{{ paymentForm.alias }}</p>
+                  <label class="text-sm font-medium text-ttc-text-muted">Alias</label>
+                  <p class="text-ttc-text">{{ paymentForm.alias }}</p>
                 </div>
                 <div v-if="paymentForm.bankName">
-                  <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Banco/Plataforma</label>
-                  <p class="text-gray-900 dark:text-white">{{ paymentForm.bankName }}</p>
+                  <label class="text-sm font-medium text-ttc-text-muted">Banco/Plataforma</label>
+                  <p class="text-ttc-text">{{ paymentForm.bankName }}</p>
                 </div>
               </div>
               <div v-else class="text-center py-8">
-                <p class="text-gray-500 dark:text-gray-400 mb-4">
+                <p class="text-ttc-text-muted mb-4">
                   No hay información de pago configurada.
                 </p>
                 <button
                   @click="startEditing"
-                  class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium"
+                  class="text-ttc-primary hover:text-ttc-primary/80 font-medium"
                 >
                   Agregar información de pago
                 </button>
@@ -315,7 +315,7 @@
             <!-- Edit Mode -->
             <form v-else @submit.prevent="savePaymentInfo" class="space-y-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                <label class="block text-sm font-medium text-ttc-text-muted mb-3">
                   Tipo de cuenta
                 </label>
                 <div class="flex gap-4 mb-3">
@@ -324,18 +324,18 @@
                       v-model="paymentForm.accountType"
                       type="radio"
                       value="cbu"
-                      class="w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                      class="w-4 h-4 text-ttc-primary focus:ring-2 focus:ring-ttc-primary"
                     />
-                    <span class="text-gray-700 dark:text-gray-300">CBU</span>
+                    <span class="text-ttc-text-muted">CBU</span>
                   </label>
                   <label class="flex items-center gap-2 cursor-pointer">
                     <input
                       v-model="paymentForm.accountType"
                       type="radio"
                       value="cvu"
-                      class="w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                      class="w-4 h-4 text-ttc-primary focus:ring-2 focus:ring-ttc-primary"
                     />
-                    <span class="text-gray-700 dark:text-gray-300">CVU</span>
+                    <span class="text-ttc-text-muted">CVU</span>
                   </label>
                 </div>
                 <input
@@ -344,12 +344,12 @@
                   maxlength="22"
                   pattern="\d{22}"
                   placeholder="0000000000000000000000 (22 dígitos)"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+                  class="w-full px-3 py-2.5 border border-ttc-border rounded-btn bg-ttc-input text-ttc-text placeholder-gray-400 focus:ring-2 focus:ring-ttc-primary focus:border-transparent font-mono"
                 />
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label class="block text-sm font-medium text-ttc-text-muted mb-1">
                   Alias
                 </label>
                 <input
@@ -357,12 +357,12 @@
                   type="text"
                   maxlength="50"
                   placeholder="mi.alias.banco"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  class="w-full px-3 py-2.5 border border-ttc-border rounded-btn bg-ttc-input text-ttc-text placeholder-gray-400 focus:ring-2 focus:ring-ttc-primary focus:border-transparent"
                 />
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label class="block text-sm font-medium text-ttc-text-muted mb-1">
                   Banco/Plataforma
                 </label>
                 <input
@@ -370,7 +370,7 @@
                   type="text"
                   maxlength="50"
                   placeholder="Mercado Pago, Binance, Personal Pay, etc."
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  class="w-full px-3 py-2.5 border border-ttc-border rounded-btn bg-ttc-input text-ttc-text placeholder-gray-400 focus:ring-2 focus:ring-ttc-primary focus:border-transparent"
                 />
               </div>
 
@@ -384,14 +384,14 @@
                 <button
                   type="button"
                   @click="cancelEditing"
-                  class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  class="flex-1 px-4 py-2.5 border border-ttc-border text-ttc-text rounded-btn hover:bg-ttc-card-hover transition-colors font-medium"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   :disabled="saving"
-                  class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium rounded-lg transition-colors"
+                  class="flex-1 px-4 py-2.5 bg-ttc-primary hover:bg-ttc-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-btn transition-colors"
                 >
                   <span v-if="saving">Guardando...</span>
                   <span v-else>Guardar</span>

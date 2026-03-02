@@ -186,9 +186,9 @@
             <tr v-if="recurrents.length === 0">
               <td colspan="100%" class="py-16 text-center">
                 <MdiCashOff class="text-6xl mx-auto mb-4 text-ttc-text-dim" />
-                <p class="text-lg font-medium text-ttc-text mb-2">No tenés pagos fijos</p>
+                <p class="text-lg font-nunito font-bold text-ttc-text mb-2">No tenés pagos fijos</p>
                 <p class="text-sm text-ttc-text-muted mb-6 max-w-md mx-auto">Agrega tus pagos fijos como Netflix, internet, alquiler y mas para llevar un control mensual de tus gastos.</p>
-                <button @click="showNewPaymentModal" class="px-6 py-2.5 bg-primary text-ttc-text rounded-lg font-medium hover:bg-primary/80 transition-colors">Agregar Primer Pago</button>
+                <button @click="showNewPaymentModal" class="px-4 py-2.5 bg-ttc-primary hover:bg-ttc-primary/90 text-white font-medium rounded-btn transition-colors">Agregar Primer Pago</button>
               </td>
             </tr>
           </tbody>
@@ -280,12 +280,14 @@
         </div>
 
         <!-- Empty State -->
-        <div v-if="recurrents.length === 0" class="py-16 text-center">
-          <MdiCashOff class="text-6xl mx-auto mb-4 text-ttc-text-dim" />
-          <p class="text-lg font-medium text-ttc-text mb-2">No tenés pagos fijos</p>
-          <p class="text-sm text-ttc-text-muted mb-6 max-w-sm mx-auto">Agrega tus pagos fijos como Netflix, internet, alquiler y mas para llevar un control mensual de tus gastos.</p>
-          <button @click="showNewPaymentModal" class="px-6 py-2.5 bg-primary text-ttc-text rounded-lg font-medium hover:bg-primary/80 transition-colors">Agregar Primer Pago</button>
-        </div>
+        <EmptyState
+          v-if="recurrents.length === 0"
+          :icon="MdiCashOff"
+          title="No tenés pagos fijos"
+          description="Agrega tus pagos fijos como Netflix, internet, alquiler y mas para llevar un control mensual de tus gastos."
+          action-label="Agregar Primer Pago"
+          @action="showNewPaymentModal"
+        />
       </div>
     </div>
   </div>

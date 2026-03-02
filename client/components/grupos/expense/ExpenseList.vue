@@ -15,21 +15,15 @@
     </div>
 
     <!-- Empty State -->
-    <div v-if="items.length === 0" class="p-8 text-center">
-      <div class="w-14 h-14 mx-auto mb-3 bg-ttc-input rounded-full flex items-center justify-center">
-        <IconReceipt class="w-7 h-7 text-gray-400" />
-      </div>
-      <p class="text-ttc-text-muted text-sm">
-        {{ emptyMessage }}
-      </p>
-      <button
-        v-if="showAddButton"
-        @click="$emit('addExpense')"
-        class="mt-3 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium text-sm"
-      >
-        Agregar el primero
-      </button>
-    </div>
+    <EmptyState
+      v-if="items.length === 0"
+      :icon="IconReceipt"
+      :title="emptyMessage"
+      description=""
+      :action-label="showAddButton ? 'Agregar el primero' : ''"
+      compact
+      @action="$emit('addExpense')"
+    />
 
     <!-- Items List -->
     <div v-else class="divide-y divide-ttc-border">
@@ -56,7 +50,7 @@
     >
       <button
         @click="showAll = !showAll"
-        class="w-full text-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium"
+        class="w-full text-center text-sm text-ttc-primary hover:text-ttc-primary/80 font-medium"
       >
         {{ showAll ? 'Ver menos' : `Ver todos (${items.length})` }}
       </button>
