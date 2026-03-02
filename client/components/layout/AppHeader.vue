@@ -1,13 +1,15 @@
 <template>
-  <header class="mb-6">
-    <div class="flex items-center justify-between">
-      <div class="flex-1">
+  <header class="bg-ttc-card border-b border-ttc-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+      <!-- Top bar -->
+      <div class="flex items-center justify-between h-14">
+        <!-- Left: wordmark + mode toggle -->
         <div class="flex items-center gap-3">
           <div class="flex items-center gap-2">
             <TtcSymbol size-class="w-6 h-6" class="text-ttc-primary" />
-            <h1 class="font-display text-2xl font-bold text-ttc-text">
-              Text The Check
-            </h1>
+            <span class="font-outfit font-semibold text-sm tracking-[3px] text-ttc-text">
+              text <span class="text-ttc-primary">the</span> check
+            </span>
           </div>
           <!-- Mode Toggle: Switch to Finanzas -->
           <button
@@ -18,117 +20,103 @@
             <span>Finanzas</span>
           </button>
         </div>
-        <!-- Group Name (clickable back to groups list) -->
-        <div class="mt-1 flex items-center gap-2">
-          <button
-            @click="groupStore.backToGroupList()"
-            class="flex items-center gap-1.5 text-ttc-text text-sm font-medium hover:text-ttc-primary transition-colors"
-          >
-            <IconGrid class="w-4 h-4" />
-            <span>{{ groupStore.selectedGroup?.name || 'Cargando...' }}</span>
-          </button>
 
-          <!-- Invite Link Button (inline with group name) -->
-          <button
-            @click="shareInviteLink"
-            class="inline-flex items-center gap-1 ml-2 px-2 py-0.5 text-xs font-medium text-ttc-text-muted hover:text-ttc-text hover:bg-ttc-card rounded-md transition-colors"
-            title="Invitar al grupo"
-          >
-            <IconShare class="w-3.5 h-3.5" />
-            <span v-if="inviteCopied" class="text-green-400">Copiado!</span>
-          </button>
-
-          <!-- Mobile Report Button (inline with group name, only show with 3+ expenses) -->
+        <!-- Right: actions + theme toggle + profile -->
+        <div class="flex items-center gap-2">
+          <!-- Report Button (desktop only, 3+ expenses) -->
           <NuxtLink
             v-if="showReportButton"
             to="/grupos/report"
-            class="md:hidden inline-flex items-center gap-1 ml-2 px-2 py-0.5 text-xs font-medium text-ttc-primary bg-ttc-primary/10 hover:bg-ttc-primary/15 rounded-md transition-colors"
+            class="hidden md:flex items-center gap-1.5 px-3 py-2 text-sm text-ttc-text-muted hover:text-ttc-primary hover:bg-ttc-primary/10 rounded-lg transition-colors"
+            title="Ver reporte del viaje"
           >
-            <IconChartBox class="w-3.5 h-3.5" />
+            <IconChartBox class="w-5 h-5" />
             <span>Reporte</span>
+          </NuxtLink>
+
+          <!-- Add Expense Button (desktop only) -->
+          <button
+            @click="handleAddExpense"
+            class="hidden md:flex items-center gap-2 bg-ttc-primary hover:bg-ttc-primary-light active:bg-ttc-primary text-white px-4 py-2 rounded-lg font-medium transition-colors"
+          >
+            <IconPlus class="w-5 h-5" />
+            <span>Agregar Gasto</span>
+          </button>
+
+          <!-- Theme Toggle (always visible) -->
+          <ThemeToggle />
+
+          <!-- Profile link -->
+          <NuxtLink
+            v-if="user"
+            to="/profile"
+            class="flex items-center gap-2 text-ttc-text hover:text-ttc-text transition-colors"
+          >
+            <img
+              v-if="user.photoURL"
+              :src="user.photoURL"
+              :alt="user.displayName || 'User'"
+              class="w-6 h-6 rounded-full ring-1 ring-ttc-border"
+            />
+            <div
+              v-else
+              class="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center"
+            >
+              <span class="text-white font-medium text-[9px]">{{ getUserInitials(user.displayName) }}</span>
+            </div>
+            <span class="text-sm hidden sm:inline">Perfil</span>
           </NuxtLink>
         </div>
       </div>
 
-      <!-- Mobile-only: theme toggle (desktop has it in the actions block below) -->
-      <div class="flex md:hidden items-center mr-2">
-        <ThemeToggle />
-      </div>
+      <!-- Group context strip (below top bar) -->
+      <div class="flex items-center gap-2 pb-1.5 text-sm">
+        <button
+          @click="groupStore.backToGroupList()"
+          class="flex items-center gap-1.5 text-ttc-text font-medium hover:text-ttc-primary transition-colors"
+        >
+          <IconGrid class="w-4 h-4" />
+          <span>{{ groupStore.selectedGroup?.name || 'Cargando...' }}</span>
+        </button>
 
-      <!-- Desktop actions (hidden on mobile since we have bottom nav) -->
-      <div class="hidden md:flex items-center gap-4">
-        <!-- Desktop Tab Navigation -->
-        <nav class="flex items-center">
-          <button
-            @click="switchTab('inicio')"
-            class="nav-tab"
-            :class="{ 'nav-tab-active': activeTab === 'inicio' }"
-          >
-            <IconHome class="w-4 h-4" />
-            <span>Inicio</span>
-          </button>
-          <button
-            @click="switchTab('grupo')"
-            class="nav-tab"
-            :class="{ 'nav-tab-active': activeTab === 'grupo' }"
-          >
-            <IconGroup class="w-4 h-4" />
-            <span>Grupo</span>
-          </button>
-        </nav>
+        <button
+          @click="shareInviteLink"
+          class="inline-flex items-center gap-1 ml-2 px-2 py-0.5 text-xs font-medium text-ttc-text-muted hover:text-ttc-text hover:bg-ttc-card-hover rounded-md transition-colors"
+          title="Invitar al grupo"
+        >
+          <IconShare class="w-3.5 h-3.5" />
+          <span v-if="inviteCopied" class="text-green-400">Copiado!</span>
+        </button>
 
-        <!-- Report Button (only show with 3+ expenses) -->
         <NuxtLink
           v-if="showReportButton"
           to="/grupos/report"
-          class="flex items-center gap-1.5 px-3 py-2 text-sm text-ttc-text-muted hover:text-ttc-primary hover:bg-ttc-primary/10 rounded-lg transition-colors"
-          title="Ver reporte del viaje"
+          class="md:hidden inline-flex items-center gap-1 ml-2 px-2 py-0.5 text-xs font-medium text-ttc-primary bg-ttc-primary/10 hover:bg-ttc-primary/15 rounded-md transition-colors"
         >
-          <IconChartBox class="w-5 h-5" />
+          <IconChartBox class="w-3.5 h-3.5" />
           <span>Reporte</span>
         </NuxtLink>
-        <!-- Add Expense Button -->
-        <button
-          @click="handleAddExpense"
-          class="flex items-center gap-2 bg-ttc-primary hover:bg-ttc-primary-light active:bg-ttc-primary text-white px-4 py-2 rounded-lg font-medium transition-colors"
-        >
-          <IconPlus class="w-5 h-5" />
-          <span>Agregar Gasto</span>
-        </button>
-
-        <!-- Theme Toggle -->
-        <ThemeToggle />
-
-        <!-- Profile link -->
-        <NuxtLink
-          v-if="user"
-          to="/profile"
-          class="flex items-center gap-3 hover:bg-ttc-card-hover rounded-lg px-3 py-2 transition-colors"
-        >
-        <img
-          v-if="user.photoURL"
-          :src="user.photoURL"
-          :alt="user.displayName || 'User'"
-          class="w-10 h-10 rounded-full ring-2 ring-ttc-border"
-        />
-        <div
-          v-else
-          class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center"
-        >
-          <span class="text-white font-medium text-sm">
-            {{ getUserInitials(user.displayName) }}
-          </span>
-        </div>
-        <div>
-          <p class="text-sm font-medium text-ttc-text">
-            {{ user.displayName }}
-          </p>
-          <p class="text-xs text-ttc-text-muted">
-            Mi perfil
-          </p>
-        </div>
-      </NuxtLink>
       </div>
+
+      <!-- Desktop Tab Navigation -->
+      <nav class="hidden md:flex items-center -mb-px">
+        <button
+          @click="switchTab('inicio')"
+          class="nav-tab"
+          :class="{ 'nav-tab-active': activeTab === 'inicio' }"
+        >
+          <IconHome class="w-4 h-4" />
+          <span>Inicio</span>
+        </button>
+        <button
+          @click="switchTab('grupo')"
+          class="nav-tab"
+          :class="{ 'nav-tab-active': activeTab === 'grupo' }"
+        >
+          <IconGroup class="w-4 h-4" />
+          <span>Grupo</span>
+        </button>
+      </nav>
     </div>
   </header>
 </template>
@@ -199,12 +187,12 @@ const getUserInitials = (displayName) => {
 
 <style scoped>
 .nav-tab {
-  @apply flex items-center gap-2 py-2.5 px-4 text-ttc-text-muted border-b-2 border-transparent font-medium text-sm whitespace-nowrap transition-colors;
+  @apply flex items-center gap-2 py-3 px-4 text-ttc-text-muted border-b-2 border-transparent font-medium text-sm whitespace-nowrap transition-colors;
 }
 .nav-tab:hover {
   @apply text-ttc-text border-ttc-border;
 }
 .nav-tab-active {
-  @apply text-ttc-primary border-ttc-primary;
+  @apply text-ttc-primary border-ttc-primary font-semibold;
 }
 </style>
