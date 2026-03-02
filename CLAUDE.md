@@ -78,6 +78,10 @@ Text the Check — WhatsApp-first financial companion for Argentina/Latin Americ
 5. **Document Results**: Add review to `tasks/todo.md`
 6. **Capture Lessons**: Update `tasks/lessons.md` after corrections
 
+## GitHub Issues
+
+To create issues, use `gh issue create -R andrealopezpalomeque/text-the-check` (the `-R` flag is required because the remote uses a custom SSH alias). Write issue titles and bodies in Spanish.
+
 ## Core Principles
 
 - **Simplicity First**: Make every change as simple as possible. Impact minimal code.
