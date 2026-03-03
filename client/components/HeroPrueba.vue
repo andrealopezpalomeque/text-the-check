@@ -50,21 +50,27 @@
           </p>
 
           <!-- Buttons -->
-          <div class="mt-8 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 animate-fade-up" style="animation-delay: 0.3s;">
-            <a
-              href="/iniciar-sesion"
-              class="inline-flex items-center justify-center gap-2 w-[200px] bg-ttc-primary text-white rounded-xl py-3.5 font-body text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer"
-            >
-              Empezar gratis
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          <div class="mt-8 flex flex-col items-center lg:items-start gap-4 animate-fade-up" style="animation-delay: 0.3s;">
+            <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+              <a
+                :href="whatsappUrl"
+                target="_blank"
+                class="inline-flex items-center justify-center gap-2 w-[200px] bg-[#25D366] text-white rounded-xl py-3.5 font-body text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer"
+              >
+                Empezá a chatear
+                <MessageCircle :size="16" :stroke-width="2" />
+              </a>
+              <button
+                @click="scrollToComoFunciona"
+                class="inline-flex items-center justify-center gap-2 w-[200px] border border-ttc-border bg-transparent text-ttc-text rounded-xl py-3.5 font-body text-sm font-semibold hover:bg-ttc-card hover:border-ttc-text-dim transition-colors cursor-pointer"
+              >
+                Ver como funciona
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              </button>
+            </div>
+            <a href="/iniciar-sesion" class="font-body text-xs text-ttc-text-dim underline hover:text-ttc-text transition-colors">
+              O empezá gratis con Google
             </a>
-            <button
-              @click="scrollToComoFunciona"
-              class="inline-flex items-center justify-center gap-2 w-[200px] border border-ttc-border bg-transparent text-ttc-text rounded-xl py-3.5 font-body text-sm font-semibold hover:bg-ttc-card hover:border-ttc-text-dim transition-colors cursor-pointer"
-            >
-              Ver como funciona
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-            </button>
           </div>
         </div>
 
@@ -232,6 +238,11 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { MessageCircle } from 'lucide-vue-next'
+
+const config = useRuntimeConfig()
+const whatsappPhone = config.public.whatsappPhoneNumber
+const whatsappUrl = whatsappPhone ? `https://wa.me/${whatsappPhone}?text=Hola` : '/iniciar-sesion'
 
 const activeMode = ref('viajes')
 const recibitoRevealed = ref(false)

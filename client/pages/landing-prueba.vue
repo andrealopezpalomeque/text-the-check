@@ -1,9 +1,7 @@
 <template>
   <div>
-    <HeroPrueba />
-    <ComoFunciona />
-    <ModesPrueba />
-    <CtaPrueba />
+    <HeroSection />
+    <ModesSection />
   </div>
 </template>
 
