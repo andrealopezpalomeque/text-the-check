@@ -14,7 +14,7 @@
           <input
             type="text"
             @input="(value) => $emit('onSearch', value.target.value)"
-            class="w-full h-10 rounded-md bg-ttc-surface border border-ttc-border pl-10 text-white placeholder:text-ttc-text-dim focus:ring-2 focus:ring-primary focus:border-transparent"
+            class="w-full h-10 rounded-md bg-ttc-surface border border-ttc-border pl-10 text-ttc-text placeholder:text-ttc-text-dim focus:ring-2 focus:ring-ttc-primary focus:border-transparent"
             placeholder="Buscar pagos..."
           >
         </div>
@@ -22,7 +22,7 @@
         <!-- Filter Button -->
         <Tooltip ref="tooltipFilter">
           <button
-            class="h-10 w-10 flex items-center justify-center bg-ttc-surface hover:bg-ttc-card-hover rounded-md border border-ttc-border text-white transition-colors"
+            class="h-10 w-10 flex items-center justify-center bg-ttc-surface hover:bg-ttc-card-hover rounded-md border border-ttc-border text-ttc-text transition-colors"
             @click="toggleTooltip"
             aria-label="Opciones de filtro"
           >
@@ -43,13 +43,13 @@
                 ]"
               >
                 <div class="flex items-center gap-2">
-                  <component :is="filter.icon" class="text-primary text-lg" /> 
-                  <span class="text-white">{{ filter.label }}</span>
+                  <component :is="filter.icon" class="text-ttc-primary text-lg" /> 
+                  <span class="text-ttc-text">{{ filter.label }}</span>
                 </div>
                 <div v-if="selectedFilter.name === filter.name" class="flex items-center gap-1">
-                  <span class="text-primary text-xs whitespace-nowrap">{{ getSortLabel(filter.name, selectedFilter.order) }}</span>
+                  <span class="text-ttc-primary text-xs whitespace-nowrap">{{ getSortLabel(filter.name, selectedFilter.order) }}</span>
                   <MingcuteArrowUpFill
-                    class="text-primary text-lg"
+                    class="text-ttc-primary text-lg"
                     :class="selectedFilter.order === 'desc' ? 'rotate-180' : ''"
                   />
                 </div>
