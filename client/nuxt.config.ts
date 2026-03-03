@@ -98,8 +98,8 @@ export default defineNuxtConfig({
     }
   },
   routeRules: {
-    '/login': { prerender: false },
-    '/profile': { prerender: false },
+    '/iniciar-sesion': { prerender: false },
+    '/perfil': { prerender: false },
     '/grupos/**': { ssr: false },
     '/finanzas/**': { ssr: false }
   }

@@ -27,7 +27,7 @@
 
         <!-- Login button -->
         <a
-          href="/login"
+          href="/iniciar-sesion"
           class="inline-flex items-center gap-1.5 bg-ttc-primary text-white rounded-lg px-4 py-1.5 font-body text-xs font-semibold hover:opacity-90 transition-opacity ml-1"
         >
           <LogIn :size="14" :stroke-width="2" />

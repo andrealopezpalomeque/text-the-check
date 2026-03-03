@@ -52,7 +52,7 @@
           <!-- Buttons -->
           <div class="mt-8 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 animate-fade-up" style="animation-delay: 0.3s;">
             <a
-              href="/login"
+              href="/iniciar-sesion"
               class="inline-flex items-center justify-center gap-2 w-[200px] bg-ttc-primary text-white rounded-xl py-3.5 font-body text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer"
             >
               Empezar gratis

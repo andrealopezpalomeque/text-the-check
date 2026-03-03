@@ -24,10 +24,10 @@
 
       <!-- Únicos Tab -->
       <NuxtLink
-        to="/finanzas/one-time"
+        to="/finanzas/pagos-unicos"
         :class="[
           'relative flex flex-col items-center justify-center w-16 h-full transition-colors',
-          route.path === '/finanzas/one-time'
+          route.path === '/finanzas/pagos-unicos'
             ? 'text-ttc-primary'
             : 'text-ttc-text-muted hover:text-ttc-text'
         ]"
@@ -35,7 +35,7 @@
         <IconReceiptText class="w-6 h-6" />
         <span class="text-xs mt-1 font-medium">Únicos</span>
         <div
-          v-if="route.path === '/finanzas/one-time'"
+          v-if="route.path === '/finanzas/pagos-unicos'"
           class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-ttc-primary rounded-full"
         />
       </NuxtLink>
@@ -54,7 +54,7 @@
 
       <!-- Resumen Tab -->
       <NuxtLink
-        to="/finanzas/summary"
+        to="/finanzas/resumen"
         :class="[
           'relative flex flex-col items-center justify-center w-16 h-full transition-colors',
           isSummaryActive
@@ -72,7 +72,7 @@
 
       <!-- Perfil Tab -->
       <NuxtLink
-        to="/profile"
+        to="/perfil"
         :class="[
           'relative flex flex-col items-center justify-center w-16 h-full transition-colors',
           isProfileActive
@@ -102,19 +102,19 @@ const route = useRoute()
 const { openNewPaymentModal } = useFinanzasNavigationState()
 
 const isSummaryActive = computed(() =>
-  route.path === '/finanzas/summary' || route.path === '/finanzas/weekly-summary'
+  route.path === '/finanzas/resumen' || route.path === '/finanzas/resumen-semanal'
 )
 
-const isProfileActive = computed(() => route.path === '/profile')
+const isProfileActive = computed(() => route.path === '/perfil')
 
 function handleAdd() {
   if (route.path === '/finanzas') {
     openNewPaymentModal('recurrent')
-  } else if (route.path === '/finanzas/one-time') {
+  } else if (route.path === '/finanzas/pagos-unicos') {
     openNewPaymentModal('one-time')
   } else {
     // Navigate to one-time page and open modal
-    navigateTo('/finanzas/one-time')
+    navigateTo('/finanzas/pagos-unicos')
     nextTick(() => {
       openNewPaymentModal('one-time')
     })

@@ -55,7 +55,7 @@
 
       <!-- Perfil Tab -->
       <NuxtLink
-        to="/profile"
+        to="/perfil"
         :class="[
           'relative flex flex-col items-center justify-center w-16 h-full transition-colors',
           isProfileActive
@@ -90,7 +90,7 @@ const isActive = (tab) => {
   return activeTab.value === tab
 }
 
-const isProfileActive = computed(() => route.path === '/profile')
+const isProfileActive = computed(() => route.path === '/perfil')
 
 const handleTabClick = (tab) => {
   // If already on dashboard, just switch tab

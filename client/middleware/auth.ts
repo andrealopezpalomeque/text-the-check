@@ -1,4 +1,4 @@
-const publicRoutes = ['/', '/login', '/setup', '/join', '/privacy', '/landing-prueba']
+const publicRoutes = ['/', '/iniciar-sesion', '/configurar', '/unirse', '/privacy', '/landing-prueba']
 
 export default defineNuxtRouteMiddleware((to) => {
   // Skip middleware on server - Firebase auth only works on client
@@ -22,21 +22,21 @@ export default defineNuxtRouteMiddleware((to) => {
   }
 
   // After auth is loaded, enforce access control
-  // /setup and /join require Firebase auth (Google sign-in) but not necessarily a group
-  if (to.path === '/setup' || to.path === '/join') {
+  // /configurar and /unirse require Firebase auth (Google sign-in) but not necessarily a group
+  if (to.path === '/configurar' || to.path === '/unirse') {
     if (!isFirebaseAuthenticated.value) {
-      return navigateTo('/login', { replace: true })
+      return navigateTo('/iniciar-sesion', { replace: true })
     }
     return
   }
 
   // If not authenticated and trying to access a protected route, redirect to login
   if (!isAuthenticated.value && !publicRoutes.includes(to.path)) {
-    return navigateTo('/login', { replace: true })
+    return navigateTo('/iniciar-sesion', { replace: true })
   }
 
   // If authenticated and trying to access login page, redirect to home
-  if (isAuthenticated.value && to.path === '/login') {
+  if (isAuthenticated.value && to.path === '/iniciar-sesion') {
     // Use replace to prevent back button returning to login
     return navigateTo('/grupos', { replace: true })
   }

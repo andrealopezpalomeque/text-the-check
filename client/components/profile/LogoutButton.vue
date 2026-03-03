@@ -31,7 +31,7 @@ const showConfirmDialog = ref(false)
 const handleLogout = async () => {
   try {
     await signOut()
-    router.push('/login')
+    router.push('/iniciar-sesion')
   } catch (error) {
     console.error('Sign out failed:', error)
   }

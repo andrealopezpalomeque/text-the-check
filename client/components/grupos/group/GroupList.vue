@@ -14,7 +14,7 @@
         <!-- Profile link -->
         <NuxtLink
           v-if="user"
-          to="/profile"
+          to="/perfil"
           class="flex items-center gap-2 hover:bg-ttc-card-hover rounded-lg px-3 py-2 transition-colors"
         >
           <img

@@ -26,7 +26,7 @@
           <!-- Report Button (desktop only, 3+ expenses) -->
           <NuxtLink
             v-if="showReportButton"
-            to="/grupos/report"
+            to="/grupos/reporte"
             class="hidden md:flex items-center gap-1.5 px-3 py-2 text-sm text-ttc-text-muted hover:text-ttc-primary hover:bg-ttc-primary/10 rounded-lg transition-colors"
             title="Ver reporte del viaje"
           >
@@ -49,7 +49,7 @@
           <!-- Profile link -->
           <NuxtLink
             v-if="user"
-            to="/profile"
+            to="/perfil"
             class="hidden md:flex items-center gap-2 text-ttc-text hover:text-ttc-text transition-colors"
           >
             <img
@@ -91,7 +91,7 @@
 
         <NuxtLink
           v-if="showReportButton"
-          to="/grupos/report"
+          to="/grupos/reporte"
           class="md:hidden inline-flex items-center gap-1 ml-2 px-2 py-0.5 text-xs font-medium text-ttc-primary bg-ttc-primary/10 hover:bg-ttc-primary/15 rounded-md transition-colors"
         >
           <IconChartBox class="w-3.5 h-3.5" />
@@ -143,7 +143,7 @@ const showReportButton = computed(() => expenseStore.expenses.length >= 3)
 const inviteCopied = ref(false)
 
 const shareInviteLink = async () => {
-  const url = `${window.location.origin}/join?group=${groupStore.selectedGroupId}`
+  const url = `${window.location.origin}/unirse?group=${groupStore.selectedGroupId}`
   const shareData = {
     title: 'Text The Check',
     text: `Unite a ${groupStore.selectedGroup?.name || 'nuestro grupo'} en Text The Check`,

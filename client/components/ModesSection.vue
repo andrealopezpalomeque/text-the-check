@@ -82,7 +82,7 @@
           <MessageCircle :size="16" :stroke-width="2" />
         </a>
         <p class="mt-3 font-body text-xs text-ttc-text-dim">
-          O <a href="/login" class="underline hover:text-ttc-text transition-colors">iniciá sesión con Google</a>
+          O <a href="/iniciar-sesion" class="underline hover:text-ttc-text transition-colors">iniciá sesión con Google</a>
         </p>
       </div>
     </div>
@@ -95,7 +95,7 @@ import { MessageCircle } from 'lucide-vue-next'
 
 const config = useRuntimeConfig()
 const whatsappPhone = config.public.whatsappPhoneNumber
-const whatsappUrl = whatsappPhone ? `https://wa.me/${whatsappPhone}?text=Hola` : '/login'
+const whatsappUrl = whatsappPhone ? `https://wa.me/${whatsappPhone}?text=Hola` : '/iniciar-sesion'
 
 const activeMode = ref('viajes')
 </script>

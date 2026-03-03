@@ -3,13 +3,13 @@
     <!-- View Toggle Tabs -->
     <div class="flex gap-1 bg-ttc-card rounded-lg p-1 mx-3 mt-3 mb-4">
       <NuxtLink
-        to="/finanzas/summary"
+        to="/finanzas/resumen"
         class="flex-1 text-center py-2 px-4 rounded-md text-sm font-medium transition-colors text-ttc-text-muted hover:text-ttc-text"
       >
         Mensual
       </NuxtLink>
       <NuxtLink
-        to="/finanzas/weekly-summary"
+        to="/finanzas/resumen-semanal"
         class="flex-1 text-center py-2 px-4 rounded-md text-sm font-medium transition-colors bg-ttc-primary text-white"
       >
         Semanal

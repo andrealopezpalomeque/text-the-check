@@ -42,7 +42,7 @@
             Ver cómo funciona
           </button>
         </div>
-        <a href="/login" class="font-body text-xs text-ttc-text-dim underline hover:text-ttc-text transition-colors">
+        <a href="/iniciar-sesion" class="font-body text-xs text-ttc-text-dim underline hover:text-ttc-text transition-colors">
           O iniciá sesión con Google
         </a>
       </div>
@@ -55,7 +55,7 @@ import { MessageCircle } from 'lucide-vue-next'
 
 const config = useRuntimeConfig()
 const whatsappPhone = config.public.whatsappPhoneNumber
-const whatsappUrl = whatsappPhone ? `https://wa.me/${whatsappPhone}?text=Hola` : '/login'
+const whatsappUrl = whatsappPhone ? `https://wa.me/${whatsappPhone}?text=Hola` : '/iniciar-sesion'
 
 const scrollToModes = () => {
   document.getElementById('modes')?.scrollIntoView({ behavior: 'smooth' })

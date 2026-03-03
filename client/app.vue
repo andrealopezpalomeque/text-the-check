@@ -83,9 +83,9 @@ watch(authLoading, (loading) => {
   if (!loading) {
     const currentPath = route.path
 
-    const publicPaths = ['/login', '/setup', '/join', '/', '/privacy']
+    const publicPaths = ['/iniciar-sesion', '/configurar', '/unirse', '/', '/privacy']
     if (!isAuthenticated.value && !publicPaths.includes(currentPath)) {
-      navigateTo('/login', { replace: true })
+      navigateTo('/iniciar-sesion', { replace: true })
     }
   }
 })
@@ -107,8 +107,8 @@ watch(isAuthenticated, async (authenticated) => {
     finTemplateStore.clearState()
     finWeeklySummaryStore.clearState()
 
-    if (import.meta.client && route.path !== '/login' && route.path !== '/') {
-      navigateTo('/login', { replace: true })
+    if (import.meta.client && route.path !== '/iniciar-sesion' && route.path !== '/') {
+      navigateTo('/iniciar-sesion', { replace: true })
     }
   }
 }, { immediate: true })

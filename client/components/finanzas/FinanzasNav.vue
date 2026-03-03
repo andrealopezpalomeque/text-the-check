@@ -26,7 +26,7 @@
 
           <!-- Profile link -->
           <NuxtLink
-          to="/profile"
+          to="/perfil"
           class="hidden md:flex items-center gap-2 text-ttc-text hover:text-ttc-text transition-colors"
         >
           <img v-if="user?.photoURL" :src="user.photoURL" :alt="user.displayName || 'User'"
@@ -51,23 +51,23 @@
           <span class="flex items-center gap-2"><span class="hidden sm:inline">Gastos</span> Fijos</span>
         </NuxtLink>
         <NuxtLink
-          to="/finanzas/one-time"
+          to="/finanzas/pagos-unicos"
           class="nav-tab"
-          :class="{ 'nav-tab-active': route.path === '/finanzas/one-time' }"
+          :class="{ 'nav-tab-active': route.path === '/finanzas/pagos-unicos' }"
         >
           <span class="flex items-center gap-2"><span class="hidden sm:inline">Pagos</span> Unicos</span>
         </NuxtLink>
         <NuxtLink
-          to="/finanzas/summary"
+          to="/finanzas/resumen"
           class="nav-tab"
-          :class="{ 'nav-tab-active': route.path === '/finanzas/summary' || route.path === '/finanzas/weekly-summary' }"
+          :class="{ 'nav-tab-active': route.path === '/finanzas/resumen' || route.path === '/finanzas/resumen-semanal' }"
         >
           Resumen
         </NuxtLink>
         <NuxtLink
-          to="/finanzas/categories"
+          to="/finanzas/categorias"
           class="nav-tab"
-          :class="{ 'nav-tab-active': route.path === '/finanzas/categories' }"
+          :class="{ 'nav-tab-active': route.path === '/finanzas/categorias' }"
         >
           Categorias
         </NuxtLink>

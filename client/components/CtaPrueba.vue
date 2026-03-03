@@ -72,7 +72,7 @@
       </p>
 
       <a
-        href="/login"
+        href="/iniciar-sesion"
         class="inline-flex items-center gap-2.5 bg-ttc-primary text-white rounded-xl px-8 py-4 font-body text-base font-semibold hover:opacity-90 transition-opacity cursor-pointer shadow-lg shadow-[#4A90D9]/20"
       >
         Empezar gratis
