@@ -5,7 +5,7 @@ dotenv.config()
 
 if (!admin.apps.length) {
   const config: admin.AppOptions = {
-    projectId: process.env.FIREBASE_PROJECT_ID || 'viaje-grupo',
+    projectId: process.env.FIREBASE_PROJECT_ID,
   }
 
   // Base64-encoded service account JSON

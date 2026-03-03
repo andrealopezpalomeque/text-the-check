@@ -19,6 +19,6 @@
   },
   "firestore": {
     "rules": "firestore.rules",
-    "indexes": "pay-trackr/firestore.indexes.json"
+    "indexes": "firestore.indexes.json"
   }
 }

@@ -9,8 +9,7 @@ Text the Check — WhatsApp-first financial companion for Argentina/Latin Americ
 ## Repository Structure
 
 - **`client/`** — Main unified Nuxt 3 frontend (landing + both app modes). **Active codebase.**
-- **`viaje-grupo/`** — Original grupos system (npm workspaces: `client/` + `server/`). Frontend being merged into `client/`; the Express.js server (WhatsApp bot + Gemini AI) remains here.
-- **`pay-trackr/`** — Legacy/archived.
+- **`server/`** — Express.js backend (WhatsApp bot + Gemini AI). See `server/CLAUDE.md` for details.
 
 ## Architecture
 

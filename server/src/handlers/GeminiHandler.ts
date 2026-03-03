@@ -162,8 +162,8 @@ export default class GeminiHandler {
 
   /**
    * Generic content generation. Supports text-only and multimodal (inline base64).
-   * Uses raw fetch for pay-trackr-style multimodal (parts with inlineData),
-   * and SDK for text-only or grupos-style calls.
+   * Uses raw fetch for multimodal requests (parts with inlineData),
+   * and SDK for text-only calls.
    */
   private async generateContent(
     prompt: string | null,
@@ -177,7 +177,7 @@ export default class GeminiHandler {
     const { maxOutputTokens = 500, temperature = 0.7, parts, model = 'gemini-2.5-flash-lite' } = options
 
     try {
-      // If parts are provided (multimodal), use raw API like pay-trackr
+      // If parts are provided (multimodal), use raw API
       if (parts) {
         const baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models'
         const response = await fetch(

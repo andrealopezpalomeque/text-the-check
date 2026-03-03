@@ -11,7 +11,7 @@ let firebaseApp: FirebaseApp | null = null
 let firestore: Firestore | null = null
 let auth: Auth | null = null
 
-// Reuse viaje-grupo's Firebase app (initialized by plugins/firebase.client.ts)
+// Reuse the main Firebase app (initialized by plugins/firebase.client.ts)
 // Falls back to initializing a new app if none exists
 export const initializeFirebase = (): FirebaseApp => {
   if (firebaseApp) {
@@ -19,7 +19,7 @@ export const initializeFirebase = (): FirebaseApp => {
   }
 
   try {
-    // Reuse the existing Firebase app from viaje-grupo's plugin
+    // Reuse the existing Firebase app from the main plugin
     firebaseApp = getApp()
   } catch {
     // No existing app — initialize one (shouldn't happen in merged app)

@@ -1,4 +1,4 @@
-// Interfaces for finanzas (pay-trackr)
+// Interfaces for finanzas
 export interface Payment {
     isPaid: boolean;
     dueDate: string;
