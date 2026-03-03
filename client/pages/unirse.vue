@@ -2,10 +2,7 @@
   <div class="min-h-screen bg-ttc-bg flex items-center justify-center px-4">
     <div class="max-w-md w-full">
       <div class="text-center mb-8">
-        <TtcSymbol size-class="w-10 h-10 mx-auto mb-3" />
-        <h1 class="font-outfit font-semibold text-4xl tracking-[3px] text-ttc-text mb-2">
-          text <span class="text-ttc-primary">the</span> check
-        </h1>
+        <AppLogo variant="stacked" icon-size="w-10 h-10 mx-auto mb-3" text-size="text-4xl" />
       </div>
 
       <ClientOnly>

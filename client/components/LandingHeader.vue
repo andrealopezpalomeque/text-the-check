@@ -2,12 +2,7 @@
   <header class="fixed top-0 left-0 right-0 z-50 bg-ttc-surface/85 backdrop-blur-xl border-b border-ttc-border">
     <div class="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
       <!-- Logo -->
-      <div class="flex items-center gap-2.5">
-        <TtcSymbol size-class="w-7 h-7" />
-        <span class="font-outfit font-semibold text-sm tracking-[3px] text-ttc-text">
-          text <span class="text-ttc-primary">the</span> check
-        </span>
-      </div>
+      <AppLogo variant="horizontal" />
 
       <!-- Right side -->
       <div class="flex items-center gap-2">

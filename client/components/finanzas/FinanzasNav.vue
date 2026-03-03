@@ -4,12 +4,7 @@
       <!-- Top bar with app name and mode toggle -->
       <div class="flex items-center justify-between h-14">
         <div class="flex items-center gap-3">
-          <div class="flex items-center gap-2">
-            <TtcSymbol size-class="w-6 h-6" class="text-ttc-primary" />
-            <span class="font-outfit font-semibold text-sm tracking-[3px] text-ttc-text">
-              text <span class="text-ttc-primary">the</span> check
-            </span>
-          </div>
+          <AppLogo variant="horizontal" />
           <!-- Mode Toggle -->
           <button
             @click="switchToGrupos"

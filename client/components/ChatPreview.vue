@@ -18,7 +18,9 @@
         />
       </div>
       <div>
-        <p class="font-outfit font-semibold text-sm tracking-[3px] text-ttc-text">text <span class="text-ttc-primary">the</span> check</p>
+        <span class="font-outfit font-semibold text-[14px] tracking-[3px] text-ttc-text leading-none">
+          text <span class="text-ttc-primary">the</span> check
+        </span>
         <p class="font-body text-[11px] text-ttc-text-muted">en línea</p>
       </div>
     </div>
