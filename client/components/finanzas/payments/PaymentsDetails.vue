@@ -169,10 +169,12 @@
       </template>
     </Modal>
 
-    <ConfirmDialogue
-      ref="confirmDialog"
+    <ConfirmDialog
+      v-model="showConfirmDialog"
+      title="Confirmar"
       :message="`¿Estás seguro que querés eliminar ${payment?.title || 'este pago'}?${deletionWarning}`"
-      textConfirmButton="Eliminar"
+      confirmText="Eliminar"
+      variant="danger"
       @confirm="deletePayment"
     />
   </template>
@@ -199,7 +201,7 @@
   
   // ----- Define Refs ---------
   const modal = ref(null);
-  const confirmDialog = ref(null);
+  const showConfirmDialog = ref(false);
   const isLoading = ref(false);
   const isSubmitting = ref(false);
   const payment = ref(null);
@@ -326,7 +328,7 @@
   }
   
   function confirmDelete() {
-    confirmDialog.value.open();
+    showConfirmDialog.value = true;
   }
   
   async function deletePayment() {

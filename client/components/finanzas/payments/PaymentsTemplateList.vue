@@ -56,10 +56,12 @@
       </div>
     </div>
 
-    <ConfirmDialogue
-      ref="confirmDialog"
+    <ConfirmDialog
+      v-model="showConfirmDialog"
+      title="Confirmar"
       :message="`Are you sure you want to delete '${templateToDelete?.name}'?`"
-      textConfirmButton="Delete"
+      confirmText="Delete"
+      variant="danger"
       @confirm="deleteTemplate"
     />
   </div>
@@ -77,7 +79,7 @@ const templateStore = useFinanzasTemplateStore();
 const { getTemplatesSorted: templates } = storeToRefs(templateStore);
 
 // ----- Define Refs ---------
-const confirmDialog = ref(null);
+const showConfirmDialog = ref(false);
 const templateToDelete = ref(null);
 const swipedTemplateId = ref(null);
 const touchStartX = ref(0);
@@ -152,7 +154,7 @@ function useTemplate(template) {
 
 function confirmDeleteTemplate(template) {
   templateToDelete.value = template;
-  confirmDialog.value?.open();
+  showConfirmDialog.value = true;
 }
 
 async function deleteTemplate() {

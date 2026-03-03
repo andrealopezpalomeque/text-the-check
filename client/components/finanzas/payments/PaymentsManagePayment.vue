@@ -320,10 +320,12 @@
       </template>
     </Modal>
 
-    <ConfirmDialogue
-      ref="confirmDialog"
+    <ConfirmDialog
+      v-model="showConfirmDialog"
+      title="Confirmar"
       :message="`¿Estás seguro que querés eliminar ${form.title}?`"
-      textConfirmButton="Eliminar"
+      confirmText="Eliminar"
+      variant="danger"
       @confirm="deletePayment"
     />
   </div>
@@ -368,7 +370,7 @@ const { getCategories: categories } = storeToRefs(categoryStore);
 
 // ----- Define Refs ---------
 const modal = ref(null);
-const confirmDialog = ref(null);
+const showConfirmDialog = ref(false);
 const isLoading = ref(false);
 const isSubmitting = ref(false);
 
@@ -722,7 +724,7 @@ async function savePayment() {
 }
 
 function confirmDelete() {
-  confirmDialog.value.open();
+  showConfirmDialog.value = true;
 }
 
 async function deletePayment() {

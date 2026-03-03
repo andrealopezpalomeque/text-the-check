@@ -36,7 +36,7 @@
 
         <!-- Error State -->
         <div v-else-if="!firestoreUser" class="text-center py-12">
-          <div class="text-red-500 dark:text-red-400 mb-4">
+          <div class="text-ttc-danger mb-4">
             <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
@@ -64,7 +64,7 @@
               </div>
               <div
                 v-else
-                class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center"
+                class="w-16 h-16 rounded-full bg-gradient-to-br from-ttc-primary to-ttc-secondary flex items-center justify-center"
               >
                 <span class="text-white font-bold text-xl">
                   {{ getUserInitials(firestoreUser.name) }}
@@ -110,7 +110,7 @@
                   <span
                     v-for="alias in firestoreUser.aliases"
                     :key="alias"
-                    class="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 text-sm rounded-full"
+                    class="px-2 py-1 bg-ttc-primary/10 text-ttc-primary text-sm rounded-full"
                   >
                     @{{ alias }}
                   </span>
@@ -125,7 +125,7 @@
                     <span
                       v-for="(alias, index) in editAliases"
                       :key="alias"
-                      class="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 text-sm rounded-full"
+                      class="inline-flex items-center gap-1 px-2 py-1 bg-ttc-primary/10 text-ttc-primary text-sm rounded-full"
                     >
                       @{{ alias }}
                       <button
@@ -145,7 +145,7 @@
                       @keydown.enter.prevent="addAlias"
                       type="text"
                       placeholder="Nuevo alias + Enter"
-                      class="flex-1 px-3 py-1.5 text-sm border border-ttc-border rounded-btn bg-ttc-input text-ttc-text placeholder-gray-400 focus:ring-2 focus:ring-ttc-primary focus:border-transparent"
+                      class="flex-1 px-3 py-1.5 text-sm border border-ttc-border rounded-btn bg-ttc-input text-ttc-text placeholder:text-ttc-text-dim focus:ring-2 focus:ring-ttc-primary focus:border-transparent"
                     />
                     <button
                       @click="addAlias"
@@ -155,7 +155,7 @@
                       Agregar
                     </button>
                   </div>
-                  <div v-if="aliasError" class="text-sm text-red-600 dark:text-red-400">{{ aliasError }}</div>
+                  <div v-if="aliasError" class="text-sm text-ttc-danger">{{ aliasError }}</div>
                   <div class="flex gap-3">
                     <button
                       type="button"
@@ -191,7 +191,7 @@
             <!-- Linked state -->
             <div v-if="whatsapp.isLinked.value" class="space-y-4">
               <div class="flex items-center gap-3">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 text-sm font-medium rounded-full">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-ttc-success/10 text-ttc-success text-sm font-medium rounded-full">
                   <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                   </svg>
@@ -205,7 +205,7 @@
               <button
                 @click="whatsapp.unlinkAccount()"
                 :disabled="whatsapp.isLoading.value"
-                class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 text-sm font-medium"
+                class="text-ttc-danger hover:text-ttc-danger/80 text-sm font-medium"
               >
                 Desvincular
               </button>
@@ -258,8 +258,8 @@
               </div>
 
               <!-- Error -->
-              <div v-if="whatsapp.error.value" class="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-                <p class="text-sm text-red-800 dark:text-red-200">{{ whatsapp.error.value }}</p>
+              <div v-if="whatsapp.error.value" class="p-3 bg-ttc-danger/10 border border-ttc-danger/30 rounded-lg">
+                <p class="text-sm text-ttc-danger">{{ whatsapp.error.value }}</p>
               </div>
             </div>
           </div>
@@ -344,7 +344,7 @@
                   maxlength="22"
                   pattern="\d{22}"
                   placeholder="0000000000000000000000 (22 dígitos)"
-                  class="w-full px-3 py-2.5 border border-ttc-border rounded-btn bg-ttc-input text-ttc-text placeholder-gray-400 focus:ring-2 focus:ring-ttc-primary focus:border-transparent font-mono"
+                  class="w-full px-3 py-2.5 border border-ttc-border rounded-btn bg-ttc-input text-ttc-text placeholder:text-ttc-text-dim focus:ring-2 focus:ring-ttc-primary focus:border-transparent font-mono"
                 />
               </div>
 
@@ -357,7 +357,7 @@
                   type="text"
                   maxlength="50"
                   placeholder="mi.alias.banco"
-                  class="w-full px-3 py-2.5 border border-ttc-border rounded-btn bg-ttc-input text-ttc-text placeholder-gray-400 focus:ring-2 focus:ring-ttc-primary focus:border-transparent"
+                  class="w-full px-3 py-2.5 border border-ttc-border rounded-btn bg-ttc-input text-ttc-text placeholder:text-ttc-text-dim focus:ring-2 focus:ring-ttc-primary focus:border-transparent"
                 />
               </div>
 
@@ -370,13 +370,13 @@
                   type="text"
                   maxlength="50"
                   placeholder="Mercado Pago, Binance, Personal Pay, etc."
-                  class="w-full px-3 py-2.5 border border-ttc-border rounded-btn bg-ttc-input text-ttc-text placeholder-gray-400 focus:ring-2 focus:ring-ttc-primary focus:border-transparent"
+                  class="w-full px-3 py-2.5 border border-ttc-border rounded-btn bg-ttc-input text-ttc-text placeholder:text-ttc-text-dim focus:ring-2 focus:ring-ttc-primary focus:border-transparent"
                 />
               </div>
 
               <!-- Error -->
-              <div v-if="saveError" class="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-                <p class="text-sm text-red-800 dark:text-red-200">{{ saveError }}</p>
+              <div v-if="saveError" class="p-3 bg-ttc-danger/10 border border-ttc-danger/30 rounded-lg">
+                <p class="text-sm text-ttc-danger">{{ saveError }}</p>
               </div>
 
               <!-- Actions -->

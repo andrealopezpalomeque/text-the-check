@@ -59,11 +59,13 @@
     </Modal>
 
     <!-- Delete Confirmation -->
-    <ConfirmDialogue
-      ref="deleteConfirm"
+    <ConfirmDialog
+      v-model="showDeleteConfirm"
+      title="Confirmar"
       message="¿Estás seguro de que querés eliminar esta categoría?"
-      textCancelButton="No, cancelar"
-      textConfirmButton="Sí, eliminar"
+      cancelText="No, cancelar"
+      confirmText="Sí, eliminar"
+      variant="danger"
       @confirm="confirmDelete"
     />
 
@@ -196,7 +198,7 @@ const { getCategories, isLoading: storeLoading } = storeToRefs(categoryStore);
 
 // ----- Refs ---------
 const editModal = ref(null);
-const deleteConfirm = ref(null);
+const showDeleteConfirm = ref(false);
 const isLoading = ref(!categoryStore.isLoaded);
 const isAdding = ref(false);
 const isSaving = ref(false);
@@ -284,7 +286,7 @@ async function saveEditCategory() {
 
 function openDeleteConfirm(category) {
   categoryToDelete.value = category;
-  deleteConfirm.value.open();
+  showDeleteConfirm.value = true;
 }
 
 async function confirmDelete() {

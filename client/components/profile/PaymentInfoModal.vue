@@ -9,7 +9,7 @@
 
       <!-- Modal -->
       <div class="relative min-h-screen flex items-center justify-center p-4">
-        <div class="relative bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
+        <div class="relative bg-ttc-card rounded-xl shadow-xl max-w-md w-full p-6">
           <!-- Header -->
           <div class="flex items-center justify-between mb-6">
             <div class="flex items-center gap-3">
@@ -20,15 +20,15 @@
                 variant="positive"
               />
               <div>
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                <h3 class="text-lg font-semibold text-ttc-text">
                   {{ user?.name }}
                 </h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Datos de pago</p>
+                <p class="text-sm text-ttc-text-muted">Datos de pago</p>
               </div>
             </div>
             <button
               @click="$emit('close')"
-              class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1"
+              class="text-ttc-text-muted hover:text-ttc-text p-1"
             >
               <IconClose class="w-6 h-6" />
             </button>
@@ -58,9 +58,9 @@
               :mono="false"
             />
 
-            <div v-if="user?.paymentInfo?.bankName" class="bg-gray-50 dark:bg-gray-700/50 rounded-lg px-3 py-2">
-              <p class="text-xs text-gray-500 dark:text-gray-400">Banco/Plataforma</p>
-              <p class="text-sm text-gray-900 dark:text-white">
+            <div v-if="user?.paymentInfo?.bankName" class="bg-ttc-surface rounded-lg px-3 py-2">
+              <p class="text-xs text-ttc-text-muted">Banco/Plataforma</p>
+              <p class="text-sm text-ttc-text">
                 {{ user.paymentInfo.bankName }}
               </p>
             </div>
@@ -68,10 +68,10 @@
 
           <!-- No payment info -->
           <div v-else class="text-center py-8">
-            <div class="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
-              <IconCreditCard class="w-8 h-8 text-gray-400" />
+            <div class="w-16 h-16 mx-auto mb-4 bg-ttc-input rounded-full flex items-center justify-center">
+              <IconCreditCard class="w-8 h-8 text-ttc-text-muted" />
             </div>
-            <p class="text-gray-500 dark:text-gray-400">
+            <p class="text-ttc-text-muted">
               {{ user?.name }} no ha configurado sus datos de pago.
             </p>
           </div>
@@ -80,7 +80,7 @@
           <div class="mt-6">
             <button
               @click="$emit('close')"
-              class="w-full px-4 py-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-xl transition-colors font-medium"
+              class="w-full px-4 py-2.5 bg-ttc-input hover:bg-ttc-card-hover text-ttc-text rounded-xl transition-colors font-medium"
             >
               Cerrar
             </button>

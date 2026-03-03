@@ -18,7 +18,7 @@
         />
       </div>
       <div>
-        <p class="font-nunito text-sm font-bold text-ttc-text">Text the Check</p>
+        <p class="font-outfit font-semibold text-sm tracking-[3px] text-ttc-text">text <span class="text-ttc-primary">the</span> check</p>
         <p class="font-body text-[11px] text-ttc-text-muted">en línea</p>
       </div>
     </div>

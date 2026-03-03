@@ -4,8 +4,8 @@
       <!-- Logo -->
       <div class="text-center mb-10">
         <TtcSymbol size-class="w-12 h-12 mx-auto mb-4" />
-        <h1 class="font-nunito font-extrabold text-2xl text-ttc-text">
-          Text <span class="text-ttc-primary">The</span> Check
+        <h1 class="font-outfit font-semibold text-2xl tracking-[3px] text-ttc-text">
+          text <span class="text-ttc-primary">the</span> check
         </h1>
         <p class="mt-2 font-body text-sm text-ttc-text-muted">
           Inicia sesion para continuar
