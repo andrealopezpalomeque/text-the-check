@@ -14,11 +14,11 @@
               {{ props.isReview ? "Revisar" : (isEdit ? "Editar" : "Crear") }} Pago {{ isRecurrent ? "Fijo" : "Único" }}
             </h2>
             <p class="text-sm text-ttc-text-dim" v-if="isEdit && form.title">{{ form.title }}</p>
-            <p class="text-xs text-green-400 flex items-center gap-1 mt-1" v-if="props.isReview">
-              <span class="inline-block w-2 h-2 rounded-full bg-green-400"></span>
+            <p class="text-xs text-ttc-success flex items-center gap-1 mt-1" v-if="props.isReview">
+              <span class="inline-block w-2 h-2 rounded-full bg-ttc-success"></span>
               Creado via WhatsApp
             </p>
-            <p class="text-xs text-green-400 flex items-center gap-1 mt-1" v-else-if="paymentsCreatedCount > 0 && !isEdit">
+            <p class="text-xs text-ttc-success flex items-center gap-1 mt-1" v-else-if="paymentsCreatedCount > 0 && !isEdit">
               <MdiCheck class="text-sm" />
               {{ paymentsCreatedCount }} {{ paymentsCreatedCount === 1 ? 'pago creado' : 'pagos creados' }}
             </p>
@@ -40,7 +40,7 @@
                 v-if="templates.length > 4"
                 type="button"
                 @click="templatesExpanded = !templatesExpanded"
-                class="text-xs text-primary hover:text-primary/80 transition-colors flex items-center gap-1"
+                class="text-xs text-ttc-primary hover:text-ttc-primary/80 transition-colors flex items-center gap-1"
               >
                 {{ templatesExpanded ? 'Colapsar' : 'Expandir' }}
                 <svg
@@ -90,17 +90,17 @@
               required
               @blur="touched.title = true"
               class="w-full p-2 bg-ttc-input border rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
-              :class="touched.title && !form.title ? 'border-red-500 ring-2 ring-red-500 focus:ring-red-500' : 'border-ttc-border focus:ring-primary'"
+              :class="touched.title && !form.title ? 'border-ttc-danger ring-2 ring-ttc-danger focus:ring-ttc-danger' : 'border-ttc-border focus:ring-ttc-primary'"
               placeholder="ej. Suscripción Netflix"
             />
-            <span v-if="touched.title && !form.title" class="text-xs text-red-400">Este campo es obligatorio</span>
+            <span v-if="touched.title && !form.title" class="text-xs text-ttc-danger">Este campo es obligatorio</span>
           </div>
 
           <div class="space-y-2" v-if="!props.isRecurrent">
             <button
               type="button"
               @click="showDescription = !showDescription"
-              class="text-sm text-primary hover:text-primary-dark flex items-center gap-1"
+              class="text-sm text-ttc-primary hover:text-ttc-primary/80 flex items-center gap-1"
             >
               <span>{{ showDescription ? '− Ocultar' : '+ Agregar' }} Descripción</span>
             </button>
@@ -108,7 +108,7 @@
               v-if="showDescription"
               id="description"
               v-model="form.description"
-              class="w-full p-2 bg-ttc-input border border-ttc-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              class="w-full p-2 bg-ttc-input border border-ttc-border rounded-md focus:outline-none focus:ring-2 focus:ring-ttc-primary focus:border-transparent"
               placeholder="Agregá detalles sobre este pago"
               rows="2"
             ></textarea>
@@ -160,11 +160,11 @@
                   @blur="touched.amount = true"
                   required
                   class="w-full p-2 pl-7 bg-ttc-input border rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
-                  :class="touched.amount && !form.amount ? 'border-red-500 ring-2 ring-red-500 focus:ring-red-500' : 'border-ttc-border focus:ring-primary'"
+                  :class="touched.amount && !form.amount ? 'border-ttc-danger ring-2 ring-ttc-danger focus:ring-ttc-danger' : 'border-ttc-border focus:ring-ttc-primary'"
                   placeholder="0,00"
                 />
               </div>
-              <span v-if="touched.amount && !form.amount" class="text-xs text-red-400">Este campo es obligatorio</span>
+              <span v-if="touched.amount && !form.amount" class="text-xs text-ttc-danger">Este campo es obligatorio</span>
             </div>
 
             <div class="space-y-2" v-if="!props.isRecurrent">
@@ -175,7 +175,7 @@
                 @blur="touched.categoryId = true"
                 required
                 class="w-full p-2 bg-ttc-input border rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
-                :class="touched.categoryId && !form.categoryId ? 'border-red-500 ring-2 ring-red-500 focus:ring-red-500' : 'border-ttc-border focus:ring-primary'"
+                :class="touched.categoryId && !form.categoryId ? 'border-ttc-danger ring-2 ring-ttc-danger focus:ring-ttc-danger' : 'border-ttc-border focus:ring-ttc-primary'"
               >
                 <option v-for="cat in categories" :key="cat.id" :value="cat.id">
                   {{ cat.name }}
@@ -194,9 +194,9 @@
               @blur="touched.dueDate = true"
               required
               class="w-full p-2 bg-ttc-input border rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
-              :class="touched.dueDate && !form.dueDate ? 'border-red-500 ring-2 ring-red-500 focus:ring-red-500' : 'border-ttc-border focus:ring-primary'"
+              :class="touched.dueDate && !form.dueDate ? 'border-ttc-danger ring-2 ring-ttc-danger focus:ring-ttc-danger' : 'border-ttc-border focus:ring-ttc-primary'"
             />
-            <span v-if="touched.dueDate && !form.dueDate" class="text-xs text-red-400">Este campo es obligatorio</span>
+            <span v-if="touched.dueDate && !form.dueDate" class="text-xs text-ttc-danger">Este campo es obligatorio</span>
           </div>
 
           <!-- Save as Template Option (only on creation) -->
@@ -205,7 +205,7 @@
               <input
                 type="checkbox"
                 v-model="saveAsTemplate"
-                class="form-checkbox h-5 w-5 text-primary rounded focus:ring-primary"
+                class="form-checkbox h-5 w-5 text-ttc-primary rounded focus:ring-ttc-primary"
               />
               <span class="text-sm font-medium text-ttc-text-muted">Guardar como plantilla</span>
             </label>
@@ -222,9 +222,9 @@
                 @blur="touched.dueDate = true"
                 required
                 class="w-full p-2 bg-ttc-input border rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
-                :class="touched.dueDate && !form.dueDate ? 'border-red-500 ring-2 ring-red-500 focus:ring-red-500' : 'border-ttc-border focus:ring-primary'"
+                :class="touched.dueDate && !form.dueDate ? 'border-ttc-danger ring-2 ring-ttc-danger focus:ring-ttc-danger' : 'border-ttc-border focus:ring-ttc-primary'"
               />
-              <span v-if="touched.dueDate && !form.dueDate" class="text-xs text-red-400">Este campo es obligatorio</span>
+              <span v-if="touched.dueDate && !form.dueDate" class="text-xs text-ttc-danger">Este campo es obligatorio</span>
             </div>
 
             <div class="space-y-2">
@@ -232,7 +232,7 @@
                 <input
                   type="checkbox"
                   v-model="form.isPaid"
-                  class="form-checkbox h-5 w-5 text-primary rounded focus:ring-primary"
+                  class="form-checkbox h-5 w-5 text-ttc-primary rounded focus:ring-ttc-primary"
                 />
                 <span class="text-sm font-medium text-ttc-text-muted">Marcar como pagado</span>
               </label>
@@ -243,7 +243,7 @@
                   id="paidDate"
                   v-model="form.paidDate"
                   type="date"
-                  class="w-full p-2 bg-ttc-input border border-ttc-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                  class="w-full p-2 bg-ttc-input border border-ttc-border rounded-md focus:outline-none focus:ring-2 focus:ring-ttc-primary focus:border-transparent"
                 />
               </div>
             </div>
@@ -254,9 +254,9 @@
               <button
                 type="button"
                 @click="markAsPending"
-                class="w-full p-2 text-sm text-warning bg-warning/20 hover:bg-warning/30 border border-warning/30 rounded-md transition-colors flex items-center justify-center gap-2"
+                class="w-full p-2 text-sm text-ttc-warning bg-ttc-warning/20 hover:bg-ttc-warning/30 border border-ttc-warning/30 rounded-md transition-colors flex items-center justify-center gap-2"
               >
-                <MdiClockOutline class="text-base text-warning" />
+                <MdiClockOutline class="text-base text-ttc-warning" />
                 <span>Revisar después</span>
               </button>
               <p class="text-xs text-ttc-text-dim">El pago volverá a aparecer como pendiente de revisión</p>
@@ -270,7 +270,7 @@
         <div v-if="props.isReview" class="flex justify-end w-full">
           <button
             @click="markAsReviewed"
-            class="px-5 py-2.5 bg-success text-white rounded-lg hover:bg-success/90 transition-colors flex items-center gap-2 font-medium"
+            class="px-5 py-2.5 bg-ttc-success text-white rounded-lg hover:bg-ttc-success/90 transition-colors flex items-center gap-2 font-medium"
             :disabled="isSubmitting"
           >
             <span v-if="isSubmitting" class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
@@ -292,15 +292,15 @@
             <button
               v-if="isEdit"
               @click="confirmDelete"
-              class="px-4 py-2 bg-danger/10 text-danger rounded-lg hover:bg-danger/20 transition-colors"
+              class="px-4 py-2 bg-ttc-danger/10 text-ttc-danger rounded-lg hover:bg-ttc-danger/20 transition-colors"
             >
               Eliminar
             </button>
 
             <button
               @click="savePayment"
-              class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
-              :class="{ 'bg-green-600 hover:bg-green-700': justSaved }"
+              class="px-4 py-2 bg-ttc-primary text-white rounded-lg hover:bg-ttc-primary/90 transition-colors"
+              :class="{ 'bg-ttc-success hover:bg-ttc-success/90': justSaved }"
               :disabled="isSubmitting"
             >
               <span v-if="isSubmitting">
@@ -784,7 +784,7 @@ defineExpose({
 
 <style scoped>
 .form-checkbox {
-  @apply text-primary border-ttc-border rounded;
+  @apply text-ttc-primary border-ttc-border rounded;
 }
 
 /* Hide scrollbar but keep functionality */

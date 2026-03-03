@@ -20,10 +20,10 @@
             required
             @blur="touched.title = true"
             class="w-full p-2 bg-ttc-input border rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
-            :class="touched.title && !form.title ? 'border-red-500 ring-2 ring-red-500 focus:ring-red-500' : 'border-ttc-border focus:ring-primary'"
+            :class="touched.title && !form.title ? 'border-ttc-danger ring-2 ring-ttc-danger focus:ring-ttc-danger' : 'border-ttc-border focus:ring-ttc-primary'"
             placeholder="ej. Suscripción Netflix"
           />
-          <span v-if="touched.title && !form.title" class="text-xs text-red-400">Este campo es obligatorio</span>
+          <span v-if="touched.title && !form.title" class="text-xs text-ttc-danger">Este campo es obligatorio</span>
         </div>
 
         <div class="space-y-2">
@@ -31,7 +31,7 @@
           <textarea
             id="description"
             v-model="form.description"
-            class="w-full p-2 bg-ttc-input border border-ttc-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            class="w-full p-2 bg-ttc-input border border-ttc-border rounded-md focus:outline-none focus:ring-2 focus:ring-ttc-primary focus:border-transparent"
             placeholder="Agregá detalles sobre este pago"
             rows="2"
           ></textarea>
@@ -53,11 +53,11 @@
                 @blur="touched.amount = true"
                 required
                 class="w-full p-2 pl-7 bg-ttc-input border rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
-                :class="touched.amount && !form.amount ? 'border-red-500 ring-2 ring-red-500 focus:ring-red-500' : 'border-ttc-border focus:ring-primary'"
+                :class="touched.amount && !form.amount ? 'border-ttc-danger ring-2 ring-ttc-danger focus:ring-ttc-danger' : 'border-ttc-border focus:ring-ttc-primary'"
                 placeholder="0,00"
               />
             </div>
-            <span v-if="touched.amount && !form.amount" class="text-xs text-red-400">Este campo es obligatorio</span>
+            <span v-if="touched.amount && !form.amount" class="text-xs text-ttc-danger">Este campo es obligatorio</span>
           </div>
 
           <div class="space-y-2">
@@ -68,7 +68,7 @@
               @blur="touched.categoryId = true"
               required
               class="w-full p-2 bg-ttc-input border rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
-              :class="touched.categoryId && !form.categoryId ? 'border-red-500 ring-2 ring-red-500 focus:ring-red-500' : 'border-ttc-border focus:ring-primary'"
+              :class="touched.categoryId && !form.categoryId ? 'border-ttc-danger ring-2 ring-ttc-danger focus:ring-ttc-danger' : 'border-ttc-border focus:ring-ttc-primary'"
             >
               <option v-for="cat in categories" :key="cat.id" :value="cat.id">
                 {{ cat.name }}
@@ -90,11 +90,11 @@
               required
               @blur="touched.dueDateDay = true"
               class="w-full p-2 bg-ttc-input border rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
-              :class="touched.dueDateDay && !form.dueDateDay ? 'border-red-500 ring-2 ring-red-500 focus:ring-red-500' : 'border-ttc-border focus:ring-primary'"
+              :class="touched.dueDateDay && !form.dueDateDay ? 'border-ttc-danger ring-2 ring-ttc-danger focus:ring-ttc-danger' : 'border-ttc-border focus:ring-ttc-primary'"
               placeholder="Día del mes (1-31)"
             />
-            <span v-if="touched.dueDateDay && !form.dueDateDay" class="text-xs text-red-400">Este campo es obligatorio</span>
-            <p v-if="parseInt(form.dueDateDay) > 28" class="text-xs text-warning">
+            <span v-if="touched.dueDateDay && !form.dueDateDay" class="text-xs text-ttc-danger">Este campo es obligatorio</span>
+            <p v-if="parseInt(form.dueDateDay) > 28" class="text-xs text-ttc-warning">
               Algunos meses tienen menos días. El pago puede vencer el último día de esos meses.
             </p>
           </div>
@@ -105,7 +105,7 @@
               id="timePeriod"
               v-model="form.timePeriod"
               required
-              class="w-full p-2 bg-ttc-input border border-ttc-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              class="w-full p-2 bg-ttc-input border border-ttc-border rounded-md focus:outline-none focus:ring-2 focus:ring-ttc-primary focus:border-transparent"
             >
               <option value="monthly">Mensual</option>
               <option value="biweekly">Quincenal</option>
@@ -127,9 +127,9 @@
               required
               @blur="touched.startDate = true"
               class="w-full p-2 bg-ttc-input border rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
-              :class="touched.startDate && !form.startDate ? 'border-red-500 ring-2 ring-red-500 focus:ring-red-500' : 'border-ttc-border focus:ring-primary'"
+              :class="touched.startDate && !form.startDate ? 'border-ttc-danger ring-2 ring-ttc-danger focus:ring-ttc-danger' : 'border-ttc-border focus:ring-ttc-primary'"
             />
-            <span v-if="touched.startDate && !form.startDate" class="text-xs text-red-400">Este campo es obligatorio</span>
+            <span v-if="touched.startDate && !form.startDate" class="text-xs text-ttc-danger">Este campo es obligatorio</span>
           </div>
 
           <div class="space-y-2">
@@ -138,7 +138,7 @@
               id="endDate"
               v-model="form.endDate"
               type="date"
-              class="w-full p-2 bg-ttc-input border border-ttc-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              class="w-full p-2 bg-ttc-input border border-ttc-border rounded-md focus:outline-none focus:ring-2 focus:ring-ttc-primary focus:border-transparent"
             />
           </div>
         </div>
@@ -158,7 +158,7 @@
 
         <button
           @click="savePayment"
-          class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
+          class="px-4 py-2 bg-ttc-primary text-white rounded-lg hover:bg-ttc-primary/90 transition-colors"
           :disabled="isSubmitting"
         >
           <span v-if="isSubmitting">

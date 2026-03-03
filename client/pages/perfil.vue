@@ -130,7 +130,7 @@
                       @{{ alias }}
                       <button
                         @click="removeAlias(index)"
-                        class="hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                        class="hover:text-ttc-danger transition-colors"
                         title="Eliminar alias"
                       >
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -250,7 +250,7 @@
                 <button
                   @click="whatsapp.generateCode()"
                   :disabled="whatsapp.isGenerating.value"
-                  class="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white font-medium rounded-lg transition-colors"
+                  class="px-4 py-2 bg-ttc-success hover:bg-ttc-success/90 disabled:bg-ttc-success/50 text-white font-medium rounded-lg transition-colors"
                 >
                   <span v-if="whatsapp.isGenerating.value">Generando...</span>
                   <span v-else>Generar codigo</span>
