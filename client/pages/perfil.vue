@@ -217,44 +217,57 @@
                 Vinculá tu WhatsApp para registrar gastos y dividir cuentas por mensaje.
               </p>
 
-              <!-- Pending code display -->
-              <div v-if="whatsapp.pendingCode.value" class="space-y-3">
-                <div class="bg-ttc-bg rounded-lg p-4">
-                  <p class="text-sm text-ttc-text-muted mb-2">Enviá este mensaje por WhatsApp:</p>
-                  <div class="flex items-center gap-3">
-                    <code class="flex-1 text-lg font-bold text-ttc-text tracking-wider">VINCULAR {{ whatsapp.pendingCode.value }}</code>
+              <!-- Primary CTA: generate + open WhatsApp -->
+              <div>
+                <button
+                  @click="whatsapp.pendingCode.value && whatsapp.deepLink.value ? openDeepLink() : whatsapp.generateAndOpen()"
+                  :disabled="whatsapp.isGenerating.value"
+                  class="w-full bg-ttc-primary hover:bg-ttc-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-white font-dm-sans text-sm font-semibold rounded-lg py-2.5 px-4 transition-colors"
+                >
+                  <span v-if="whatsapp.isGenerating.value">Generando...</span>
+                  <span v-else-if="whatsapp.pendingCode.value">Enviar por WhatsApp</span>
+                  <span v-else>Vincular WhatsApp</span>
+                </button>
+                <p v-if="whatsapp.botNumber" class="text-ttc-text-muted font-dm-sans text-xs mt-1.5">
+                  Se enviará al +{{ whatsapp.botNumber }}
+                </p>
+              </div>
+
+              <!-- Secondary: manual flow (expandable) -->
+              <div v-if="whatsapp.pendingCode.value">
+                <button
+                  @click="showManualFlow = !showManualFlow"
+                  class="text-ttc-text-muted text-xs hover:underline"
+                >
+                  {{ showManualFlow ? 'Ocultar código' : 'Copiar código manualmente' }}
+                </button>
+
+                <div v-if="showManualFlow" class="mt-3 space-y-3">
+                  <div class="bg-ttc-bg rounded-lg p-4">
+                    <p class="text-xs text-ttc-text-muted mb-2">Enviá este mensaje por WhatsApp:</p>
+                    <div class="flex items-center gap-3">
+                      <code class="flex-1 font-mono text-lg text-ttc-primary tracking-widest">VINCULAR {{ whatsapp.pendingCode.value }}</code>
+                      <button
+                        @click="copyCode"
+                        class="shrink-0 px-3 py-1.5 bg-ttc-primary hover:bg-ttc-primary/90 text-white font-dm-sans text-sm font-semibold rounded-lg transition-colors"
+                      >
+                        {{ codeCopied ? 'Copiado' : 'Copiar' }}
+                      </button>
+                    </div>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <p v-if="whatsapp.countdown.value" class="text-xs text-ttc-text-muted">
+                      Expira en <span :class="{ 'text-ttc-danger': isCountdownLow }">{{ whatsapp.countdown.value }}</span>
+                    </p>
                     <button
-                      @click="copyCode"
-                      class="shrink-0 px-3 py-1.5 bg-ttc-primary hover:bg-ttc-primary/90 text-white text-sm font-medium rounded-btn transition-colors"
+                      @click="whatsapp.generateCode()"
+                      :disabled="whatsapp.isGenerating.value"
+                      class="text-ttc-primary hover:text-ttc-primary/80 text-xs font-medium"
                     >
-                      {{ codeCopied ? 'Copiado' : 'Copiar' }}
+                      Regenerar
                     </button>
                   </div>
                 </div>
-                <div class="flex items-center justify-between">
-                  <p v-if="whatsapp.countdown.value" class="text-sm text-ttc-text-muted">
-                    Expira en {{ whatsapp.countdown.value }}
-                  </p>
-                  <button
-                    @click="whatsapp.generateCode()"
-                    :disabled="whatsapp.isGenerating.value"
-                    class="text-ttc-primary hover:text-ttc-primary/80 text-sm font-medium"
-                  >
-                    Regenerar
-                  </button>
-                </div>
-              </div>
-
-              <!-- Generate code button -->
-              <div v-else>
-                <button
-                  @click="whatsapp.generateCode()"
-                  :disabled="whatsapp.isGenerating.value"
-                  class="px-4 py-2 bg-ttc-success hover:bg-ttc-success/90 disabled:bg-ttc-success/50 text-white font-medium rounded-lg transition-colors"
-                >
-                  <span v-if="whatsapp.isGenerating.value">Generando...</span>
-                  <span v-else>Generar codigo</span>
-                </button>
               </div>
 
               <!-- Error -->
@@ -428,6 +441,19 @@ const { mode } = useAppMode()
 const backRoute = computed(() => mode.value === 'finanzas' ? '/finanzas' : '/grupos')
 const whatsapp = useWhatsappLink()
 const codeCopied = ref(false)
+const showManualFlow = ref(false)
+
+const isCountdownLow = computed(() => {
+  const c = whatsapp.countdown.value
+  if (!c) return false
+  return c.startsWith('00:')
+})
+
+const openDeepLink = () => {
+  if (whatsapp.deepLink.value) {
+    window.open(whatsapp.deepLink.value, '_blank')
+  }
+}
 
 const copyCode = async () => {
   if (!whatsapp.pendingCode.value) return

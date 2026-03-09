@@ -36,6 +36,8 @@ export const useWhatsappLink = () => {
   const { $db } = useNuxtApp()
   const db = $db as Firestore
   const { user, firestoreUser } = useAuth()
+  const config = useRuntimeConfig()
+  const botNumber = config.public.whatsappPhoneNumber as string
 
   const linkedAccount = ref<LinkedAccount | null>(null)
   const pendingCode = ref<string | null>(null)
@@ -114,6 +116,12 @@ export const useWhatsappLink = () => {
     }
   }
 
+  // Build the wa.me deep link for the current pending code
+  const deepLink = computed(() => {
+    if (!pendingCode.value || !botNumber) return null
+    return `https://wa.me/${botNumber}?text=${encodeURIComponent(`VINCULAR ${pendingCode.value}`)}`
+  })
+
   // Generate a new linking code
   async function generateCode() {
     const userId = firestoreUser.value?.id
@@ -138,6 +146,14 @@ export const useWhatsappLink = () => {
       error.value = 'Error al generar el código'
     } finally {
       isGenerating.value = false
+    }
+  }
+
+  // Generate code and open WhatsApp deep link
+  async function generateAndOpen() {
+    await generateCode()
+    if (deepLink.value) {
+      window.open(deepLink.value, '_blank')
     }
   }
 
@@ -184,7 +200,10 @@ export const useWhatsappLink = () => {
     isGenerating: readonly(isGenerating),
     error: readonly(error),
     countdown: readonly(countdown),
+    deepLink,
+    botNumber,
     generateCode,
+    generateAndOpen,
     unlinkAccount,
   }
 }
