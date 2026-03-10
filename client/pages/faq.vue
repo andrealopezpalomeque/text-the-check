@@ -74,8 +74,8 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { collection, getDocs, query } from 'firebase/firestore'
+<script setup>
+import { collection, getDocs } from 'firebase/firestore'
 import { ArrowLeft, ChevronDown } from 'lucide-vue-next'
 
 definePageMeta({
@@ -94,31 +94,14 @@ useSeoMeta({
   ogDescription: 'Preguntas frecuentes sobre text the check. Cómo dividir gastos, registrar pagos, vincular WhatsApp y más.',
 })
 
-interface FaqItem {
-  id: string
-  topic: string
-  topicLabel: string
-  topicOrder: number
-  order: number
-  question: string
-  answer: string
-}
-
-interface FaqGroup {
-  topic: string
-  topicLabel: string
-  topicOrder: number
-  items: FaqItem[]
-}
-
 const { db } = useFirebase()
 const loading = ref(true)
 const error = ref(false)
-const faqItems = ref<FaqItem[]>([])
-const openItems = ref(new Set<string>())
+const faqItems = ref([])
+const openItems = ref(new Set())
 
-const groupedFaq = computed<FaqGroup[]>(() => {
-  const groups = new Map<string, FaqGroup>()
+const groupedFaq = computed(() => {
+  const groups = new Map()
 
   for (const item of faqItems.value) {
     if (!groups.has(item.topic)) {
@@ -129,7 +112,7 @@ const groupedFaq = computed<FaqGroup[]>(() => {
         items: [],
       })
     }
-    groups.get(item.topic)!.items.push(item)
+    groups.get(item.topic).items.push(item)
   }
 
   const sorted = Array.from(groups.values()).sort((a, b) => a.topicOrder - b.topicOrder)
@@ -139,7 +122,7 @@ const groupedFaq = computed<FaqGroup[]>(() => {
   return sorted
 })
 
-function toggle(id: string) {
+function toggle(id) {
   if (openItems.value.has(id)) {
     openItems.value.delete(id)
   } else {
@@ -152,13 +135,12 @@ async function fetchFaq() {
   error.value = false
 
   try {
-    const q = query(collection(db, 'ttc_faq'))
-    const snapshot = await getDocs(q)
+    const snapshot = await getDocs(collection(db, 'ttc_faq'))
 
     faqItems.value = snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
-    })) as FaqItem[]
+    }))
   } catch (e) {
     console.error('Error fetching FAQ:', e)
     error.value = true

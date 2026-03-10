@@ -22,13 +22,7 @@
         <div class="lg:w-[45%] text-center lg:text-left mb-10 lg:mb-0">
           <!-- Pill badge -->
           <div class="animate-fade-up">
-            <span class="inline-flex items-center gap-2 rounded-full border border-[#4A90D9]/30 bg-[#4A90D9]/[0.08] px-5 py-2 font-body text-[11px] font-semibold uppercase tracking-[2px] text-ttc-primary">
-              <svg width="14" height="14" viewBox="0 0 160 200" fill="none" class="inline-block">
-                <path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 142,37 124,78 139,115 C 144,148 124,170 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 19,159 37,127 23,88 C 18,52 37,32 28,25 Z" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-                <rect x="43" y="72" width="42" height="10" rx="5" fill="currentColor" opacity="0.18"/>
-                <rect x="80" y="92" width="44" height="10" rx="5" fill="currentColor" opacity="0.12"/>
-                <rect x="45" y="112" width="34" height="10" rx="5" fill="currentColor" opacity="0.18"/>
-              </svg>
+            <span class="inline-flex items-center rounded-full border border-[#4A90D9]/30 bg-[#4A90D9]/[0.08] px-5 py-2 font-body text-[11px] font-semibold uppercase tracking-[2px] text-ttc-primary">
               Tu plata, a un mensaje
             </span>
           </div>
@@ -348,7 +342,7 @@ const scrollToComoFunciona = () => {
 
 /* Fixed-height chat area to prevent layout shifts */
 .chat-area {
-  height: 260px;
+  height: 290px;
   overflow: hidden;
   position: relative;
 }

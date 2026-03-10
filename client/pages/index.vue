@@ -1,8 +1,11 @@
 <template>
   <div>
     <HeroPrueba />
+    <LandingFeatures />
     <ComoFunciona />
-    <ModesPrueba />
+    <LandingInputTypes />
+    <LandingModes />
+    <LandingComparison />
     <CtaPrueba />
   </div>
 </template>
