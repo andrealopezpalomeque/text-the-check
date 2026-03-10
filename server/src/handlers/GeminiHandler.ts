@@ -102,6 +102,15 @@ export type AIPersonalParseResult = AIPersonalExpenseResult | AIUnknownResult | 
 const AI_TIMEOUT_MS = parseInt(process.env.AI_TIMEOUT_MS || '5000', 10)
 const AI_CONFIDENCE_THRESHOLD = parseFloat(process.env.AI_CONFIDENCE_THRESHOLD || '0.7')
 
+// Model fallback rotation: try each in order, skip exhausted (rate-limited) ones
+const GEMINI_MODELS = [
+  'gemini-2.5-flash-lite',          // Stable — primary
+  'gemini-2.5-flash',               // Stable — fallback 1
+  'gemini-2.0-flash',               // Stable — fallback 2
+]
+
+const RETRY_DELAYS = [2000, 5000] // Exponential backoff for 503 retries
+
 // Shared Argentine Spanish dictionary used by both Grupos and Finanzas prompts
 const ARGENTINE_DICTIONARY = `| Term | Meaning |
 |------|---------|
@@ -142,6 +151,7 @@ const CONFIDENCE_RULES = `- 0.95-1.0: Very clear message, explicit amount and de
 export default class GeminiHandler {
   private genAI: GoogleGenerativeAI | null = null
   private apiKey: string
+  private exhaustedModels = new Map<string, string>() // model → 'YYYY-MM-DD'
 
   constructor(apiKey: string) {
     this.apiKey = apiKey
@@ -158,12 +168,42 @@ export default class GeminiHandler {
     return this.getClient().getGenerativeModel({ model: modelName })
   }
 
+  // ─── Model rotation internals ──────────────────────────────────
+
+  private isExhausted(model: string): boolean {
+    const today = new Date().toISOString().slice(0, 10)
+    return this.exhaustedModels.get(model) === today
+  }
+
+  private markExhausted(model: string): void {
+    const today = new Date().toISOString().slice(0, 10)
+    this.exhaustedModels.set(model, today)
+    console.log(`[GEMINI] Model ${model} marked exhausted for ${today}`)
+  }
+
+  /** Extract HTTP status code from SDK errors or fetch-like errors */
+  private getErrorStatus(error: unknown): number | null {
+    if (error && typeof error === 'object') {
+      // @google/generative-ai SDK wraps HTTP errors with status
+      if ('status' in error && typeof (error as any).status === 'number') return (error as any).status
+      // Some SDK versions put it in statusCode
+      if ('statusCode' in error && typeof (error as any).statusCode === 'number') return (error as any).statusCode
+      // Check error message for status code patterns
+      const msg = (error as any).message || ''
+      const match = msg.match(/\b(429|503)\b/)
+      if (match) return parseInt(match[1], 10)
+    }
+    return null
+  }
+
   // ─── Shared internals ─────────────────────────────────────────
 
   /**
-   * Generic content generation. Supports text-only and multimodal (inline base64).
-   * Uses raw fetch for multimodal requests (parts with inlineData),
-   * and SDK for text-only calls.
+   * Generic content generation with model fallback rotation.
+   * Tries each model in GEMINI_MODELS order, skipping exhausted ones.
+   * On 429: marks model exhausted, rotates to next.
+   * On 503: retries with exponential backoff, then rotates.
+   * On other errors: returns null (doesn't mask).
    */
   private async generateContent(
     prompt: string | null,
@@ -171,50 +211,131 @@ export default class GeminiHandler {
       maxOutputTokens?: number
       temperature?: number
       parts?: any[]
-      model?: string
     } = {}
   ): Promise<string | null> {
-    const { maxOutputTokens = 500, temperature = 0.7, parts, model = 'gemini-2.5-flash-lite' } = options
+    const { maxOutputTokens = 500, temperature = 0.7, parts } = options
 
-    try {
-      // If parts are provided (multimodal), use raw API
-      if (parts) {
-        const baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models'
-        const response = await fetch(
-          `${baseUrl}/${model}:generateContent?key=${this.apiKey}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts }],
-              generationConfig: { maxOutputTokens, temperature },
-            }),
-          }
-        )
+    for (const model of GEMINI_MODELS) {
+      if (this.isExhausted(model)) continue
 
-        if (!response.ok) {
-          const errorText = await response.text()
-          console.error(`[GEMINI] API ${response.status}: ${errorText.slice(0, 150)}`)
-          Sentry.captureMessage('Gemini API error', { level: 'error', extra: { status: response.status, body: errorText } })
-          return null
-        }
+      const result = await this.tryWithModel(model, prompt, { maxOutputTokens, temperature, parts })
 
-        const result: any = await response.json()
-        return result.candidates?.[0]?.content?.parts?.[0]?.text || null
+      if (result === '__rate_limit__') {
+        this.markExhausted(model)
+        Sentry.captureMessage('Gemini model exhausted (429), rotating', { level: 'warning', extra: { model } })
+        continue
       }
 
-      // Text-only: use SDK
-      const genModel = this.getModel(model)
-      const result = await genModel.generateContent({
-        contents: [{ role: 'user', parts: [{ text: prompt! }] }],
-        generationConfig: { maxOutputTokens, temperature },
-      })
-      return result.response.text().trim() || null
-    } catch (error) {
-      console.error(`[GEMINI] Request failed:`, error)
-      Sentry.captureException(error)
-      return null
+      if (result === '__unavailable__') {
+        console.log(`[GEMINI] Model ${model} unavailable (503), rotating to next`)
+        continue
+      }
+
+      // Success or null (real error) — return as-is
+      return result
     }
+
+    // All models exhausted
+    console.error('[GEMINI] All models exhausted')
+    Sentry.captureException(new Error('All Gemini models exhausted'))
+    return null
+  }
+
+  /**
+   * Try a single model with 503 retry logic.
+   * Returns the text, null (non-retryable error), '__rate_limit__', or '__unavailable__'.
+   */
+  private async tryWithModel(
+    model: string,
+    prompt: string | null,
+    options: { maxOutputTokens: number; temperature: number; parts?: any[] }
+  ): Promise<string | null | '__rate_limit__' | '__unavailable__'> {
+    const { maxOutputTokens, temperature, parts } = options
+
+    for (let attempt = 0; attempt <= RETRY_DELAYS.length; attempt++) {
+      try {
+        let text: string | null
+
+        if (parts) {
+          // Multimodal: raw fetch API
+          text = await this.fetchGenerateContent(model, { maxOutputTokens, temperature, parts })
+        } else {
+          // Text-only: SDK
+          text = await this.sdkGenerateContent(model, prompt!, { maxOutputTokens, temperature })
+        }
+
+        console.log(`[GEMINI] Success with model ${model}`)
+        return text
+      } catch (error) {
+        const status = this.getErrorStatus(error)
+
+        if (status === 429) {
+          console.warn(`[GEMINI] 429 rate limited on ${model}`)
+          return '__rate_limit__'
+        }
+
+        if (status === 503) {
+          if (attempt < RETRY_DELAYS.length) {
+            const delay = RETRY_DELAYS[attempt]
+            console.warn(`[GEMINI] 503 on ${model}, retry ${attempt + 1}/${RETRY_DELAYS.length} in ${delay}ms`)
+            await new Promise(r => setTimeout(r, delay))
+            continue
+          }
+          console.warn(`[GEMINI] 503 persistent on ${model}, rotating`)
+          return '__unavailable__'
+        }
+
+        // Non-retryable error — log and return null
+        console.error(`[GEMINI] Request failed on ${model}:`, error)
+        Sentry.captureException(error, { extra: { model } })
+        return null
+      }
+    }
+
+    return null
+  }
+
+  /** Raw fetch to Gemini API (for multimodal / parts requests). Throws on HTTP errors. */
+  private async fetchGenerateContent(
+    model: string,
+    options: { maxOutputTokens: number; temperature: number; parts: any[] }
+  ): Promise<string | null> {
+    const baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models'
+    const response = await fetch(
+      `${baseUrl}/${model}:generateContent?key=${this.apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: options.parts }],
+          generationConfig: { maxOutputTokens: options.maxOutputTokens, temperature: options.temperature },
+        }),
+      }
+    )
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      const err: any = new Error(`Gemini API ${response.status}: ${errorText.slice(0, 150)}`)
+      err.status = response.status
+      throw err
+    }
+
+    const result: any = await response.json()
+    return result.candidates?.[0]?.content?.parts?.[0]?.text || null
+  }
+
+  /** SDK-based text generation. Throws on errors (including HTTP errors from the SDK). */
+  private async sdkGenerateContent(
+    model: string,
+    prompt: string,
+    options: { maxOutputTokens: number; temperature: number }
+  ): Promise<string | null> {
+    const genModel = this.getModel(model)
+    const result = await genModel.generateContent({
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      generationConfig: { maxOutputTokens: options.maxOutputTokens, temperature: options.temperature },
+    })
+    return result.response.text().trim() || null
   }
 
   /** Strip markdown code blocks and parse JSON */
@@ -247,23 +368,23 @@ export default class GeminiHandler {
     const startTime = Date.now()
 
     try {
-      const model = this.getModel('gemini-2.5-flash-lite')
       const systemPrompt = this.buildExtractionPrompt(groupMembers, senderName)
+      const fullPrompt = `${systemPrompt}\n\nMensaje del usuario: "${message}"`
 
       console.log('[AI] Input:', message)
       console.log('[AI] Group members:', groupMembers.map(m => `${m.name} (${(m.aliases || []).join(', ')})`))
 
-      const result = await Promise.race([
-        model.generateContent([
-          { text: systemPrompt },
-          { text: `Mensaje del usuario: "${message}"` },
-        ]),
+      const responseText = await Promise.race([
+        this.generateContent(fullPrompt, { maxOutputTokens: 500, temperature: 0.7 }),
         new Promise<never>((_, reject) =>
           setTimeout(() => reject(new Error('AI request timed out')), AI_TIMEOUT_MS)
         ),
       ])
 
-      const responseText = result.response.text().trim()
+      if (!responseText) {
+        return { type: 'error', error: 'No response from AI' }
+      }
+
       console.log('[AI] Raw response:', responseText)
       console.log('[AI] Latency:', `${Date.now() - startTime}ms`)
 
@@ -570,23 +691,23 @@ IMPORTANT:
     const startTime = Date.now()
 
     try {
-      const model = this.getModel('gemini-2.5-flash-lite')
       const systemPrompt = this.buildPersonalExpensePrompt(userCategories)
+      const fullPrompt = `${systemPrompt}\n\nMensaje del usuario: "${message}"`
 
       console.log('[AI-FIN] Input:', message)
       console.log('[AI-FIN] User categories:', userCategories.join(', '))
 
-      const result = await Promise.race([
-        model.generateContent([
-          { text: systemPrompt },
-          { text: `Mensaje del usuario: "${message}"` },
-        ]),
+      const responseText = await Promise.race([
+        this.generateContent(fullPrompt, { maxOutputTokens: 500, temperature: 0.7 }),
         new Promise<never>((_, reject) =>
           setTimeout(() => reject(new Error('AI request timed out')), AI_TIMEOUT_MS)
         ),
       ])
 
-      const responseText = result.response.text().trim()
+      if (!responseText) {
+        return { type: 'error', error: 'No response from AI' }
+      }
+
       console.log('[AI-FIN] Raw response:', responseText)
       console.log('[AI-FIN] Latency:', `${Date.now() - startTime}ms`)
 
