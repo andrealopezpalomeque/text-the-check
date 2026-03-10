@@ -48,6 +48,7 @@ export interface AIUnknownResult {
   type: 'unknown'
   confidence: number
   suggestion?: string
+  isSupportQuestion: boolean
 }
 
 export interface AIErrorResult {
@@ -414,7 +415,7 @@ export default class GeminiHandler {
         default: return this.validateUnknownResult(parsed)
       }
     } catch {
-      return { type: 'unknown', confidence: 0, suggestion: 'No pude entender el mensaje' }
+      return { type: 'unknown', confidence: 0, suggestion: 'No pude entender el mensaje', isSupportQuestion: false }
     }
   }
 
@@ -455,6 +456,7 @@ export default class GeminiHandler {
       type: 'unknown',
       confidence: typeof p.confidence === 'number' ? Math.min(1, Math.max(0, p.confidence)) : 0.3,
       suggestion: typeof p.suggestion === 'string' ? p.suggestion : undefined,
+      isSupportQuestion: typeof p.isSupportQuestion === 'boolean' ? p.isSupportQuestion : false,
     }
   }
 
@@ -585,6 +587,12 @@ When you detect an exclusion pattern:
 
 Note: "menos yo" or "excepto yo" means the sender excludes themselves, so set includesSender: false and excludeFromSplit: []
 
+SUPPORT QUESTION DETECTION:
+- isSupportQuestion: true SOLO si el mensaje es claramente una pregunta general, saludo, consulta de soporte, o texto sin relación a un gasto/pago.
+- Ejemplos de isSupportQuestion=true: "hola", "cómo funciona esto", "necesito ayuda", "qué puedo hacer", "no entiendo"
+- Ejemplos de isSupportQuestion=false: "150", "pizza", "5 lucas", "le pagué a juan" (cualquier cosa que pueda ser un gasto o pago)
+- En caso de duda, usa false.
+
 RESPONSE FORMAT (strict JSON):
 
 For EXPENSE:
@@ -620,7 +628,8 @@ For UNKNOWN:
 {
   "type": "unknown",
   "confidence": <0.0 to 1.0>,
-  "suggestion": "<suggestion for user in Spanish>"
+  "suggestion": "<suggestion for user in Spanish>",
+  "isSupportQuestion": true | false
 }
 
 CONFIDENCE RULES:
@@ -671,7 +680,7 @@ Message: "/balance"
 {"type":"command","command":"balance","confidence":1.0}
 
 Message: "Hola"
-{"type":"unknown","confidence":0.1,"suggestion":"Hola! Para registrar un gasto, decime el monto y la descripción. Ej: 150 pizza"}
+{"type":"unknown","confidence":0.1,"suggestion":"Hola! Para registrar un gasto, decime el monto y la descripción. Ej: 150 pizza","isSupportQuestion":true}
 
 IMPORTANT:
 - Respond ONLY with the JSON, no additional text
@@ -733,7 +742,7 @@ IMPORTANT:
       if (parsed.type === 'personal_expense') return this.validatePersonalExpenseResult(parsed)
       return this.validateUnknownResult(parsed)
     } catch {
-      return { type: 'unknown', confidence: 0, suggestion: 'No pude entender el mensaje' }
+      return { type: 'unknown', confidence: 0, suggestion: 'No pude entender el mensaje', isSupportQuestion: false }
     }
   }
 
@@ -810,6 +819,12 @@ CATEGORY MATCHING:
 - If no category is specified or matched, use "Otros"
 - If a #hashtag is present, use it as the category hint
 
+SUPPORT QUESTION DETECTION:
+- isSupportQuestion: true SOLO si el mensaje es claramente una pregunta general, saludo, consulta de soporte, o texto sin relación a un gasto/pago.
+- Ejemplos de isSupportQuestion=true: "hola", "cómo funciona esto", "necesito ayuda", "qué puedo hacer", "no entiendo"
+- Ejemplos de isSupportQuestion=false: "150", "pizza", "5 lucas", "pagué el netflix" (cualquier cosa que pueda ser un gasto)
+- En caso de duda, usa false.
+
 RESPONSE FORMAT (strict JSON):
 
 For PERSONAL EXPENSE:
@@ -829,7 +844,8 @@ For UNKNOWN:
 {
   "type": "unknown",
   "confidence": <0.0 to 1.0>,
-  "suggestion": "<suggestion for user in Spanish>"
+  "suggestion": "<suggestion for user in Spanish>",
+  "isSupportQuestion": true | false
 }
 
 CONFIDENCE RULES:
@@ -865,7 +881,7 @@ Message: "monotributo"
 {"type":"personal_expense","amount":0,"currency":"ARS","title":"Monotributo","category":"Impuestos","description":"","isRecurrent":true,"frequency":"monthly","confidence":0.5}
 
 Message: "hola"
-{"type":"unknown","confidence":0.1,"suggestion":"Hola! Para registrar un gasto, decime el monto y la descripción. Ej: $500 café #comida"}
+{"type":"unknown","confidence":0.1,"suggestion":"Hola! Para registrar un gasto, decime el monto y la descripción. Ej: $500 café #comida","isSupportQuestion":true}
 
 IMPORTANT:
 - Respond ONLY with the JSON, no additional text

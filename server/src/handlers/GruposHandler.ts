@@ -11,7 +11,7 @@ import Fuse from 'fuse.js'
 import axios from 'axios'
 import { FieldValue } from 'firebase-admin/firestore'
 import { db } from '../config/firebase.js'
-import { sendMessage, downloadMedia } from '../helpers/whatsapp.js'
+import { sendMessage, sendButtons, downloadMedia } from '../helpers/whatsapp.js'
 import { normalizeForComparison, generatePhoneCandidates } from '../helpers/phone.js'
 import {
   isAffirmativeResponse, isNegativeResponse, isGreeting, formatGreetingResponse,
@@ -159,6 +159,7 @@ export default class GruposHandler {
   private pendingGroupSelections = new Map<string, PendingGroupSelection>()
   private pendingExpenses = new Map<string, PendingExpense>()
   private pendingAIExpenses = new Map<string, PendingAIExpense>()
+  private pendingSupportTexts = new Map<string, { text: string; expiresAt: number }>()
   private recentExpenseCache = new Map<string, string[]>()
 
   // Exchange rate cache
@@ -203,11 +204,25 @@ export default class GruposHandler {
 
   /** Clear all pending states for a user (called on mode switch). Returns true if any pending was cleared. */
   clearPendingStates(userId: string): boolean {
-    const hadPending = this.pendingAIExpenses.has(userId) || this.pendingGroupSelections.has(userId) || this.pendingExpenses.has(userId)
+    const hadPending = this.pendingAIExpenses.has(userId) || this.pendingGroupSelections.has(userId) || this.pendingExpenses.has(userId) || this.pendingSupportTexts.has(userId)
     this.pendingAIExpenses.delete(userId)
     this.pendingGroupSelections.delete(userId)
     this.pendingExpenses.delete(userId)
+    this.pendingSupportTexts.delete(userId)
     return hadPending
+  }
+
+  getPendingSupportText(userId: string): string | null {
+    const pending = this.pendingSupportTexts.get(userId)
+    if (!pending || Date.now() > pending.expiresAt) {
+      this.pendingSupportTexts.delete(userId)
+      return null
+    }
+    return pending.text
+  }
+
+  clearPendingSupportText(userId: string): void {
+    this.pendingSupportTexts.delete(userId)
   }
 
   // ─── Message dedup ──────────────────────────────────────────────
@@ -220,7 +235,7 @@ export default class GruposHandler {
 
   // ─── Main entry point ──────────────────────────────────────────
 
-  async handleMessage(from: string, messageType: string, messageData: any, user: User, contactName: string): Promise<void> {
+  async handleMessage(from: string, messageType: string, messageData: any, user: User, contactName: string, skipSupportDetection = false): Promise<void> {
     // Route non-text message types
     if (messageType === 'audio') {
       await this.processAudioMessage(from, messageData.audio?.id, user)
@@ -363,7 +378,18 @@ export default class GruposHandler {
           await this.handleAIPayment(from, aiResult, user, groupId, group?.name || '')
           return
         } else if (aiResult.type === 'unknown') {
-          // AI couldn't parse — show our formatted parse error (not raw AI suggestion)
+          // Check if it's a support question
+          if (aiResult.isSupportQuestion && !skipSupportDetection) {
+            this.pendingSupportTexts.set(user.id, {
+              text,
+              expiresAt: Date.now() + 5 * 60 * 1000,
+            })
+            await sendButtons(from, 'Parece que tenés una consulta. ¿Querés que te ayude?', [
+              { id: 'support_detect_ai', title: 'Soporte AI' },
+              { id: 'support_detect_expense', title: 'Registrar gasto' },
+            ])
+            return
+          }
           await sendMessage(from, formatParseError('grupos', { groupName: group?.name }))
           return
         }

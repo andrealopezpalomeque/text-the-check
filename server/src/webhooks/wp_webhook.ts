@@ -622,6 +622,41 @@ async function processMessage(message: any, contacts: any[]): Promise<void> {
       return
     }
 
+    // Smart support detection button responses
+    if (buttonId === 'support_detect_ai') {
+      createSupportSession(from)
+      await sendMessage(from, 'Escribí tu consulta y te ayudo.')
+      const user = await gruposHandler.getUserByPhone(from)
+      if (user) {
+        gruposHandler.clearPendingSupportText(user.id)
+        finanzasHandler.clearPendingSupportText(user.id)
+      }
+      return
+    }
+
+    if (buttonId === 'support_detect_expense') {
+      const user = await gruposHandler.getUserByPhone(from)
+      if (!user) {
+        await sendMessage(from, 'Escribí el gasto que querés registrar.')
+        return
+      }
+      const { mode } = await determineUserMode(from)
+      const originalText = mode === 'grupos'
+        ? gruposHandler.getPendingSupportText(user.id)
+        : finanzasHandler.getPendingSupportText(user.id)
+
+      if (originalText && mode === 'grupos') {
+        gruposHandler.clearPendingSupportText(user.id)
+        await gruposHandler.handleMessage(from, 'text', { type: 'text', text: { body: originalText } }, user, contactName, true)
+      } else if (originalText && mode === 'finanzas') {
+        finanzasHandler.clearPendingSupportText(user.id)
+        await finanzasHandler.handleMessage(from, 'text', { type: 'text', text: { body: originalText } }, contactName, true)
+      } else {
+        await sendMessage(from, 'Escribí el gasto que querés registrar.')
+      }
+      return
+    }
+
     // Unknown button — fall through to text handling
     // Some button responses might be handled by the mode handlers
   }

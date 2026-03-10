@@ -10,7 +10,7 @@
 import admin from 'firebase-admin'
 import * as Sentry from '@sentry/node'
 import { db } from '../config/firebase.js'
-import { sendMessage, downloadMedia } from '../helpers/whatsapp.js'
+import { sendMessage, sendButtons, downloadMedia } from '../helpers/whatsapp.js'
 import {
   formatAmount, formatNotLinkedError, formatHelpMessage,
   formatParseError, formatSaveError, formatMediaError,
@@ -98,6 +98,7 @@ function parseDateOrNow(dateStr: string | null | undefined): admin.firestore.Fie
 export default class FinanzasHandler {
   private gemini: GeminiHandler
   private pendingAIExpenses = new Map<string, PendingFinanzasExpense>()
+  private pendingSupportTexts = new Map<string, { text: string; expiresAt: number }>()
   private welcomedPhones = new Set<string>()
   private readonly AI_EXPENSE_TIMEOUT = 5 * 60 * 1000
 
@@ -142,14 +143,28 @@ export default class FinanzasHandler {
 
   /** Clear all pending states for a user (called on mode switch). Returns true if any pending was cleared. */
   clearPendingStates(userId: string): boolean {
-    const hadPending = this.pendingAIExpenses.has(userId)
+    const hadPending = this.pendingAIExpenses.has(userId) || this.pendingSupportTexts.has(userId)
     this.pendingAIExpenses.delete(userId)
+    this.pendingSupportTexts.delete(userId)
     return hadPending
+  }
+
+  getPendingSupportText(userId: string): string | null {
+    const pending = this.pendingSupportTexts.get(userId)
+    if (!pending || Date.now() > pending.expiresAt) {
+      this.pendingSupportTexts.delete(userId)
+      return null
+    }
+    return pending.text
+  }
+
+  clearPendingSupportText(userId: string): void {
+    this.pendingSupportTexts.delete(userId)
   }
 
   // ─── Main entry point ──────────────────────────────────────────
 
-  async handleMessage(from: string, messageType: string, messageData: any, contactName: string): Promise<void> {
+  async handleMessage(from: string, messageType: string, messageData: any, contactName: string, skipSupportDetection = false): Promise<void> {
     try {
       // Welcome message on first interaction
       if (await this.checkAndSendWelcome(from, contactName)) return
@@ -159,7 +174,7 @@ export default class FinanzasHandler {
 
       if (messageType === 'text') {
         const text = messageData.text?.body ?? messageData
-        await this.processTextMessage(from, typeof text === 'string' ? text : String(text), contactName, userId)
+        await this.processTextMessage(from, typeof text === 'string' ? text : String(text), contactName, userId, skipSupportDetection)
       } else if (messageType === 'audio') {
         await this.processAudioMessage(from, messageData.audio.id, contactName, userId)
       } else if (messageType === 'image') {
@@ -183,7 +198,7 @@ export default class FinanzasHandler {
 
   // ─── Text message routing ──────────────────────────────────────
 
-  private async processTextMessage(from: string, text: string, contactName: string, userId: string | null): Promise<void> {
+  private async processTextMessage(from: string, text: string, contactName: string, userId: string | null, skipSupportDetection = false): Promise<void> {
     const normalized = text.trim().toLowerCase()
 
     // 0. Empty message guard
@@ -240,7 +255,7 @@ export default class FinanzasHandler {
     }
 
     // 4. Expense parsing
-    await this.handleExpenseMessage(from, text, userId)
+    await this.handleExpenseMessage(from, text, userId, skipSupportDetection)
   }
 
   /** Check if phone is linked. Tries multiple format candidates. Returns userId (Firebase Auth UID) or null. */
@@ -469,7 +484,7 @@ export default class FinanzasHandler {
 
   // ─── Expense message parsing ───────────────────────────────────
 
-  private async handleExpenseMessage(phone: string, text: string, userId: string | null): Promise<void> {
+  private async handleExpenseMessage(phone: string, text: string, userId: string | null, skipSupportDetection = false): Promise<void> {
     if (!userId) { await sendMessage(phone, NOT_LINKED_MSG); return }
 
     if (!this.gemini.isAIEnabled()) {
@@ -483,6 +498,19 @@ export default class FinanzasHandler {
 
       if (aiResult.type === 'personal_expense' && aiResult.confidence >= this.gemini.getConfidenceThreshold() && aiResult.amount > 0) {
         await this.handleAIExpense(phone, userId, aiResult, text)
+        return
+      }
+
+      // Check for support question (before regex fallback)
+      if (aiResult.type === 'unknown' && aiResult.isSupportQuestion && !skipSupportDetection) {
+        this.pendingSupportTexts.set(userId, {
+          text,
+          expiresAt: Date.now() + 5 * 60 * 1000,
+        })
+        await sendButtons(phone, 'Parece que tenés una consulta. ¿Querés que te ayude?', [
+          { id: 'support_detect_ai', title: 'Soporte AI' },
+          { id: 'support_detect_expense', title: 'Registrar gasto' },
+        ])
         return
       }
 

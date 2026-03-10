@@ -98,6 +98,7 @@ export default defineNuxtConfig({
     }
   },
   routeRules: {
+    '/faq': { prerender: true },
     '/iniciar-sesion': { prerender: false },
     '/perfil': { prerender: false },
     '/grupos/**': { ssr: false },

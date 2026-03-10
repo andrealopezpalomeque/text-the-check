@@ -280,6 +280,14 @@ service cloud.firestore {
     }
 
     // ============================================
+    // ttc_faq Collection (public read)
+    // ============================================
+    match /ttc_faq/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // ============================================
     // Deny all other collections
     // ============================================
     match /{document=**} {

@@ -21,12 +21,20 @@
       </a>
 
       <!-- Links -->
-      <NuxtLink
-        to="/privacy"
-        class="text-xs text-ttc-text-dim hover:text-ttc-text transition-colors"
-      >
-        Politica de Privacidad
-      </NuxtLink>
+      <nav class="flex items-center gap-4 text-xs text-ttc-text-dim">
+        <NuxtLink
+          to="/faq"
+          class="hover:text-ttc-text transition-colors"
+        >
+          Preguntas frecuentes
+        </NuxtLink>
+        <NuxtLink
+          to="/privacy"
+          class="hover:text-ttc-text transition-colors"
+        >
+          Politica de Privacidad
+        </NuxtLink>
+      </nav>
 
       <!-- Domain -->
       <p class="text-xs text-ttc-text-dim">
