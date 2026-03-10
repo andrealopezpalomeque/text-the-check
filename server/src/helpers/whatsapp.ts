@@ -61,6 +61,66 @@ export async function sendMessage(to: string, text: string): Promise<SendMessage
 }
 
 /**
+ * Send an interactive button message via WhatsApp Business API.
+ * Max 3 buttons per WhatsApp API constraint.
+ */
+export async function sendButtons(
+  to: string,
+  body: string,
+  buttons: Array<{ id: string; title: string }>
+): Promise<SendMessageResponse> {
+  const apiToken = process.env.WHATSAPP_API_TOKEN
+  const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID
+
+  if (!apiToken || !phoneNumberId) {
+    console.log(`[SEND] Credentials not configured, would send buttons to ${to}: ${body.slice(0, 60)}...`)
+    return { success: false, error: 'WhatsApp credentials not configured' }
+  }
+
+  const normalizedTo = normalizeForSending(to)
+  const url = `https://graph.facebook.com/${GRAPH_API_VERSION}/${phoneNumberId}/messages`
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        messaging_product: 'whatsapp',
+        recipient_type: 'individual',
+        to: normalizedTo,
+        type: 'interactive',
+        interactive: {
+          type: 'button',
+          body: { text: body },
+          action: {
+            buttons: buttons.map((btn, i) => ({
+              type: 'reply',
+              reply: { id: btn.id || `btn_${i}`, title: btn.title },
+            })),
+          },
+        },
+      }),
+    })
+
+    const data: any = await response.json()
+
+    if (!response.ok) {
+      console.error('[SEND] WhatsApp buttons API error:', data)
+      return { success: false, error: data.error?.message || 'Unknown API error' }
+    }
+
+    console.log(`[SEND] Buttons sent to ${normalizedTo} (id: ${data.messages?.[0]?.id || 'unknown'})`)
+    return { success: true, messageId: data.messages?.[0]?.id }
+  } catch (error) {
+    console.error('[SEND] Error sending WhatsApp buttons:', error)
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
+  }
+}
+
+/**
  * Download media (audio/image/PDF) from WhatsApp Graph API.
  * Returns base64 + mimeType, or null on failure.
  */

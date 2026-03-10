@@ -20,7 +20,7 @@ import * as Sentry from '@sentry/node'
 
 import { db, admin } from '../config/firebase.js'
 import { normalizeForComparison, generatePhoneCandidates } from '../helpers/phone.js'
-import { sendMessage } from '../helpers/whatsapp.js'
+import { sendMessage, sendButtons } from '../helpers/whatsapp.js'
 import {
   formatOnboardingWelcome,
   formatOnboardingGruposAskName,
@@ -90,6 +90,184 @@ setInterval(() => {
     if (state.createdAt < fiveMinAgo) pendingOnboarding.delete(phone)
   }
 }, 60 * 1000)
+
+// ─── AI Support sessions ──────────────────────────────────────
+
+interface SupportSession {
+  timestamp: number
+  previousQA: Array<{ question: string; answer: string }>
+  lastQueryId: string | null
+  warningTimerId: ReturnType<typeof setTimeout> | null
+  expiryTimerId: ReturnType<typeof setTimeout> | null
+}
+
+const AI_SUPPORT_SESSION_TTL = 15 * 60 * 1000   // 15 min auto-end
+const AI_SUPPORT_WARNING_TTL = 12 * 60 * 1000   // 12 min warning (3 min before expiry)
+const SUPPORT_RATE_LIMIT = 10
+const SUPPORT_RATE_WINDOW = 60 * 60 * 1000      // 1 hour
+
+const activeSupportSessions = new Map<string, SupportSession>()
+const supportRateLimits = new Map<string, { count: number; resetAt: number }>()
+
+// FAQ cache (1 hour TTL)
+const FAQ_CACHE_TTL = 60 * 60 * 1000
+let faqCache: { data: Array<{ topic: string; question: string; answer: string }>; fetchedAt: number } | null = null
+
+async function getFaqData(): Promise<Array<{ topic: string; question: string; answer: string }>> {
+  if (faqCache && (Date.now() - faqCache.fetchedAt < FAQ_CACHE_TTL)) {
+    return faqCache.data
+  }
+
+  try {
+    const snapshot = await db.collection('ttc_faq').get()
+    const data = snapshot.docs.map(doc => {
+      const d = doc.data()
+      return { topic: d.topic as string, question: d.question as string, answer: d.answer as string }
+    })
+    faqCache = { data, fetchedAt: Date.now() }
+    return data
+  } catch (error) {
+    console.error('[SUPPORT] Error fetching FAQ data:', error)
+    return faqCache?.data || []
+  }
+}
+
+function checkSupportRateLimit(phone: string): boolean {
+  const now = Date.now()
+  const entry = supportRateLimits.get(phone)
+
+  if (!entry || now >= entry.resetAt) {
+    supportRateLimits.set(phone, { count: 1, resetAt: now + SUPPORT_RATE_WINDOW })
+    return true
+  }
+
+  if (entry.count >= SUPPORT_RATE_LIMIT) return false
+  entry.count++
+  return true
+}
+
+function createSupportSession(phone: string): SupportSession {
+  clearSupportSession(phone)
+  const session: SupportSession = {
+    timestamp: Date.now(),
+    previousQA: [],
+    lastQueryId: null,
+    warningTimerId: null,
+    expiryTimerId: null,
+  }
+  activeSupportSessions.set(phone, session)
+  resetSessionTimers(phone)
+  return session
+}
+
+function clearSupportSession(phone: string): void {
+  const session = activeSupportSessions.get(phone)
+  if (session) {
+    if (session.warningTimerId) clearTimeout(session.warningTimerId)
+    if (session.expiryTimerId) clearTimeout(session.expiryTimerId)
+    activeSupportSessions.delete(phone)
+  }
+}
+
+function resetSessionTimers(phone: string): void {
+  const session = activeSupportSessions.get(phone)
+  if (!session) return
+
+  if (session.warningTimerId) clearTimeout(session.warningTimerId)
+  if (session.expiryTimerId) clearTimeout(session.expiryTimerId)
+
+  session.warningTimerId = setTimeout(async () => {
+    if (activeSupportSessions.get(phone) === session) {
+      try {
+        await sendMessage(phone, 'El soporte se cerrará en 3 minutos. Escribí tu consulta o "salir" para terminar.')
+      } catch (err) {
+        console.error('[SUPPORT] Error sending session warning:', err)
+      }
+    }
+  }, AI_SUPPORT_WARNING_TTL)
+
+  session.expiryTimerId = setTimeout(async () => {
+    if (activeSupportSessions.get(phone) === session) {
+      activeSupportSessions.delete(phone)
+      try {
+        await sendMessage(phone, 'La sesión de soporte se cerró por inactividad. Escribí /ayuda cuando necesites.')
+      } catch (err) {
+        console.error('[SUPPORT] Error sending session expiry:', err)
+      }
+    }
+  }, AI_SUPPORT_SESSION_TTL)
+}
+
+async function handleAISupport(phone: string, question: string, session: SupportSession): Promise<void> {
+  // Rate limit
+  if (!checkSupportRateLimit(phone)) {
+    clearSupportSession(phone)
+    await sendMessage(phone, 'Alcanzaste el límite de consultas por hora (10). Intentá de nuevo más tarde.')
+    return
+  }
+
+  if (!gemini.isAIEnabled()) {
+    await sendMessage(phone, 'El soporte AI no está disponible en este momento.')
+    return
+  }
+
+  await sendMessage(phone, 'Buscando respuesta...')
+
+  const faqData = await getFaqData()
+  if (faqData.length === 0) {
+    await sendMessage(phone, 'No pude acceder a la información de soporte. Intentá más tarde.')
+    return
+  }
+
+  const conversationHistory = session.previousQA.slice(-3)
+  const result = await gemini.answerSupportQuestion(question, faqData, conversationHistory)
+
+  // Store query for analytics
+  let queryDocId: string | null = null
+  try {
+    const queryDoc = await db.collection('ttc_support_queries').add({
+      phoneNumber: phone,
+      question,
+      answer: result?.answer || null,
+      noAnswer: result?.noAnswer || false,
+      error: !result ? 'gemini_error' : null,
+      parentQueryId: session.lastQueryId || null,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    })
+    queryDocId = queryDoc.id
+  } catch (err) {
+    console.error('[SUPPORT] Error storing support query:', err)
+  }
+
+  // Handle Gemini errors
+  if (!result) {
+    clearSupportSession(phone)
+    await sendMessage(phone, 'El servicio de soporte no está disponible. Intentá más tarde.')
+    return
+  }
+
+  // Update session
+  session.previousQA.push({ question, answer: result.answer || '' })
+  session.lastQueryId = queryDocId
+  resetSessionTimers(phone)
+
+  // Handle "no answer" case
+  if (result.noAnswer) {
+    await sendMessage(phone, result.answer)
+    await sendButtons(phone, '¿Necesitás algo más?', [
+      { id: 'support_otra', title: 'Otra consulta' },
+      { id: 'support_listo', title: 'Listo, gracias' },
+    ])
+    return
+  }
+
+  // Successful answer
+  await sendMessage(phone, result.answer)
+  await sendButtons(phone, '¿Necesitás algo más?', [
+    { id: 'support_otra', title: 'Otra consulta' },
+    { id: 'support_listo', title: 'Listo, gracias' },
+  ])
+}
 
 const DEFAULT_CATEGORIES = [
   { name: 'Vivienda y Alquiler', color: '#4682B4' },
@@ -387,14 +565,82 @@ async function processMessage(message: any, contacts: any[]): Promise<void> {
       return
     }
 
-    // /ayuda or /help — unified help for users without a mode (with or without /)
+    // /ayuda or /help — two-step flow with buttons
     if (textLower === '/ayuda' || textLower === '/help' || textLower === 'ayuda' || textLower === 'help') {
       const { mode: userMode } = await determineUserMode(from)
       if (!userMode) {
         await sendMessage(from, `📖 *Cómo usar text the check*\n\nEste bot tiene dos modos:\n👥 *Grupos* — Dividir gastos con amigos\n📊 *Finanzas* — Registrar gastos personales\n\nMandá cualquier mensaje para empezar!\n\nUna vez configurado, usá /modo grupos o /modo finanzas para cambiar.`)
         return
       }
-      // Has mode — let it pass through to the handler-specific help
+      // Has mode — show button choice: Comandos vs Soporte AI
+      await sendButtons(from, '¿En qué te puedo ayudar?', [
+        { id: 'ayuda_comandos', title: 'Comandos' },
+        { id: 'ayuda_soporte', title: 'Soporte AI' },
+      ])
+      return
+    }
+  }
+
+  // ── Interactive button responses (before mode routing) ──
+
+  if (messageType === 'interactive') {
+    const buttonId = message.interactive?.button_reply?.id || ''
+
+    // /ayuda button responses
+    if (buttonId === 'ayuda_comandos') {
+      const { mode: userMode, user } = await determineUserMode(from)
+      if (userMode === 'grupos' && user) {
+        await gruposHandler.handleMessage(from, 'text', { type: 'text', text: { body: '/ayuda' } }, user, contactName)
+      } else if (userMode === 'finanzas') {
+        await finanzasHandler.handleMessage(from, 'text', { type: 'text', text: { body: 'ayuda' } }, contactName)
+      }
+      return
+    }
+
+    if (buttonId === 'ayuda_soporte') {
+      createSupportSession(from)
+      await sendMessage(from, 'Escribí tu consulta y te ayudo.')
+      return
+    }
+
+    // Support session button responses
+    if (buttonId === 'support_otra') {
+      const session = activeSupportSessions.get(from)
+      if (session) {
+        resetSessionTimers(from)
+        await sendMessage(from, 'Escribí tu consulta y te ayudo.')
+      } else {
+        createSupportSession(from)
+        await sendMessage(from, 'Escribí tu consulta y te ayudo.')
+      }
+      return
+    }
+
+    if (buttonId === 'support_listo') {
+      clearSupportSession(from)
+      await sendMessage(from, 'Listo! Si necesitás algo más, escribí /ayuda cuando quieras.')
+      return
+    }
+
+    // Unknown button — fall through to text handling
+    // Some button responses might be handled by the mode handlers
+  }
+
+  // ── Active support session check (before mode routing) ──
+
+  if (messageType === 'text') {
+    const textBody = (message.text?.body?.trim() || '').toLowerCase()
+    const session = activeSupportSessions.get(from)
+    if (session) {
+      // Exit commands
+      if (['salir', 'exit', 'listo', 'listo, gracias', 'listo gracias'].includes(textBody)) {
+        clearSupportSession(from)
+        await sendMessage(from, 'Listo! Si necesitás algo más, escribí /ayuda cuando quieras.')
+        return
+      }
+      // Route to support handler
+      await handleAISupport(from, message.text?.body?.trim() || '', session)
+      return
     }
   }
 

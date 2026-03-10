@@ -941,6 +941,70 @@ Responde directamente con el analisis, sin introduccion.`
     return text || 'No se pudo completar el analisis. Intenta nuevamente.'
   }
 
+  // ─── Support AI methods ────────────────────────────────────────
+
+  /** FAQ entry type for support questions */
+  async answerSupportQuestion(
+    question: string,
+    faqEntries: Array<{ topic: string; question: string; answer: string }>,
+    conversationHistory: Array<{ question: string; answer: string }> = []
+  ): Promise<{ answer: string; noAnswer: boolean } | null> {
+    const faqContext = faqEntries
+      .map(entry => `Tema: ${entry.topic}\nPregunta: ${entry.question}\nRespuesta: ${entry.answer}`)
+      .join('\n\n---\n\n')
+
+    let historyBlock = ''
+    if (conversationHistory.length > 0) {
+      const recent = conversationHistory.slice(-3)
+      historyBlock = '\nConversacion previa:\n' +
+        recent.map(qa => `Usuario: ${qa.question}\nAsistente: ${qa.answer}`).join('\n\n') +
+        '\n'
+    }
+
+    const prompt = `Sos un asistente de soporte de "text the check", una app financiera para Argentina/Latinoamérica con dos modos:
+
+Contexto de la plataforma:
+- *Grupos*: dividir gastos entre amigos (tipo Splitwise). Se registran gastos por WhatsApp, se dividen automáticamente, se pueden hacer @menciones para dividir entre personas específicas, "todos menos X", pagos entre personas, ver balances.
+- *Finanzas*: registrar gastos personales. Se pueden enviar textos, audios, fotos de comprobantes o PDFs. Categorización automática, gastos fijos/recurrentes, resúmenes mensuales, análisis financiero con IA.
+- El usuario interactúa principalmente por WhatsApp enviando mensajes al bot.
+- También hay un dashboard web en textthecheck.app donde se pueden ver y editar gastos.
+- Comandos disponibles: /ayuda, /balance, /lista, /grupo, /modo, /resumen, /fijos, /categorias, /analisis, /borrar
+- Para vincular WhatsApp: generar código en la app → enviar "VINCULAR <código>" por WhatsApp
+- Se puede cambiar entre modos con /modo grupos o /modo finanzas
+
+Tu rol es responder consultas usando UNICAMENTE la información del FAQ y el contexto de arriba. No inventes información.
+
+Reglas:
+- Respondé en español argentino informal (vos, tenés, podés, etc.)
+- Sé conciso y claro (máximo 3-4 oraciones)
+- Si la pregunta no se puede responder con el FAQ ni el contexto, respondé con "noAnswer": true y en "answer" poné un mensaje amable indicando que no tenés esa información
+- No uses formato HTML, solo texto plano y *negritas* para énfasis
+- Si el usuario pregunta sobre precios o costos del servicio, respondé con "noAnswer": true
+- Siempre referite a la plataforma como "text the check"
+- Sé amable y empático. Si el usuario está frustrado, reconocé su situación antes de responder
+- Nunca prometas funcionalidades futuras ni des información que no está en el FAQ
+- Usá un tono cercano y profesional, como un compañero de trabajo que te ayuda
+
+FAQ:
+${faqContext}
+${historyBlock}
+Pregunta del usuario: "${question}"
+
+Respondé SOLO con JSON válido en este formato:
+{"answer": "tu respuesta", "noAnswer": false}
+
+Si no podés responder:
+{"answer": "mensaje amable", "noAnswer": true}`
+
+    const text = await this.generateContent(prompt, {
+      maxOutputTokens: 500,
+      temperature: 0.3,
+    })
+
+    if (!text) return null
+    return this.parseJSON<{ answer: string; noAnswer: boolean }>(text, 'answerSupportQuestion')
+  }
+
   /** Weekly summary insight */
   async getWeeklyInsight(weeklyStats: {
     pastWeek: { count: number; amount: number; paidCount: number; unpaidCount: number; unpaidAmount: number }

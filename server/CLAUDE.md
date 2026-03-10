@@ -213,6 +213,7 @@ Shared: `ttc_user`
 Auth: `ttc_otp` (OTP codes, keyed by normalized phone, 5-min expiry checked at read time)
 Grupos: `ttc_group`, `ttc_expense`, `ttc_payment`
 Finanzas: `ttc_finanzas_payment`, `ttc_finanzas_recurring`, `ttc_finanzas_category`, `ttc_finanzas_template`, `pt_whatsapp_link`
+Support: `ttc_faq` (FAQ entries, seeded via `npm run seed:faq`), `ttc_support_queries` (analytics, auto-created)
 
 ## Scripts
 

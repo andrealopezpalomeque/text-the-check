@@ -13,7 +13,8 @@
     "typecheck": "tsc --noEmit",
     "reminders:morning": "tsx src/scripts/send-reminders.ts --mode morning",
     "reminders:evening": "tsx src/scripts/send-reminders.ts --mode evening",
-    "weekly-summary": "tsx src/scripts/send-weekly-summary.ts"
+    "weekly-summary": "tsx src/scripts/send-weekly-summary.ts",
+    "seed:faq": "tsx src/scripts/seed-faq.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
