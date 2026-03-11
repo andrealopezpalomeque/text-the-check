@@ -68,7 +68,7 @@
 
       <!-- Message -->
       <h1 class="error-title" :class="{ 'error-title--entered': entered }">
-        {{ is404 ? 'Esta pagina se nos perdio' : 'Algo salio mal' }}
+        {{ is404 ? 'Esta página se nos perdió' : 'Algo salió mal' }}
       </h1>
 
       <p class="error-subtitle" :class="{ 'error-subtitle--entered': entered }">
@@ -84,7 +84,7 @@
           Ir al inicio
         </button>
         <button class="btn-ghost" @click="goBack">
-          Volver atras
+          Volver atrás
         </button>
       </div>
 

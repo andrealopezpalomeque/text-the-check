@@ -21,7 +21,7 @@
           to="/privacy"
           class="hover:text-ttc-text transition-colors"
         >
-          Politica de Privacidad
+          Política de Privacidad
         </NuxtLink>
         <a
           href="https://www.instagram.com/textthecheck"

@@ -79,7 +79,7 @@
               title="Tu Actividad Reciente"
               show-user-share
               show-add-button
-              empty-message="No tenes actividad aun"
+              empty-message="No tenés actividad aún"
               @add-expense="openExpenseModal"
               @edit-expense="handleEditExpense"
               @delete-expense="confirmDeleteExpense"
@@ -342,7 +342,7 @@ const expenseToDelete = ref(null)
 
 const deleteConfirmMessage = computed(() => {
   if (!expenseToDelete.value) return ''
-  return `¿Estas seguro de que queres eliminar "${expenseToDelete.value.description}" por ${formatCurrency(expenseToDelete.value.amount)}? Esta accion no se puede deshacer.`
+  return `¿Estás seguro de que querés eliminar "${expenseToDelete.value.description}" por ${formatCurrency(expenseToDelete.value.amount)}? Esta acción no se puede deshacer.`
 })
 
 const confirmDeleteExpense = (expense) => {

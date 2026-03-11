@@ -209,7 +209,7 @@
             <!-- No payment info -->
             <div v-else class="flex items-center gap-2 text-sm text-ttc-text-muted bg-ttc-bg rounded-lg px-3 py-2">
               <IconInformation class="w-4 h-4 flex-shrink-0" />
-              <span>{{ creditorFirstName }} no agrego datos de pago aun</span>
+              <span>{{ creditorFirstName }} no agregó datos de pago aún</span>
             </div>
           </div>
 

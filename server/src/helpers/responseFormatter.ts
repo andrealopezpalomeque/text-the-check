@@ -146,10 +146,10 @@ export function formatRelativeDate(date: Date): string {
 }
 
 export function formatDueDate(daysUntilDue: number): string {
-  if (daysUntilDue < 0) return `vencido hace ${Math.abs(daysUntilDue)} dias`
+  if (daysUntilDue < 0) return `vencido hace ${Math.abs(daysUntilDue)} días`
   if (daysUntilDue === 0) return 'vence hoy'
-  if (daysUntilDue === 1) return 'vence manana'
-  return `vence en ${daysUntilDue} dias`
+  if (daysUntilDue === 1) return 'vence mañana'
+  return `vence en ${daysUntilDue} días`
 }
 
 export function getCategoryEmoji(category: string): string {
@@ -370,23 +370,23 @@ export function formatPaymentNotification(amount: number, recorderName: string, 
 
 export function formatOnboardingWelcome(name: string): string {
   const greeting = name && name !== 'Usuario' ? `Hola ${name}!` : 'Hola!'
-  return `👋 ${bold(greeting)} Bienvenido a ${bold(BRAND_NAME)}\n\nQue queres hacer?\n\n1️⃣ Dividir gastos con amigos\n2️⃣ Mis finanzas personales`
+  return `👋 ${bold(greeting)} Bienvenido a ${bold(BRAND_NAME)}\n\n¿Qué querés hacer?\n\n1️⃣ Dividir gastos con amigos\n2️⃣ Mis finanzas personales`
 }
 
 export function formatOnboardingGruposAskName(): string {
-  return `👥 ${bold('Genial! Vamos a crear tu primer grupo.')}\n\nComo se llama? (ej: "Viaje a Bariloche", "Depto")`
+  return `👥 ${bold('¡Genial! Vamos a crear tu primer grupo.')}\n\n¿Cómo se llama? (ej: "Viaje a Bariloche", "Depto")`
 }
 
 export function formatOnboardingGruposCreated(groupName: string, inviteLink: string): string {
-  return `✅ ${bold(`Grupo "${groupName}" creado!`)}\n\nInvita a tus amigos con este link:\n${inviteLink}\n\nYa podes registrar gastos. Ej: "Pague 5000 la cena"`
+  return `✅ ${bold(`Grupo "${groupName}" creado!`)}\n\nInvitá a tus amigos con este link:\n${inviteLink}\n\nYa podés registrar gastos. Ej: "Pagué 5000 la cena"`
 }
 
 export function formatOnboardingFinanzasReady(): string {
-  return `✅ ${bold('Listo! Ya estas configurado.')}\n\nConta tu primer gasto. Ej:\n"Gaste 2500 en el super"\n"5000 nafta"\n"Pague 1200 cafe"`
+  return `✅ ${bold('¡Listo! Ya estás configurado.')}\n\nContá tu primer gasto. Ej:\n"Gasté 2500 en el super"\n"5000 nafta"\n"Pagué 1200 café"`
 }
 
 export function formatOnboardingReprompt(): string {
-  return `No entendi. Responde con:\n\n1️⃣ Dividir gastos con amigos\n2️⃣ Mis finanzas personales`
+  return `No entendí. Respondé con:\n\n1️⃣ Dividir gastos con amigos\n2️⃣ Mis finanzas personales`
 }
 
 // ─── Payment Messages ───────────────────────────────────────────

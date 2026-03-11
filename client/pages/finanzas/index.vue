@@ -187,7 +187,7 @@
               <td colspan="100%" class="py-16 text-center">
                 <MdiCashOff class="text-6xl mx-auto mb-4 text-ttc-text-dim" />
                 <p class="text-lg font-nunito font-bold text-ttc-text mb-2">No tenés pagos fijos</p>
-                <p class="text-sm text-ttc-text-muted mb-6 max-w-md mx-auto">Agrega tus pagos fijos como Netflix, internet, alquiler y mas para llevar un control mensual de tus gastos.</p>
+                <p class="text-sm text-ttc-text-muted mb-6 max-w-md mx-auto">Agregá tus pagos fijos como Netflix, internet, alquiler y más para llevar un control mensual de tus gastos.</p>
                 <button @click="showNewPaymentModal" class="px-4 py-2.5 bg-ttc-primary hover:bg-ttc-primary/90 text-white font-medium rounded-btn transition-colors">Agregar Primer Pago</button>
               </td>
             </tr>
@@ -284,7 +284,7 @@
           v-if="recurrents.length === 0"
           :icon="MdiCashOff"
           title="No tenés pagos fijos"
-          description="Agrega tus pagos fijos como Netflix, internet, alquiler y mas para llevar un control mensual de tus gastos."
+          description="Agregá tus pagos fijos como Netflix, internet, alquiler y más para llevar un control mensual de tus gastos."
           action-label="Agregar Primer Pago"
           @action="showNewPaymentModal"
         />

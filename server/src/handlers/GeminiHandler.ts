@@ -798,7 +798,7 @@ RECURRENT DETECTION RULES:
 - Keywords: "mensual", "semanal", "quincenal", "anual", "todos los meses", "cada mes", "por mes"
 - Service heuristics (auto-detect as monthly if title matches):
   netflix, spotify, disney, hbo, amazon prime, youtube premium,
-  luz, gas, agua, internet, telefono, celular,
+  luz, gas, agua, internet, teléfono, celular,
   alquiler, expensas, gym, gimnasio, monotributo, prepaga, obra social, seguro, abono
 - frequency: "monthly" | "weekly" | "biweekly" | "yearly" | null
 
@@ -898,7 +898,7 @@ IMPORTANT:
   /** Audio transcription + expense extraction */
   async transcribeAudio(base64: string, mimeType: string, userCategories: string[] = []): Promise<TranscriptionResult | null> {
     const categoriesList = userCategories.length > 0
-      ? `Categorias del usuario: ${userCategories.join(', ')}`
+      ? `Categorías del usuario: ${userCategories.join(', ')}`
       : ''
 
     const today = new Date().toISOString().slice(0, 10)
@@ -907,25 +907,25 @@ IMPORTANT:
     const parts = [
       { inlineData: { mimeType, data: base64 } },
       {
-        text: `Transcribi este audio en español argentino. El audio describe un gasto o compra.
+        text: `Transcribí este audio en español argentino. El audio describe un gasto o compra.
 Hoy es ${today} (año ${year}).
 
-Extrae la siguiente informacion y devolvela SOLO como JSON valido, sin markdown ni texto extra:
+Extraé la siguiente información y devolvela SOLO como JSON válido, sin markdown ni texto extra:
 {
   "transcription": "texto completo transcrito",
-  "title": "titulo corto del gasto (max 30 chars)",
+  "title": "título corto del gasto (max 30 chars)",
   "items": ["item1", "item2"],
   "totalAmount": 0,
-  "description": "descripcion breve si la hay",
-  "category": "categoria sugerida",
+  "description": "descripción breve si la hay",
+  "category": "categoría sugerida",
   "date": "fecha en formato YYYY-MM-DD o null"
 }
 
 ${categoriesList}
 
-Si no podes determinar el monto, usa 0.
-Si no podes determinar la categoria, usa "Otros".
-El titulo debe ser conciso y descriptivo.
+Si no podés determinar el monto, usa 0.
+Si no podés determinar la categoría, usa "Otros".
+El título debe ser conciso y descriptivo.
 Si el audio menciona una fecha (ej: "ayer", "el martes", "el 5"), convertila a YYYY-MM-DD usando la fecha de hoy como referencia. Si no menciona fecha, usa null.`
       },
     ]
@@ -946,7 +946,7 @@ Si el audio menciona una fecha (ej: "ayer", "el martes", "el 5"), convertila a Y
         text: `Analiza este comprobante de pago o transferencia bancaria argentina.
 Hoy es ${today}.
 
-Extrae la siguiente informacion y devolvela SOLO como JSON valido, sin markdown ni texto extra:
+Extraé la siguiente información y devolvela SOLO como JSON válido, sin markdown ni texto extra:
 {
   "amount": 0,
   "recipientName": "nombre del destinatario o comercio",
@@ -955,18 +955,18 @@ Extrae la siguiente informacion y devolvela SOLO como JSON valido, sin markdown 
   "recipientBank": "banco del destinatario",
   "senderBank": "banco del emisor",
   "date": "fecha en formato YYYY-MM-DD",
-  "reference": "numero de referencia o comprobante",
-  "concept": "concepto o categoria si aparece"
+  "reference": "número de referencia o comprobante",
+  "concept": "concepto o categoría si aparece"
 }
 
 IMPORTANTE sobre montos argentinos:
 - Los montos usan punto como separador de miles: $67.506 = sesenta y siete mil quinientos seis
 - Los decimales a veces aparecen en tamaño chico/superindice al lado del monto principal. Ej: "$67.506⁰⁸" o "$67.506,08" significa 67506.08 (sesenta y siete mil quinientos seis con 08 centavos)
 - NUNCA interpretes los puntos como decimales. En Argentina el punto es separador de miles.
-- El monto debe ser un numero con decimales si los hay (ej: 67506.08), sin signos ni separadores de miles.
+- El monto debe ser un número con decimales si los hay (ej: 67506.08), sin signos ni separadores de miles.
 
-Si la fecha no muestra año, asumi ${year}.
-Si algun campo no esta visible o no se puede determinar, usa null.`
+Si la fecha no muestra año, asumí ${year}.
+Si algún campo no está visible o no se puede determinar, usa null.`
       },
     ]
 
@@ -986,7 +986,7 @@ Si algun campo no esta visible o no se puede determinar, usa null.`
         text: `Analiza este comprobante de pago o transferencia bancaria argentina en PDF.
 Hoy es ${today}.
 
-Extrae la siguiente informacion y devolvela SOLO como JSON valido, sin markdown ni texto extra:
+Extraé la siguiente información y devolvela SOLO como JSON válido, sin markdown ni texto extra:
 {
   "amount": 0,
   "recipientName": "nombre del destinatario o comercio",
@@ -995,18 +995,18 @@ Extrae la siguiente informacion y devolvela SOLO como JSON valido, sin markdown 
   "recipientBank": "banco del destinatario",
   "senderBank": "banco del emisor",
   "date": "fecha en formato YYYY-MM-DD",
-  "reference": "numero de referencia o comprobante",
-  "concept": "concepto o categoria si aparece"
+  "reference": "número de referencia o comprobante",
+  "concept": "concepto o categoría si aparece"
 }
 
 IMPORTANTE sobre montos argentinos:
 - Los montos usan punto como separador de miles: $67.506 = sesenta y siete mil quinientos seis
 - Los decimales a veces aparecen en tamaño chico/superindice al lado del monto principal. Ej: "$67.506⁰⁸" o "$67.506,08" significa 67506.08 (sesenta y siete mil quinientos seis con 08 centavos)
 - NUNCA interpretes los puntos como decimales. En Argentina el punto es separador de miles.
-- El monto debe ser un numero con decimales si los hay (ej: 67506.08), sin signos ni separadores de miles.
+- El monto debe ser un número con decimales si los hay (ej: 67506.08), sin signos ni separadores de miles.
 
-Si la fecha no muestra año, asumi ${year}.
-Si algun campo no esta visible o no se puede determinar, usa null.`
+Si la fecha no muestra año, asumí ${year}.
+Si algún campo no está visible o no se puede determinar, usa null.`
       },
     ]
 
@@ -1019,13 +1019,13 @@ Si algun campo no esta visible o no se puede determinar, usa null.`
   async categorizeExpense(title: string, description: string, userCategories: string[] = []): Promise<string> {
     if (userCategories.length === 0) return 'Otros'
 
-    const prompt = `Clasifica este gasto en una de las categorias del usuario.
+    const prompt = `Clasifica este gasto en una de las categorías del usuario.
 
 Gasto: "${title}"${description ? ` - ${description}` : ''}
 
-Categorias disponibles: ${userCategories.join(', ')}
+Categorías disponibles: ${userCategories.join(', ')}
 
-Responde SOLO con el nombre exacto de la categoria que mejor aplique. Si ninguna aplica, responde "Otros".`
+Responde SOLO con el nombre exacto de la categoría que mejor aplique. Si ninguna aplica, responde "Otros".`
 
     const text = await this.generateContent(prompt, { maxOutputTokens: 50, temperature: 0.2 })
     if (!text) return 'Otros'
@@ -1054,7 +1054,7 @@ DATOS DEL USUARIO:
 GASTOS POR MES:
 ${Object.entries(dataSummary.monthlyData).map(([month, info]) =>
   `${month}: $${info.total.toLocaleString('es-AR')} (${info.count} pagos)
-   Categorias: ${Object.entries(info.byCategory).map(([cat, amt]) => `${cat}: $${(amt as number).toLocaleString('es-AR')}`).join(', ')}`
+   Categorías: ${Object.entries(info.byCategory).map(([cat, amt]) => `${cat}: $${(amt as number).toLocaleString('es-AR')}`).join(', ')}`
 ).join('\n\n')}
 
 GASTOS FIJOS PRINCIPALES:
@@ -1062,20 +1062,20 @@ ${dataSummary.recurrents.map(r => `- ${r.title}: $${r.amount.toLocaleString('es-
 
 INSTRUCCIONES:
 1. Analiza tendencias de gasto (subiendo, bajando, estable)
-2. Identifica categorias con mayor gasto. Identifica posible gastos irresponsables, evitables o anomalos
-3. Evalua la proporcion de gastos fijos vs variables
-4. Da 2-3 consejos practicos y especificos
-5. Usa un tono amigable y motivador. No marques errores ni juzgues los habitos. Sos el aliado que quiere ayudar.
+2. Identifica categorías con mayor gasto. Identifica posibles gastos irresponsables, evitables o anómalos
+3. Evaluá la proporción de gastos fijos vs variables
+4. Da 2-3 consejos prácticos y específicos
+5. Usa un tono amigable y motivador. No marques errores ni juzgues los hábitos. Sos el aliado que quiere ayudar.
 6. NO uses emojis
-7. Responde en espanol argentino
-8. Manten la respuesta CORTA (max 800 caracteres) para WhatsApp
+7. Responde en español argentino
+8. Mantené la respuesta CORTA (max 800 caracteres) para WhatsApp
 9. Usa *asteriscos* para negritas
-10. Si aplica, haz notar algun patron interesante en los datos
+10. Si aplica, haz notar algún patrón interesante en los datos
 
-Responde directamente con el analisis, sin introduccion.`
+Responde directamente con el análisis, sin introducción.`
 
     const text = await this.generateContent(prompt, { maxOutputTokens: 500, temperature: 0.7 })
-    return text || 'No se pudo completar el analisis. Intenta nuevamente.'
+    return text || 'No se pudo completar el análisis. Intentá nuevamente.'
   }
 
   // ─── Support AI methods ────────────────────────────────────────
@@ -1093,7 +1093,7 @@ Responde directamente con el analisis, sin introduccion.`
     let historyBlock = ''
     if (conversationHistory.length > 0) {
       const recent = conversationHistory.slice(-3)
-      historyBlock = '\nConversacion previa:\n' +
+      historyBlock = '\nConversación previa:\n' +
         recent.map(qa => `Usuario: ${qa.question}\nAsistente: ${qa.answer}`).join('\n\n') +
         '\n'
     }
@@ -1105,7 +1105,7 @@ Contexto de la plataforma:
 - *Finanzas*: registrar gastos personales. Se pueden enviar textos, audios, fotos de comprobantes o PDFs. Categorización automática, gastos fijos/recurrentes, resúmenes mensuales, análisis financiero con IA.
 - El usuario interactúa principalmente por WhatsApp enviando mensajes al bot.
 - También hay un dashboard web en textthecheck.app donde se pueden ver y editar gastos.
-- Comandos disponibles: /ayuda, /balance, /lista, /grupo, /modo, /resumen, /fijos, /categorias, /analisis, /borrar
+- Comandos disponibles: /ayuda, /balance, /lista, /grupo, /modo, /resumen, /fijos, /categorías, /análisis, /borrar
 - Para vincular WhatsApp: generar código en la app → enviar "VINCULAR <código>" por WhatsApp
 - Se puede cambiar entre modos con /modo grupos o /modo finanzas
 

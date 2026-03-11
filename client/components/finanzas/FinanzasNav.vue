@@ -50,7 +50,7 @@
           class="nav-tab"
           :class="{ 'nav-tab-active': route.path === '/finanzas/pagos-unicos' }"
         >
-          <span class="flex items-center gap-2"><span class="hidden sm:inline">Pagos</span> Unicos</span>
+          <span class="flex items-center gap-2"><span class="hidden sm:inline">Pagos</span> Únicos</span>
         </NuxtLink>
         <NuxtLink
           to="/finanzas/resumen"
@@ -64,7 +64,7 @@
           class="nav-tab"
           :class="{ 'nav-tab-active': route.path === '/finanzas/categorias' }"
         >
-          Categorias
+          Categorías
         </NuxtLink>
       </nav>
     </div>

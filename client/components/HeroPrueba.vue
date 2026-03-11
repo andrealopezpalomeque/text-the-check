@@ -40,7 +40,7 @@
 
           <!-- Subtitle -->
           <p class="mt-5 font-body text-base md:text-lg text-ttc-text-muted leading-relaxed max-w-[480px] mx-auto lg:mx-0 animate-fade-up" style="animation-delay: 0.2s;">
-            Dividi cuentas con amigos, registra gastos diarios y recibi resumenes inteligentes. Todo con un simple mensaje.
+            Dividí cuentas con amigos, registrá gastos diarios y recibí resúmenes inteligentes. Todo con un simple mensaje.
           </p>
 
           <!-- Buttons -->
@@ -58,7 +58,7 @@
                 @click="scrollToComoFunciona"
                 class="inline-flex items-center justify-center gap-2 w-[200px] border border-ttc-border bg-transparent text-ttc-text rounded-xl py-3.5 font-body text-sm font-semibold hover:bg-ttc-card hover:border-ttc-text-dim transition-colors cursor-pointer"
               >
-                Ver como funciona
+                Ver cómo funciona
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
               </button>
             </div>
@@ -141,7 +141,7 @@
                   </div>
                   <div>
                     <p class="font-outfit font-semibold text-xs tracking-[3px] text-ttc-text leading-tight">text <span class="text-ttc-primary">the</span> check</p>
-                    <p class="font-body text-[10px] text-ttc-accent leading-tight">en linea</p>
+                    <p class="font-body text-[10px] text-ttc-accent leading-tight">en línea</p>
                   </div>
                 </div>
 
@@ -175,7 +175,7 @@
                 <!-- Input bar -->
                 <div class="px-3 py-2 border-t border-ttc-border">
                   <div class="flex items-center gap-2 rounded-full border border-ttc-border bg-ttc-surface px-3 py-1.5">
-                    <span class="flex-1 font-body text-[10px] text-ttc-text-muted">Escribi un mensaje...</span>
+                    <span class="flex-1 font-body text-[10px] text-ttc-text-muted">Escribí un mensaje...</span>
                     <div :class="['w-5 h-5 rounded-full flex items-center justify-center transition-colors duration-500', activeMode === 'viajes' ? 'bg-ttc-primary' : 'bg-ttc-accent']">
                       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                     </div>
@@ -245,16 +245,16 @@ let modeInterval = null
 
 const chatData = {
   viajes: [
-    { sender: 'user', text: 'Pague 12.000 la cena para todos', time: '21:32' },
+    { sender: 'user', text: 'Pagué 12.000 la cena para todos', time: '21:32' },
     { sender: 'bot', text: 'Listo, gasto registrado! Gonza, Mili y Sofi te deben $3.000 c/u.', time: '21:32' },
-    { sender: 'user', text: 'Cuanto me deben en total?', time: '21:33' },
+    { sender: 'user', text: 'Cuánto me deben en total?', time: '21:33' },
     { sender: 'bot', text: 'Te deben $14.500 en total. Gonza: $6.500, Mili: $4.000, Sofi: $4.000.', time: '21:33' },
   ],
   finanzas: [
-    { sender: 'user', text: 'Gaste 2.500 en el super', time: '18:15' },
-    { sender: 'bot', text: 'Registrado en Supermercado. Llevas $18.200 esta semana.', time: '18:15' },
-    { sender: 'user', text: 'Como vengo este mes?', time: '18:16' },
-    { sender: 'bot', text: 'Llevas $85.400 de $120.000. Vas bien, te quedan 12 dias.', time: '18:16' },
+    { sender: 'user', text: 'Gasté 2.500 en el super', time: '18:15' },
+    { sender: 'bot', text: 'Registrado en Supermercado. Llevás $18.200 esta semana.', time: '18:15' },
+    { sender: 'user', text: 'Cómo vengo este mes?', time: '18:16' },
+    { sender: 'bot', text: 'Llevás $85.400 de $120.000. Vas bien, te quedan 12 días.', time: '18:16' },
   ],
 }
 

@@ -193,7 +193,7 @@
             <span class="text-xs text-ttc-text-dim">este mes</span>
           </div>
           <div class="flex flex-col p-3 bg-ttc-surface rounded-lg">
-            <span class="text-xs text-ttc-text-muted">Gastos Unicos</span>
+            <span class="text-xs text-ttc-text-muted">Gastos Únicos</span>
             <span class="text-xl font-bold">{{ stats.oneTimeCount }}</span>
             <span class="text-xs text-ttc-text-dim font-mono tabular-nums">{{ formatPrice(stats.oneTimeAmount) }}</span>
           </div>

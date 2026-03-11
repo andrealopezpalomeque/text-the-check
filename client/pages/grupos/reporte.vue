@@ -13,7 +13,7 @@
       <div class="w-16 h-16 rounded-full bg-ttc-card flex items-center justify-center mx-auto mb-4">
         <IconBarChart3 class="w-8 h-8 text-gray-400" />
       </div>
-      <p class="text-ttc-text-muted mb-4">No hay gastos registrados todavia</p>
+      <p class="text-ttc-text-muted mb-4">No hay gastos registrados todavía</p>
       <NuxtLink
         to="/"
         class="inline-flex items-center gap-2 px-4 py-2 bg-ttc-primary hover:bg-ttc-primary-light text-white font-medium rounded-lg transition-colors"
@@ -62,7 +62,7 @@
             {{ formatDateRange(firstExpenseDate, lastExpenseDate) }}
           </p>
           <p class="text-sm text-ttc-text-muted">
-            {{ tripDays }} dias · {{ memberCount }} personas · {{ expenseCount }} gastos
+            {{ tripDays }} días · {{ memberCount }} personas · {{ expenseCount }} gastos
           </p>
         </div>
 
@@ -270,7 +270,7 @@
                 <IconTrendingUp class="w-4 h-4 text-red-600 dark:text-red-400" />
               </div>
               <div>
-                <p class="text-sm text-ttc-text-muted">Gasto mas grande</p>
+                <p class="text-sm text-ttc-text-muted">Gasto más grande</p>
                 <p class="font-mono text-ttc-text">
                   {{ formatCurrency(biggestExpense.amount) }} - {{ biggestExpense.description }}
                   <span class="text-ttc-text-muted">({{ biggestExpense.userName }})</span>
@@ -284,7 +284,7 @@
                 <IconCalendarX class="w-4 h-4 text-orange-600 dark:text-orange-400" />
               </div>
               <div>
-                <p class="text-sm text-ttc-text-muted">Dia mas caro</p>
+                <p class="text-sm text-ttc-text-muted">Día más caro</p>
                 <p class="font-mono text-ttc-text">
                   {{ formatFullDate(mostExpensiveDay.dateKey) }} - {{ formatCurrency(mostExpensiveDay.total) }}
                 </p>
@@ -297,7 +297,7 @@
                 <IconPiggyBank class="w-4 h-4 text-green-600 dark:text-green-400" />
               </div>
               <div>
-                <p class="text-sm text-ttc-text-muted">Dia mas barato</p>
+                <p class="text-sm text-ttc-text-muted">Día más barato</p>
                 <p class="font-mono text-ttc-text">
                   {{ formatFullDate(cheapestDay.dateKey) }} - {{ formatCurrency(cheapestDay.total) }}
                 </p>
@@ -310,7 +310,7 @@
                 <IconTag class="w-4 h-4 text-purple-600 dark:text-purple-400" />
               </div>
               <div>
-                <p class="text-sm text-ttc-text-muted">Categoria favorita</p>
+                <p class="text-sm text-ttc-text-muted">Categoría favorita</p>
                 <p class="flex items-center gap-2 text-ttc-text">
                   <CategoryIcon :category="topCategory.category" size="sm" />
                   <span class="capitalize">{{ getCategoryLabel(topCategory.category) }}</span>

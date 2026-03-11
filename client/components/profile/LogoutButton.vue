@@ -10,9 +10,9 @@
 
     <ConfirmDialog
       v-model="showConfirmDialog"
-      title="Cerrar sesion"
-      message="Seguro que queres cerrar sesion?"
-      confirm-text="Si, cerrar sesion"
+      title="Cerrar sesión"
+      message="¿Seguro que querés cerrar sesión?"
+      confirm-text="Sí, cerrar sesión"
       cancel-text="Cancelar"
       variant="danger"
       @confirm="handleLogout"

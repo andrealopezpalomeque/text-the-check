@@ -7,10 +7,10 @@
       <!-- Section header -->
       <div class="text-center mb-16">
         <p class="font-body font-semibold text-[11px] tracking-[2px] uppercase text-ttc-accent mb-3">
-          asi de facil
+          así de fácil
         </p>
         <h2 class="font-nunito font-extrabold text-2xl sm:text-3xl md:text-4xl text-ttc-text">
-          Como funciona
+          Cómo funciona
         </h2>
         <p class="mt-3 font-body text-sm md:text-base text-ttc-text-muted max-w-md mx-auto">
           Tres pasos. Cero complicaciones.
@@ -109,7 +109,7 @@
             </div>
             <h3 class="font-nunito font-bold text-base text-ttc-text mb-2">Recibito entiende</h3>
             <p class="font-body text-sm text-ttc-text-muted leading-relaxed max-w-[240px]">
-              Nuestra IA interpreta tu mensaje: monto, categoria, quien pago y a quien
+              Nuestra IA interpreta tu mensaje: monto, categoría, quién pagó y a quién
             </p>
           </div>
 
