@@ -46,7 +46,7 @@
         class="relative flex items-center justify-center -mt-4"
       >
         <div
-          class="w-14 h-14 bg-ttc-primary hover:bg-ttc-primary-light active:bg-ttc-primary rounded-full flex items-center justify-center shadow-lg transition-colors"
+          class="w-14 h-14 bg-ttc-primary hover:bg-ttc-primary/90 active:bg-ttc-primary/80 rounded-full flex items-center justify-center shadow-lg transition-colors"
         >
           <IconPlus class="w-7 h-7 text-white" />
         </div>
