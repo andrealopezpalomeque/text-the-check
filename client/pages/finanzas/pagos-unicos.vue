@@ -120,9 +120,14 @@
           <div
             v-for="payment in payments"
             :key="payment.id"
-            class="rounded-xl p-4 bg-ttc-surface cursor-pointer transition-all duration-200 border border-ttc-border shadow-sm hover:shadow-md group"
+            class="rounded-xl pl-5 pr-4 py-4 overflow-hidden relative bg-ttc-surface cursor-pointer transition-all duration-200 border border-ttc-border shadow-sm hover:shadow-md group"
             @click="showDetails(payment.id)"
           >
+            <!-- Left color bar -->
+            <div
+              class="absolute left-0 top-0 bottom-0 w-1"
+              :style="{ backgroundColor: getDisplayCategoryColor(payment) }"
+            />
             <!-- Card Header -->
             <div class="flex items-start justify-between mb-3">
               <div class="flex-1 min-w-0">
@@ -151,20 +156,11 @@
                   {{ getDisplayCategoryName(payment) }}
                 </span>
               </div>
-              <div
-                class="ml-3 h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110"
-                :class="
-                  payment.isPaid
-                    ? 'bg-success/15'
-                    : isDelayed(payment.dueDate)
-                    ? 'bg-danger/15'
-                    : 'bg-ttc-input'
-                "
-              >
-                <MdiCheck v-if="payment.isPaid" class="text-success text-xl" />
-                <MdiClockOutline v-else-if="isDelayed(payment.dueDate)" class="text-danger text-xl" />
-                <MdiCircleOutline v-else class="text-ttc-text-dim text-xl" />
-              </div>
+              <!-- Status badge -->
+              <span
+                class="ml-2 flex-shrink-0 text-[10px] px-2 py-0.5 rounded-md font-medium"
+                :class="getStatusBadgeClass(payment)"
+              >{{ getStatusBadgeText(payment) }}</span>
             </div>
 
             <!-- Description -->
@@ -226,8 +222,6 @@
 <script setup>
 import { formatPrice } from "~/utils/finanzas";
 import MdiCheck from "~icons/mdi/check";
-import MdiClockOutline from "~icons/mdi/clock-outline";
-import MdiCircleOutline from "~icons/mdi/circle-outline";
 import MdiPencil from "~icons/mdi/pencil";
 import MdiCashCheck from "~icons/mdi/cash-check";
 import MdiCashRemove from "~icons/mdi/cash-remove";
@@ -528,6 +522,32 @@ function applySortOrder(orderCriteria) {
 
     return comparison * direction;
   });
+}
+
+// ----- Status Badge Helpers ---------
+function getStatusBadgeClass(payment) {
+  const { $dayjs } = useNuxtApp()
+  if (payment.isPaid) return 'bg-success/15 text-ttc-success'
+  const daysUntil = payment.dueDate
+    ? $dayjs(payment.dueDate.toDate()).diff($dayjs(), 'day')
+    : null
+  if (daysUntil !== null && daysUntil < 0) return 'bg-danger/15 text-ttc-danger'
+  if (daysUntil !== null && daysUntil <= 7) return 'bg-warning/15 text-ttc-warning'
+  return 'bg-ttc-input text-ttc-text-muted'
+}
+
+function getStatusBadgeText(payment) {
+  const { $dayjs } = useNuxtApp()
+  if (payment.isPaid) return 'Pagado'
+  const daysUntil = payment.dueDate
+    ? $dayjs(payment.dueDate.toDate()).diff($dayjs(), 'day')
+    : null
+  if (daysUntil !== null && daysUntil < 0) return 'Vencido'
+  if (daysUntil !== null && daysUntil <= 7) {
+    const formatted = $dayjs(payment.dueDate.toDate()).format('D MMM')
+    return `Próximo: ${formatted}`
+  }
+  return 'Pendiente'
 }
 
 // ----- Keyboard Shortcut ---------
