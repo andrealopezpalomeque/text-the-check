@@ -43,6 +43,13 @@
               {{ payments.length }} pago{{ payments.length !== 1 ? 's' : '' }} este mes
             </p>
           </div>
+          <button
+            @click="showNewPayment"
+            class="hidden md:flex items-center gap-2 px-4 py-2 bg-ttc-primary hover:bg-ttc-primary/90 text-white font-medium rounded-btn transition-colors text-sm"
+          >
+            <MdiPlus class="text-base" />
+            Agregar pago
+          </button>
         </div>
       </div>
 

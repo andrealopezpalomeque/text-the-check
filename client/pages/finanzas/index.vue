@@ -37,6 +37,13 @@
               {{ recurrents.length }} pago{{ recurrents.length !== 1 ? 's' : '' }}
             </p>
           </div>
+          <button
+            @click="showNewPaymentModal"
+            class="hidden md:flex items-center gap-2 px-4 py-2 bg-ttc-primary hover:bg-ttc-primary/90 text-white font-medium rounded-btn transition-colors text-sm"
+          >
+            <MdiPlus class="text-base" />
+            Agregar pago
+          </button>
         </div>
       </div>
 
@@ -302,6 +309,7 @@ import MdiClockOutline from "~icons/mdi/clock-outline";
 import MdiCircleOutline from "~icons/mdi/circle-outline";
 import MdiPencil from "~icons/mdi/pencil";
 import MdiPlusCircleOutline from "~icons/mdi/plus-circle-outline";
+import MdiPlus from "~icons/mdi/plus";
 import MdiCashCheck from "~icons/mdi/cash-check";
 import MdiCashRemove from "~icons/mdi/cash-remove";
 import MdiCashOff from "~icons/mdi/cash-off";
