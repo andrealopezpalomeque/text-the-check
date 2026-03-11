@@ -526,7 +526,6 @@ function applySortOrder(orderCriteria) {
 
 // ----- Status Badge Helpers ---------
 function getStatusBadgeClass(payment) {
-  const { $dayjs } = useNuxtApp()
   if (payment.isPaid) return 'bg-success/15 text-ttc-success'
   const daysUntil = payment.dueDate
     ? $dayjs(payment.dueDate.toDate()).diff($dayjs(), 'day')
@@ -537,16 +536,12 @@ function getStatusBadgeClass(payment) {
 }
 
 function getStatusBadgeText(payment) {
-  const { $dayjs } = useNuxtApp()
   if (payment.isPaid) return 'Pagado'
-  const daysUntil = payment.dueDate
-    ? $dayjs(payment.dueDate.toDate()).diff($dayjs(), 'day')
-    : null
-  if (daysUntil !== null && daysUntil < 0) return 'Vencido'
-  if (daysUntil !== null && daysUntil <= 7) {
-    const formatted = $dayjs(payment.dueDate.toDate()).format('D MMM')
-    return `Próximo: ${formatted}`
-  }
+  if (!payment.dueDate) return 'Pendiente'
+  const dueDateObj = $dayjs(payment.dueDate.toDate())
+  const daysUntil = dueDateObj.diff($dayjs(), 'day')
+  if (daysUntil < 0) return 'Vencido'
+  if (daysUntil <= 7) return `Próximo: ${dueDateObj.format('D MMM')}`
   return 'Pendiente'
 }
 
