@@ -4,6 +4,7 @@
     <div
       class="absolute left-0 top-0 bottom-0 w-1 rounded-r-sm"
       :style="{ backgroundColor: categoryColor }"
+      :title="categoryName"
     />
 
     <!-- Main content -->
