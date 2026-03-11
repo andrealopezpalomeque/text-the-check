@@ -38,7 +38,7 @@
       <div class="px-3 pt-2">
         <div class="flex items-center justify-between">
           <div>
-            <h1 class="font-display text-2xl font-bold">Pagos Únicos</h1>
+            <h1 class="font-display text-2xl font-extrabold">Pagos Únicos</h1>
             <p class="text-sm text-ttc-text-dim">
               {{ payments.length }} pago{{ payments.length !== 1 ? 's' : '' }} este mes
             </p>

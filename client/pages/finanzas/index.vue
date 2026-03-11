@@ -32,7 +32,7 @@
       <div class="px-3 pt-2">
         <div class="flex items-center justify-between">
           <div>
-            <h1 class="font-display text-2xl font-bold">Pagos Fijos</h1>
+            <h1 class="font-display text-2xl font-extrabold">Pagos Fijos</h1>
             <p class="text-sm text-ttc-text-dim">
               {{ recurrents.length }} pago{{ recurrents.length !== 1 ? 's' : '' }}
             </p>
