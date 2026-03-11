@@ -2,28 +2,9 @@
   <div>
     <Modal ref="modal">
       <template #header>
-        <div class="flex items-center">
-          <div v-if="isLoading" class="w-3 h-14 rounded-full mr-3 bg-ttc-input animate-pulse"></div>
-          <div
-            v-else-if="form.categoryId"
-            class="w-3 h-14 rounded-full mr-3"
-            :style="{ backgroundColor: getCategoryColor(form.categoryId) }"
-          ></div>
-          <div>
-            <h2 class="text-xl font-bold">
-              {{ props.isReview ? "Revisar" : (isEdit ? "Editar" : "Crear") }} Pago {{ isRecurrent ? "Fijo" : "Único" }}
-            </h2>
-            <p class="text-sm text-ttc-text-dim" v-if="isEdit && form.title">{{ form.title }}</p>
-            <p class="text-xs text-ttc-success flex items-center gap-1 mt-1" v-if="props.isReview">
-              <span class="inline-block w-2 h-2 rounded-full bg-ttc-success"></span>
-              Creado via WhatsApp
-            </p>
-            <p class="text-xs text-ttc-success flex items-center gap-1 mt-1" v-else-if="paymentsCreatedCount > 0 && !isEdit">
-              <MdiCheck class="text-sm" />
-              {{ paymentsCreatedCount }} {{ paymentsCreatedCount === 1 ? 'pago creado' : 'pagos creados' }}
-            </p>
-          </div>
-        </div>
+        <h2 class="font-display text-base font-semibold text-ttc-text">
+          {{ props.isReview ? "Revisar" : (isEdit ? "Editar" : "Crear") }} Pago {{ isRecurrent ? "Fijo" : "Único" }}
+        </h2>
       </template>
 
       <template #body>
@@ -32,6 +13,24 @@
         </div>
 
         <form v-else @submit.prevent="savePayment" class="space-y-6">
+          <!-- WhatsApp review indicator -->
+          <div
+            v-if="props.isReview"
+            class="flex items-center gap-2 text-xs text-ttc-success bg-success/10 border border-success/20 rounded-lg px-3 py-2"
+          >
+            <span class="inline-block w-2 h-2 rounded-full bg-ttc-success flex-shrink-0"></span>
+            Creado via WhatsApp
+          </div>
+
+          <!-- Created count feedback -->
+          <div
+            v-if="paymentsCreatedCount > 0 && !isEdit"
+            class="flex items-center gap-2 text-xs text-ttc-success bg-success/10 border border-success/20 rounded-lg px-3 py-2"
+          >
+            <MdiCheck class="text-sm flex-shrink-0" />
+            {{ paymentsCreatedCount }} {{ paymentsCreatedCount === 1 ? 'pago creado' : 'pagos creados' }}
+          </div>
+
           <!-- Quick Templates (only for new one-time payments) -->
           <div v-if="!props.isEdit && !props.isRecurrent && templates.length > 0" class="space-y-2">
             <div class="flex items-center justify-between">
