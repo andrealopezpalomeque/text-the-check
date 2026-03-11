@@ -10,7 +10,7 @@
       <form @submit.prevent="handleSubmit" id="expense-form">
         <!-- Currency -->
         <div class="mb-4">
-          <label class="block text-sm font-medium text-ttc-text mb-1">
+          <label class="block text-sm font-medium text-ttc-text-muted mb-1.5">
             Moneda
           </label>
           <select
@@ -26,7 +26,7 @@
 
         <!-- Amount -->
         <div class="mb-4">
-          <label class="block text-sm font-medium text-ttc-text mb-1">
+          <label class="block text-sm font-medium text-ttc-text-muted mb-1.5">
             Monto *
           </label>
           <input
@@ -46,7 +46,7 @@
 
         <!-- Description -->
         <div class="mb-4">
-          <label class="block text-sm font-medium text-ttc-text mb-1">
+          <label class="block text-sm font-medium text-ttc-text-muted mb-1.5">
             Descripcion *
           </label>
           <input
@@ -61,7 +61,7 @@
 
         <!-- Category -->
         <div class="mb-4">
-          <label class="block text-sm font-medium text-ttc-text mb-1">
+          <label class="block text-sm font-medium text-ttc-text-muted mb-1.5">
             Categoria
           </label>
           <select
@@ -79,7 +79,7 @@
 
         <!-- Participants -->
         <div class="mb-6">
-          <label class="block text-sm font-medium text-ttc-text mb-2">
+          <label class="block text-sm font-medium text-ttc-text-muted mb-1.5">
             Quienes participan en este gasto?
           </label>
           <div class="space-y-1 max-h-40 overflow-y-auto border border-ttc-border rounded-btn p-2">
