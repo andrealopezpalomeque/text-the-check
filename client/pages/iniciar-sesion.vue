@@ -216,11 +216,15 @@
         <button
           v-if="loginStep === 'phone' || loginStep === 'code'"
           @click="handleGoogleSignIn"
-          :disabled="isSubmitting"
+          :disabled="isGoogleSubmitting"
           class="w-full flex items-center justify-center gap-3 px-6 py-3 bg-ttc-surface border border-ttc-border rounded-lg font-body text-sm font-semibold text-ttc-text hover:border-ttc-text-dim disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
+          <div
+            v-if="isGoogleSubmitting"
+            class="w-5 h-5 border-2 border-ttc-text/30 border-t-ttc-text rounded-full animate-spin"
+          />
           <svg
-            v-if="!isSubmitting"
+            v-else
             class="w-5 h-5"
             viewBox="0 0 24 24"
           >
@@ -263,6 +267,7 @@ const loginStep = ref('phone')  // 'phone' | 'code' | 'google-prompt' | 'merge-p
 const phoneInput = ref('')
 const codeInput = ref('')
 const isSubmitting = ref(false)
+const isGoogleSubmitting = ref(false)
 const errorMsg = ref(null)
 
 // Pending Google auth data for the prompt flow
@@ -317,7 +322,7 @@ const verifyOTP = async () => {
 }
 
 const handleGoogleSignIn = async () => {
-  isSubmitting.value = true
+  isGoogleSubmitting.value = true
   errorMsg.value = null
   try {
     const result = await signInWithGoogle()
@@ -326,7 +331,7 @@ const handleGoogleSignIn = async () => {
       // No ttc_user found for this email — ask if they have a WhatsApp account
       pendingGoogleUser.value = result.firebaseUser
       loginStep.value = 'google-prompt'
-      isSubmitting.value = false
+      isGoogleSubmitting.value = false
       return
     }
 
@@ -335,7 +340,7 @@ const handleGoogleSignIn = async () => {
     // error is set by useAuth
     errorMsg.value = error.value
   } finally {
-    isSubmitting.value = false
+    isGoogleSubmitting.value = false
   }
 }
 
