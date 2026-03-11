@@ -69,20 +69,21 @@
         </div>
 
         <!-- Summary Stats -->
-        <div class="flex flex-wrap gap-4 md:gap-6">
-          <div class="flex items-center gap-3">
-            <MdiCashCheck class="text-success text-2xl" />
-            <span class="text-lg font-semibold text-ttc-text font-mono tabular-nums">{{ formatPrice(currentMonthTotals.paid) }}</span>
+        <div class="flex flex-wrap gap-2">
+          <div class="flex items-center gap-1.5 bg-ttc-card border border-ttc-border rounded-lg px-3 py-2">
+            <span class="w-2 h-2 rounded-full flex-shrink-0 bg-ttc-success"></span>
+            <span class="text-[10px] text-ttc-text-muted">Pagado</span>
+            <span class="text-sm font-semibold text-ttc-text font-mono tabular-nums ml-1">{{ formatPrice(currentMonthTotals.paid) }}</span>
           </div>
-
-          <div class="flex items-center gap-3">
-            <MdiCashRemove class="text-danger text-2xl" />
-            <span class="text-lg font-semibold text-ttc-text font-mono tabular-nums">{{ formatPrice(currentMonthTotals.unpaid) }}</span>
+          <div class="flex items-center gap-1.5 bg-ttc-card border border-ttc-border rounded-lg px-3 py-2">
+            <span class="w-2 h-2 rounded-full flex-shrink-0 bg-ttc-danger"></span>
+            <span class="text-[10px] text-ttc-text-muted">Pendiente</span>
+            <span class="text-sm font-semibold text-ttc-text font-mono tabular-nums ml-1">{{ formatPrice(currentMonthTotals.unpaid) }}</span>
           </div>
-
-          <div class="flex items-center gap-3">
-            <MdiCalendarMonth class="text-ttc-text-muted text-2xl" />
-            <span class="text-lg font-semibold text-ttc-text font-mono tabular-nums">{{ formatPrice(currentMonthTotals.paid + currentMonthTotals.unpaid) }}</span>
+          <div class="flex items-center gap-1.5 bg-ttc-card border border-ttc-border rounded-lg px-3 py-2">
+            <span class="w-2 h-2 rounded-full flex-shrink-0 bg-ttc-primary"></span>
+            <span class="text-[10px] text-ttc-text-muted">Total</span>
+            <span class="text-sm font-semibold text-ttc-text font-mono tabular-nums ml-1">{{ formatPrice(currentMonthTotals.paid + currentMonthTotals.unpaid) }}</span>
           </div>
         </div>
       </div>
@@ -310,10 +311,7 @@ import MdiCircleOutline from "~icons/mdi/circle-outline";
 import MdiPencil from "~icons/mdi/pencil";
 import MdiPlusCircleOutline from "~icons/mdi/plus-circle-outline";
 import MdiPlus from "~icons/mdi/plus";
-import MdiCashCheck from "~icons/mdi/cash-check";
-import MdiCashRemove from "~icons/mdi/cash-remove";
 import MdiCashOff from "~icons/mdi/cash-off";
-import MdiCalendarMonth from "~icons/mdi/calendar-month";
 import MdiLoading from "~icons/mdi/loading";
 
 definePageMeta({
