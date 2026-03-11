@@ -1,22 +1,23 @@
 <template>
   <div>
     <NuxtLayout>
-      <div v-show="!authLoading">
-        <NuxtPage />
-      </div>
+      <NuxtPage />
     </NuxtLayout>
 
-    <!-- Global loading overlay while auth initializes -->
+    <!-- Global loading overlay while auth initializes (protected routes only) -->
     <ClientOnly>
-      <div
-        v-if="authLoading"
-        class="fixed inset-0 z-50 bg-ttc-bg flex items-center justify-center"
-      >
-        <div class="text-center">
-          <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-ttc-primary mb-4"></div>
-          <p class="font-body text-ttc-text-muted">Cargando...</p>
+      <Transition name="fade">
+        <div
+          v-if="authLoading && !isPublicRoute"
+          class="fixed inset-0 z-50 bg-ttc-bg flex flex-col items-center justify-center gap-4"
+        >
+          <AppLogo variant="stacked" />
+          <div class="flex items-center gap-2 text-ttc-text-muted text-sm font-body">
+            <span class="w-4 h-4 border-2 border-ttc-primary/30 border-t-ttc-primary rounded-full animate-spin"></span>
+            Verificando sesión...
+          </div>
         </div>
-      </div>
+      </Transition>
     </ClientOnly>
   </div>
 </template>
@@ -24,6 +25,9 @@
 <script setup>
 const { isAuthenticated, firestoreUser, loading: authLoading } = useAuth()
 const route = useRoute()
+
+const publicRoutes = ['/', '/iniciar-sesion', '/configurar', '/unirse', '/privacy', '/faq', '/landing-prueba']
+const isPublicRoute = computed(() => publicRoutes.includes(route.path))
 const expenseStore = useExpenseStore()
 const paymentStore = usePaymentStore()
 const userStore = useUserStore()
@@ -142,3 +146,8 @@ onUnmounted(() => {
   paymentStore.stopListeners()
 })
 </script>
+
+<style scoped>
+.fade-leave-active { transition: opacity 0.3s ease; }
+.fade-leave-to { opacity: 0; }
+</style>
