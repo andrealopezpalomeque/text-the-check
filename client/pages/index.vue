@@ -15,6 +15,7 @@
     </Transition>
 
     <HeroPrueba />
+    <LandingSocialProof />
     <LandingFeatures />
     <ComoFunciona />
     <LandingInputTypes />
