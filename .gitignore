@@ -27,7 +27,6 @@ Thumbs.db
 # Claude Code / Superpowers
 .claude/
 .superpowers/
-docs/superpowers/
 
 # Logs
 *.log
