@@ -83,7 +83,7 @@
           </p>
         </div>
         <NuxtLink
-          to="/login"
+          to="/iniciar-sesion"
           class="shrink-0 inline-flex items-center gap-1.5 bg-ttc-primary hover:bg-ttc-primary-light transition-colors duration-200 text-white font-body font-semibold text-sm px-5 py-2.5 rounded-xl cursor-pointer"
         >
           Ser de los primeros
