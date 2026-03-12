@@ -24,8 +24,10 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Claude Code
+# Claude Code / Superpowers
 .claude/
+.superpowers/
+docs/superpowers/
 
 # Logs
 *.log
