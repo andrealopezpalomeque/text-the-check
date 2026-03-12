@@ -75,7 +75,7 @@
       >
         <div>
           <p class="font-body font-bold text-[11px] tracking-[1.5px] uppercase text-ttc-accent mb-1">
-            ✦ beta abierta
+            ✦ versión beta — acceso gratuito
           </p>
           <p class="font-body text-sm text-ttc-text leading-relaxed">
             Estamos construyendo esto con los primeros usuarios.
