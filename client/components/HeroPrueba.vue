@@ -1,5 +1,5 @@
 <template>
-  <section class="relative overflow-hidden pt-8 pb-16 md:pt-16 md:pb-24 px-5">
+  <section class="relative overflow-hidden pt-16 pb-[75px] px-5">
     <!-- Background: subtle dot grid pattern -->
     <div class="absolute inset-0 pointer-events-none opacity-[0.03]">
       <svg width="100%" height="100%">
@@ -49,7 +49,7 @@
               <a
                 :href="whatsappUrl"
                 target="_blank"
-                class="inline-flex items-center justify-center gap-2 w-[200px] bg-[#25D366] text-white rounded-xl py-3.5 font-body text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer"
+                class="inline-flex items-center justify-center gap-2 w-[200px] bg-gradient-to-br from-[#25D366] to-[#4A90D9] text-white rounded-xl py-3.5 font-body text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer"
               >
                 Empezá a chatear
                 <MessageCircle :size="16" :stroke-width="2" />
