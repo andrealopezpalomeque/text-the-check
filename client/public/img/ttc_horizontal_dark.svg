@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 100" fill="none">
+  <!--
+    Text the Check — Horizontal Logo (Dark mode, transparent bg)
+    Receipt icon left + wordmark and tagline right
+  -->
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@600&amp;family=DM+Sans:wght@500&amp;display=swap');
+    </style>
+  </defs>
+
+  <!-- Receipt icon — vertically centered -->
+  <g transform="translate(8, 6) scale(0.65)">
+    <path d="M 20 20
+             l 10 -5 l 10 5
+             l 10 -5 l 10 5
+             l 10 -5 l 10 5
+             C 75 55, 85 85, 80 120
+             l -10 5 l -10 -5
+             l -10 5 l -10 -5
+             l -10 5 l -10 -5
+             C 25 85, 15 55, 20 20 Z"
+          fill="#4A90D9" fill-opacity="0.08"
+          stroke="#E2E8F0" stroke-width="3" stroke-linejoin="round" />
+
+    <line x1="32" y1="50" x2="68" y2="50" stroke="#4A90D9" stroke-width="3" stroke-linecap="round" stroke-opacity="0.55" />
+    <line x1="32" y1="70" x2="52" y2="70" stroke="#4A90D9" stroke-width="3" stroke-linecap="round" stroke-opacity="0.55" />
+    <line x1="32" y1="90" x2="60" y2="90" stroke="#4A90D9" stroke-width="3" stroke-linecap="round" stroke-opacity="0.55" />
+  </g>
+
+  <!-- Wordmark — vertically centered with icon -->
+  <text
+    x="88" y="46"
+    font-family="'Outfit', sans-serif"
+    font-weight="600"
+    font-size="24"
+    letter-spacing="3"
+    fill="#E2E8F0"
+  >text <tspan fill="#4A90D9">the</tspan> check</text>
+
+  <!-- Tagline -->
+  <text
+    x="88" y="68"
+    font-family="'DM Sans', sans-serif"
+    font-weight="500"
+    font-size="9"
+    letter-spacing="3"
+    fill="#7B8FA6"
+  >TU PLATA, A UN MENSAJE</text>
+</svg>

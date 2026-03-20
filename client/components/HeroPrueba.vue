@@ -132,11 +132,11 @@
                 <!-- WhatsApp header -->
                 <div class="flex items-center gap-2.5 px-4 py-3 border-b border-ttc-border">
                   <div class="w-8 h-8 rounded-full bg-[#4A90D9]/15 flex items-center justify-center flex-shrink-0">
-                    <svg width="14" height="14" viewBox="0 0 160 200" fill="none" class="text-ttc-primary">
-                      <path d="M 28,25 l 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 4,-3.5 4,3.5 C 142,37 124,78 139,115 C 144,148 124,170 132,175 l -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 -4,3.5 -4,-3.5 C 19,159 37,127 23,88 C 18,52 37,32 28,25 Z" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-                      <rect x="43" y="72" width="42" height="10" rx="5" fill="currentColor" opacity="0.18"/>
-                      <rect x="80" y="92" width="44" height="10" rx="5" fill="currentColor" opacity="0.12"/>
-                      <rect x="45" y="112" width="34" height="10" rx="5" fill="currentColor" opacity="0.18"/>
+                    <svg width="14" height="14" viewBox="10 10 80 120" fill="none" class="text-ttc-primary">
+                      <path d="M 20 20 l 10 -5 l 10 5 l 10 -5 l 10 5 l 10 -5 l 10 5 C 75 55, 85 85, 80 120 l -10 5 l -10 -5 l -10 5 l -10 -5 l -10 5 l -10 -5 C 25 85, 15 55, 20 20 Z" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                      <line x1="32" y1="50" x2="68" y2="50" stroke="currentColor" stroke-width="4" stroke-linecap="round" opacity="0.55"/>
+                      <line x1="32" y1="70" x2="52" y2="70" stroke="currentColor" stroke-width="4" stroke-linecap="round" opacity="0.55"/>
+                      <line x1="32" y1="90" x2="60" y2="90" stroke="currentColor" stroke-width="4" stroke-linecap="round" opacity="0.55"/>
                     </svg>
                   </div>
                   <div>
