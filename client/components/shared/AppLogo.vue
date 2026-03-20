@@ -2,10 +2,10 @@
   <!-- Horizontal: icon left, wordmark right, vertically centered -->
   <div
     v-if="variant === 'horizontal'"
-    class="flex items-center gap-2"
+    class="flex items-center gap-2.5"
   >
-    <TtcSymbol size-class="w-7 h-7" class="text-ttc-primary" />
-    <span class="font-outfit font-semibold text-[14px] tracking-[3px] text-ttc-text leading-none">
+    <TtcSymbol size-class="w-9 h-9" class="text-ttc-primary" />
+    <span class="font-outfit font-semibold text-[16px] tracking-[3px] text-ttc-text leading-none">
       text <span class="text-ttc-primary">the</span> check
     </span>
   </div>
