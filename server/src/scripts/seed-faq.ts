@@ -61,22 +61,22 @@ const FAQ_ENTRIES: FaqEntry[] = [
 <p>Podés ver tus gastos, balances, resúmenes y registrar gastos manualmente sin necesidad de vincular WhatsApp.</p>`,
   },
 
-  // ─── Topic 2: Modo Grupos ──────────────────────────────────
+  // ─── Topic 2: Dividir gastos ──────────────────────────────────
   {
     topic: 'grupos',
-    topicLabel: 'Modo Grupos',
+    topicLabel: 'Dividir gastos',
     topicOrder: 2,
     order: 1,
     question: '¿Cómo creo un grupo?',
     answer: `<p>Tenés dos formas:</p>
 <ul>
-<li><strong>Por WhatsApp:</strong> cuando te registrás por primera vez y elegís modo Grupos, el bot te guía para crear tu primer grupo</li>
+<li><strong>Por WhatsApp:</strong> cuando te registrás por primera vez, el bot te guía para crear tu primer grupo</li>
 <li><strong>Desde la app:</strong> entrá a <a href="https://textthecheck.app/grupos" target="_blank">textthecheck.app/grupos</a> y creá uno nuevo</li>
 </ul>`,
   },
   {
     topic: 'grupos',
-    topicLabel: 'Modo Grupos',
+    topicLabel: 'Dividir gastos',
     topicOrder: 2,
     order: 2,
     question: '¿Cómo invito gente al grupo?',
@@ -86,7 +86,7 @@ const FAQ_ENTRIES: FaqEntry[] = [
   },
   {
     topic: 'grupos',
-    topicLabel: 'Modo Grupos',
+    topicLabel: 'Dividir gastos',
     topicOrder: 2,
     order: 3,
     question: '¿Cómo registro un gasto grupal?',
@@ -101,7 +101,7 @@ const FAQ_ENTRIES: FaqEntry[] = [
   },
   {
     topic: 'grupos',
-    topicLabel: 'Modo Grupos',
+    topicLabel: 'Dividir gastos',
     topicOrder: 2,
     order: 4,
     question: '¿Cómo divido un gasto entre personas específicas?',
@@ -114,7 +114,7 @@ const FAQ_ENTRIES: FaqEntry[] = [
   },
   {
     topic: 'grupos',
-    topicLabel: 'Modo Grupos',
+    topicLabel: 'Dividir gastos',
     topicOrder: 2,
     order: 5,
     question: '¿Qué es "todos menos"?',
@@ -127,7 +127,7 @@ const FAQ_ENTRIES: FaqEntry[] = [
   },
   {
     topic: 'grupos',
-    topicLabel: 'Modo Grupos',
+    topicLabel: 'Dividir gastos',
     topicOrder: 2,
     order: 6,
     question: '¿Cómo registro un pago a alguien?',
@@ -141,7 +141,7 @@ const FAQ_ENTRIES: FaqEntry[] = [
   },
   {
     topic: 'grupos',
-    topicLabel: 'Modo Grupos',
+    topicLabel: 'Dividir gastos',
     topicOrder: 2,
     order: 7,
     question: '¿Qué son los miembros fantasma?',
@@ -150,7 +150,7 @@ const FAQ_ENTRIES: FaqEntry[] = [
   },
   {
     topic: 'grupos',
-    topicLabel: 'Modo Grupos',
+    topicLabel: 'Dividir gastos',
     topicOrder: 2,
     order: 8,
     question: '¿Cómo funciona el balance?',
@@ -160,7 +160,7 @@ const FAQ_ENTRIES: FaqEntry[] = [
   },
   {
     topic: 'grupos',
-    topicLabel: 'Modo Grupos',
+    topicLabel: 'Dividir gastos',
     topicOrder: 2,
     order: 9,
     question: '¿Cómo se simplifican las deudas?',
@@ -169,66 +169,11 @@ const FAQ_ENTRIES: FaqEntry[] = [
 <p>Esto minimiza la cantidad de movimientos de dinero entre los miembros del grupo.</p>`,
   },
 
-  // ─── Topic 3: Modo Finanzas ─────────────────────────────────
-  {
-    topic: 'finanzas',
-    topicLabel: 'Modo Finanzas',
-    topicOrder: 3,
-    order: 1,
-    question: '¿Qué es el modo Finanzas?',
-    answer: `<p>Es tu <strong>tracker de gastos personales</strong>. Registrá lo que gastás día a día, organizalo por categorías, y llevá el control de tus pagos fijos.</p>
-<p>Funciona por WhatsApp y desde el dashboard en <a href="https://textthecheck.app/finanzas" target="_blank">textthecheck.app/finanzas</a>.</p>`,
-  },
-  {
-    topic: 'finanzas',
-    topicLabel: 'Modo Finanzas',
-    topicOrder: 3,
-    order: 2,
-    question: '¿Cómo registro un gasto personal?',
-    answer: `<p>Mandá un mensaje con el monto y descripción:</p>
-<ul>
-<li><code>$500 supermercado</code></li>
-<li><code>$500 comida #Salidas</code> — con categoría</li>
-<li><code>5 lucas uber</code></li>
-<li><code>50 dólares la cena</code></li>
-</ul>
-<p>También podés enviar un <strong>audio</strong> describiendo el gasto, una <strong>foto</strong> de comprobante o un <strong>PDF</strong> de transferencia.</p>`,
-  },
-  {
-    topic: 'finanzas',
-    topicLabel: 'Modo Finanzas',
-    topicOrder: 3,
-    order: 3,
-    question: '¿Cómo funcionan las categorías?',
-    answer: `<p>Tenés 17 categorías predeterminadas (Supermercado, Salidas, Transporte, Servicios, etc.).</p>
-<p>La IA asigna la categoría automáticamente según el gasto. También podés forzar una categoría con <strong>#hashtag</strong>: <code>$500 café #Salidas</code>.</p>
-<p>Escribí <code>/categorias</code> para ver tus categorías disponibles.</p>`,
-  },
-  {
-    topic: 'finanzas',
-    topicLabel: 'Modo Finanzas',
-    topicOrder: 3,
-    order: 4,
-    question: '¿Qué son los pagos fijos?',
-    answer: `<p>Son gastos recurrentes con fecha de vencimiento: alquiler, Netflix, servicios, etc.</p>
-<p>Se detectan automáticamente cuando registrás un gasto que parece recurrente, o los podés crear manualmente desde la app.</p>
-<p>Escribí <code>/fijos</code> para ver el estado de tus pagos fijos del mes: cuáles están pagados y cuáles pendientes.</p>`,
-  },
-  {
-    topic: 'finanzas',
-    topicLabel: 'Modo Finanzas',
-    topicOrder: 3,
-    order: 5,
-    question: '¿Cómo funciona el análisis financiero?',
-    answer: `<p>Escribí <code>/analisis</code> y la IA analiza tus últimos 3 meses de gastos.</p>
-<p>Te da 2-3 consejos personalizados sobre tus hábitos de gasto, tendencias y oportunidades de ahorro.</p>`,
-  },
-
-  // ─── Topic 4: Multi-moneda ──────────────────────────────────
+  // ─── Topic 3: Multi-moneda ──────────────────────────────────
   {
     topic: 'multimoneda',
     topicLabel: 'Multi-moneda',
-    topicOrder: 4,
+    topicOrder: 3,
     order: 1,
     question: '¿Puedo registrar gastos en dólares u otras monedas?',
     answer: `<p>Sí. Soportamos <strong>USD</strong> (dólares), <strong>EUR</strong> (euros) y <strong>BRL</strong> (reales brasileños).</p>
@@ -237,7 +182,7 @@ const FAQ_ENTRIES: FaqEntry[] = [
   {
     topic: 'multimoneda',
     topicLabel: 'Multi-moneda',
-    topicOrder: 4,
+    topicOrder: 3,
     order: 2,
     question: '¿Qué tipo de cambio se usa?',
     answer: `<p>Se usa la cotización del <strong>dólar blue</strong> (mercado informal), actualizada cada 30 minutos via <a href="https://dolarapi.com" target="_blank">dolarapi.com</a>.</p>
@@ -246,7 +191,7 @@ const FAQ_ENTRIES: FaqEntry[] = [
   {
     topic: 'multimoneda',
     topicLabel: 'Multi-moneda',
-    topicOrder: 4,
+    topicOrder: 3,
     order: 3,
     question: '¿Cómo registro un gasto en dólares?',
     answer: `<p>Indicá la moneda en el mensaje:</p>
@@ -258,62 +203,37 @@ const FAQ_ENTRIES: FaqEntry[] = [
 <p>El bot detecta la moneda automáticamente y muestra la conversión.</p>`,
   },
 
-  // ─── Topic 5: Comandos del bot ──────────────────────────────
+  // ─── Topic 4: Comandos del bot ──────────────────────────────
   {
     topic: 'comandos',
     topicLabel: 'Comandos del bot',
-    topicOrder: 5,
+    topicOrder: 4,
     order: 1,
     question: '¿Qué comandos tiene el bot?',
-    answer: `<p><strong>Comandos generales:</strong></p>
+    answer: `<p><strong>Comandos disponibles:</strong></p>
 <ul>
 <li><code>/ayuda</code> — Ver opciones de ayuda</li>
-<li><code>/modo</code> — Ver o cambiar de modo (grupos/finanzas)</li>
-</ul>
-<p><strong>Modo Grupos:</strong></p>
-<ul>
 <li><code>/balance</code> — Ver deudas del grupo</li>
 <li><code>/lista</code> — Últimos gastos del grupo</li>
 <li><code>/grupo</code> — Cambiar de grupo activo</li>
 <li><code>/borrar</code> — Borrar el último gasto o pago</li>
-</ul>
-<p><strong>Modo Finanzas:</strong></p>
-<ul>
-<li><code>/resumen</code> — Resumen del mes</li>
-<li><code>/lista</code> — Últimos gastos personales</li>
-<li><code>/fijos</code> — Estado de pagos fijos</li>
-<li><code>/categorias</code> — Ver categorías</li>
-<li><code>/analisis</code> — Análisis financiero con IA</li>
 </ul>`,
   },
   {
     topic: 'comandos',
     topicLabel: 'Comandos del bot',
-    topicOrder: 5,
+    topicOrder: 4,
     order: 2,
-    question: '¿Cómo cambio entre modo Grupos y Finanzas?',
-    answer: `<p>Escribí:</p>
-<ul>
-<li><code>/modo grupos</code> — para dividir gastos con amigos</li>
-<li><code>/modo finanzas</code> — para registrar gastos personales</li>
-<li><code>/modo</code> — para ver en qué modo estás</li>
-</ul>`,
-  },
-  {
-    topic: 'comandos',
-    topicLabel: 'Comandos del bot',
-    topicOrder: 5,
-    order: 3,
     question: '¿Cómo cambio de grupo activo?',
     answer: `<p>Escribí <code>/grupo</code> y el bot te muestra la lista de tus grupos.</p>
 <p>Elegí el número del grupo en el que querés registrar los próximos gastos.</p>`,
   },
 
-  // ─── Topic 6: Dashboard y cuenta ────────────────────────────
+  // ─── Topic 5: Dashboard y cuenta ────────────────────────────
   {
     topic: 'dashboard',
     topicLabel: 'Dashboard y cuenta',
-    topicOrder: 6,
+    topicOrder: 5,
     order: 1,
     question: '¿Cómo inicio sesión?',
     answer: `<p>Tenés dos formas de iniciar sesión en <a href="https://textthecheck.app" target="_blank">textthecheck.app</a>:</p>
@@ -325,7 +245,7 @@ const FAQ_ENTRIES: FaqEntry[] = [
   {
     topic: 'dashboard',
     topicLabel: 'Dashboard y cuenta',
-    topicOrder: 6,
+    topicOrder: 5,
     order: 2,
     question: '¿Cómo configuro mi perfil?',
     answer: `<p>Entrá a <a href="https://textthecheck.app/perfil" target="_blank">tu perfil</a> para configurar:</p>
@@ -339,7 +259,7 @@ const FAQ_ENTRIES: FaqEntry[] = [
   {
     topic: 'dashboard',
     topicLabel: 'Dashboard y cuenta',
-    topicOrder: 6,
+    topicOrder: 5,
     order: 3,
     question: '¿Puedo exportar mis gastos?',
     answer: `<p>Esta funcionalidad está en desarrollo. Próximamente vas a poder exportar tus gastos desde el dashboard.</p>`,
@@ -347,7 +267,7 @@ const FAQ_ENTRIES: FaqEntry[] = [
   {
     topic: 'dashboard',
     topicLabel: 'Dashboard y cuenta',
-    topicOrder: 6,
+    topicOrder: 5,
     order: 4,
     question: '¿El bot entiende jerga argentina?',
     answer: `<p>Sí. El bot entiende expresiones como:</p>

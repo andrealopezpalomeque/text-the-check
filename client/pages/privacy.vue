@@ -17,7 +17,7 @@
           <div>
             <h2 class="text-xl font-semibold text-ttc-text mt-8 mb-3">1. Responsables</h2>
             <p>
-              <strong class="text-ttc-text">text the check</strong> es operado por Imanol Ariel Corimayo y Andrea Lopez Palomeque
+              <strong class="text-ttc-text">text the check</strong> es operado por Andrea Lopez Palomeque
               (en adelante, "nosotros"). Para cualquier consulta sobre esta política o el tratamiento de tus datos,
               podés escribirnos a <a href="mailto:hello@textthecheck.app" class="text-ttc-primary hover:text-ttc-primary/80">hello@textthecheck.app</a>.
             </p>
@@ -29,7 +29,7 @@
             <ul class="list-disc list-inside space-y-1 mt-2">
               <li><strong class="text-ttc-text">Datos de cuenta:</strong> nombre, dirección de email y foto de perfil proporcionados por Google al iniciar sesión.</li>
               <li><strong class="text-ttc-text">Número de teléfono de WhatsApp:</strong> cuando vinculás tu cuenta mediante el flujo VINCULAR.</li>
-              <li><strong class="text-ttc-text">Datos financieros que vos registrás:</strong> gastos, pagos, categorías, gastos recurrentes y balances de grupo.</li>
+              <li><strong class="text-ttc-text">Datos de gastos grupales que vos registrás:</strong> gastos, pagos y balances de grupo.</li>
               <li><strong class="text-ttc-text">Mensajes de WhatsApp:</strong> el contenido de los mensajes que nos enviás (texto, audio, imágenes y PDFs de comprobantes) para procesarlos y registrar tus gastos.</li>
               <li><strong class="text-ttc-text">Información de pago:</strong> CBU/CVU y alias bancario, si decidís cargarlos en tu perfil.</li>
             </ul>
@@ -39,11 +39,11 @@
             <h2 class="text-xl font-semibold text-ttc-text mt-8 mb-3">3. Cómo usamos tus datos</h2>
             <p>Utilizamos tus datos exclusivamente para:</p>
             <ul class="list-disc list-inside space-y-1 mt-2">
-              <li>Registrar y mostrar tus gastos personales y grupales.</li>
+              <li>Registrar y mostrar tus gastos grupales.</li>
               <li>Procesar los mensajes que enviás por WhatsApp (texto, audio, imágenes, PDFs) para extraer información de gastos.</li>
-              <li>Generar resúmenes y análisis de tus finanzas.</li>
+              <li>Generar resúmenes de tus gastos grupales.</li>
               <li>Facilitar la división de gastos entre miembros de un grupo.</li>
-              <li>Enviar notificaciones de recordatorio de pagos.</li>
+              <li>Enviar notificaciones de recordatorio de deudas grupales.</li>
             </ul>
           </div>
 

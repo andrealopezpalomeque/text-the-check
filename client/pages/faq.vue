@@ -89,9 +89,9 @@ useHead({
 
 useSeoMeta({
   title: 'Preguntas frecuentes — text the check',
-  description: 'Preguntas frecuentes sobre text the check. Cómo dividir gastos, registrar pagos, vincular WhatsApp y más.',
+  description: 'Preguntas frecuentes sobre text the check. Cómo dividir gastos con amigos, vincular WhatsApp y más.',
   ogTitle: 'Preguntas frecuentes — text the check',
-  ogDescription: 'Preguntas frecuentes sobre text the check. Cómo dividir gastos, registrar pagos, vincular WhatsApp y más.',
+  ogDescription: 'Preguntas frecuentes sobre text the check. Cómo dividir gastos con amigos, vincular WhatsApp y más.',
 })
 
 const { db } = useFirebase()
