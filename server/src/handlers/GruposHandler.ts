@@ -254,14 +254,14 @@ export default class GruposHandler {
 
     // 0. Empty message guard
     if (!text.trim()) {
-      await sendMessage(from, formatParseError('grupos'))
+      await sendMessage(from, formatParseError())
       return
     }
 
     // 1. Welcome message check
     if (!user.welcomedAt) {
       const userGroups = await this.getAllGroupsByUserId(user.id)
-      await sendMessage(from, formatWelcomeMessage('grupos', { userName: user.name, groups: userGroups }))
+      await sendMessage(from, formatWelcomeMessage( { userName: user.name, groups: userGroups }))
       await this.markUserAsWelcomed(user.id)
       return
     }
@@ -337,14 +337,14 @@ export default class GruposHandler {
       const group = await this.getGroupByUserId(user.id)
       if (group) {
         const allGroups = await this.getAllGroupsByUserId(user.id)
-        await sendMessage(from, formatGreetingResponse('grupos', { groupName: group.name, groupCount: allGroups.length }))
+        await sendMessage(from, formatGreetingResponse( { groupName: group.name, groupCount: allGroups.length }))
         return
       }
       // Multi-group user with no active group — greeting + group selection
       const prompted = await this.promptGroupSelectionIfNeeded(from, user.id, '👋 *¡Hola!*\n\nEstás en modo *grupos* 👥\n\n📍 *¿Qué grupo querés usar?*')
       if (prompted) return
       // 0 groups — greeting with no group context
-      await sendMessage(from, formatGreetingResponse('grupos'))
+      await sendMessage(from, formatGreetingResponse())
       return
     }
 
@@ -390,7 +390,7 @@ export default class GruposHandler {
             ])
             return
           }
-          await sendMessage(from, formatParseError('grupos', { groupName: group?.name }))
+          await sendMessage(from, formatParseError({ groupName: group?.name }))
           return
         }
         // Low confidence → fall through to regex
@@ -418,7 +418,7 @@ export default class GruposHandler {
     switch (parsed.command) {
       case '/ayuda':
       case '/help':
-        await sendMessage(from, formatHelpMessage('grupos'))
+        await sendMessage(from, formatHelpMessage())
         break
 
       case '/grupo':
@@ -472,7 +472,7 @@ export default class GruposHandler {
     const originalCurrency = currencyInfo?.currency
 
     if (parsed.needsReview) {
-      await sendMessage(from, formatParseError('grupos', { groupName }))
+      await sendMessage(from, formatParseError({ groupName }))
       return
     }
 

@@ -25,7 +25,7 @@
             </div>
             <h3 class="font-nunito font-bold text-base text-ttc-text mb-3">Splitwise</h3>
             <p class="font-body text-sm text-ttc-text-muted leading-relaxed">
-              Solo divide cuentas. No entiende español argentino, no maneja multi-moneda real, no tiene modo finanzas personales. Y necesita que todos se descarguen la app.
+              Solo divide cuentas. No entiende español argentino, no maneja multi-moneda real. Y necesita que todos se descarguen la app.
             </p>
             <!-- Pain points -->
             <ul class="mt-4 space-y-2">
@@ -93,7 +93,7 @@
               </li>
               <li class="flex items-center gap-2">
                 <Check :size="14" class="text-ttc-success flex-shrink-0" />
-                <span class="font-body text-xs text-ttc-text">Grupos + Finanzas</span>
+                <span class="font-body text-xs text-ttc-text">Grupos sin instalar nada</span>
               </li>
             </ul>
           </div>

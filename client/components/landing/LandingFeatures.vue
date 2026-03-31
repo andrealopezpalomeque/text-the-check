@@ -77,8 +77,8 @@ const features = [
   },
   {
     icon: ArrowLeftRight,
-    title: 'Dos modos, una app',
-    description: 'Modo Grupos para dividir gastos de viajes. Modo Finanzas para tu plata personal. Cambiás entre los dos con un mensaje.',
+    title: 'Todo desde WhatsApp',
+    description: 'Dividí gastos de viajes con amigos directo desde el chat. Sin instalar apps, sin planillas, sin vueltas.',
     color: 'accent'
   },
   {

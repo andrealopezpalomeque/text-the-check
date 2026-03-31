@@ -423,8 +423,7 @@
     </div>
 
     <!-- Bottom Navigation -->
-    <FinanzasBottomNav v-if="mode === 'finanzas'" />
-    <BottomNav v-else />
+    <BottomNav />
   </div>
 </template>
 
@@ -437,8 +436,7 @@ definePageMeta({
 const { user, firestoreUser, loading } = useAuth()
 const userStore = useUserStore()
 const groupStore = useGroupStore()
-const { mode } = useAppMode()
-const backRoute = computed(() => mode.value === 'finanzas' ? '/finanzas' : '/grupos')
+const backRoute = '/grupos'
 const whatsapp = useWhatsappLink()
 const codeCopied = ref(false)
 const showManualFlow = ref(false)

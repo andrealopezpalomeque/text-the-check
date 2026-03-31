@@ -3,7 +3,7 @@ export const useTheme = () => {
 
   const applyTheme = (value) => {
     document.documentElement.setAttribute('data-theme', value)
-    // Sync Tailwind dark mode class for app components (grupos/finanzas)
+    // Sync Tailwind dark mode class
     if (value === 'dark') {
       document.documentElement.classList.add('dark')
     } else {

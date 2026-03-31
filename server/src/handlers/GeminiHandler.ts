@@ -1,11 +1,8 @@
 /**
- * GeminiHandler — all AI operations for both Grupos and Finanzas.
+ * GeminiHandler — all AI operations for Grupos.
  *
  * All methods use Gemini 2.5 Flash Lite via SDK.
- * Grupos: NL expense/payment parsing.
- * Finanzas: NL personal expense parsing, audio transcription,
- *           image/PDF receipt parsing, categorization,
- *           financial analysis, weekly insight.
+ * Grupos: NL expense/payment parsing, support Q&A.
  */
 
 import { GoogleGenerativeAI, type GenerativeModel } from '@google/generative-ai'
@@ -58,7 +55,7 @@ export interface AIErrorResult {
 
 export type AIParseResult = AIExpenseResult | AIPaymentResult | AICommandResult | AIUnknownResult | AIErrorResult
 
-// ─── Finanzas AI types ─────────────────────────────────────────────
+// ─── Media AI types ───────────────────────────────────────────────
 
 export interface TranscriptionResult {
   transcription: string
@@ -81,22 +78,6 @@ export interface TransferResult {
   reference: string | null
   concept: string | null
 }
-
-// ─── Finanzas personal expense NLP types ──────────────────────────
-
-export interface AIPersonalExpenseResult {
-  type: 'personal_expense'
-  amount: number
-  currency: 'ARS' | 'USD' | 'EUR' | 'BRL'
-  title: string
-  category: string
-  description: string
-  isRecurrent: boolean
-  frequency: 'monthly' | 'weekly' | 'biweekly' | 'yearly' | null
-  confidence: number
-}
-
-export type AIPersonalParseResult = AIPersonalExpenseResult | AIUnknownResult | AIErrorResult
 
 // ─── Config ────────────────────────────────────────────────────────
 
@@ -690,210 +671,7 @@ IMPORTANT:
 `
   }
 
-  // ─── Finanzas NLP parsing ────────────────────────────────────
-
-  /**
-   * Parse a natural language message into structured personal expense data.
-   * Uses Gemini 2.5 Flash Lite via SDK with the personal finance prompt.
-   */
-  async parsePersonalExpenseNL(message: string, userCategories: string[]): Promise<AIPersonalParseResult> {
-    const startTime = Date.now()
-
-    try {
-      const systemPrompt = this.buildPersonalExpensePrompt(userCategories)
-      const fullPrompt = `${systemPrompt}\n\nMensaje del usuario: "${message}"`
-
-      console.log('[AI-FIN] Input:', message)
-      console.log('[AI-FIN] User categories:', userCategories.join(', '))
-
-      const responseText = await Promise.race([
-        this.generateContent(fullPrompt, { maxOutputTokens: 500, temperature: 0.7 }),
-        new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error('AI request timed out')), AI_TIMEOUT_MS)
-        ),
-      ])
-
-      if (!responseText) {
-        return { type: 'error', error: 'No response from AI' }
-      }
-
-      console.log('[AI-FIN] Raw response:', responseText)
-      console.log('[AI-FIN] Latency:', `${Date.now() - startTime}ms`)
-
-      const parsed = this.parsePersonalExpenseResponse(responseText)
-      console.log('[AI-FIN] Parsed result:', JSON.stringify(parsed))
-      return parsed
-    } catch (error) {
-      console.error('[AI-FIN] Error:', error)
-      console.log('[AI-FIN] Latency (error):', `${Date.now() - startTime}ms`)
-      return { type: 'error', error: error instanceof Error ? error.message : 'Unknown error' }
-    }
-  }
-
-  private parsePersonalExpenseResponse(responseText: string): AIPersonalParseResult {
-    try {
-      let jsonStr = responseText
-      const jsonMatch = responseText.match(/```(?:json)?\s*([\s\S]*?)```/)
-      if (jsonMatch) jsonStr = jsonMatch[1].trim()
-
-      const parsed = JSON.parse(jsonStr)
-      if (!parsed.type) throw new Error('Missing type in response')
-
-      if (parsed.type === 'personal_expense') return this.validatePersonalExpenseResult(parsed)
-      return this.validateUnknownResult(parsed)
-    } catch {
-      return { type: 'unknown', confidence: 0, suggestion: 'No pude entender el mensaje', isSupportQuestion: false }
-    }
-  }
-
-  private validatePersonalExpenseResult(p: Record<string, unknown>): AIPersonalExpenseResult {
-    return {
-      type: 'personal_expense',
-      amount: typeof p.amount === 'number' ? p.amount : parseFloat(String(p.amount)) || 0,
-      currency: this.validateCurrency(p.currency),
-      title: typeof p.title === 'string' ? p.title.slice(0, 30) : '',
-      category: typeof p.category === 'string' ? p.category : 'Otros',
-      description: typeof p.description === 'string' ? p.description : '',
-      isRecurrent: typeof p.isRecurrent === 'boolean' ? p.isRecurrent : false,
-      frequency: this.validateFrequency(p.frequency),
-      confidence: typeof p.confidence === 'number' ? Math.min(1, Math.max(0, p.confidence)) : 0.5,
-    }
-  }
-
-  private validateFrequency(freq: unknown): 'monthly' | 'weekly' | 'biweekly' | 'yearly' | null {
-    const valid = ['monthly', 'weekly', 'biweekly', 'yearly']
-    if (typeof freq === 'string' && valid.includes(freq)) return freq as any
-    return null
-  }
-
-  private buildPersonalExpensePrompt(userCategories: string[]): string {
-    const categoriesList = userCategories.length > 0
-      ? userCategories.join(', ')
-      : 'Supermercado, Salidas, Transporte, Servicios, Suscripciones, Otros'
-
-    return `You are an assistant that extracts personal expense information from messages in Argentine Spanish.
-
-TASK: Analyze the user's message and extract structured data for a personal finance tracker.
-
-MESSAGE TYPES:
-
-1. PERSONAL EXPENSE (personal_expense): User registers a personal expense
-   - Keywords: "gasté", "pagué", "compré", amount + description, "$amount title"
-   - Example: "Gasté 150 en pizza", "5 lucas el uber", "$1500 café #comida"
-
-2. UNKNOWN (unknown): Cannot determine what the user wants
-   - Ambiguous messages, greetings, questions
-
-USER'S CATEGORIES (match to the closest one):
-${categoriesList}
-
-ARGENTINE SPANISH DICTIONARY:
-
-${ARGENTINE_DICTIONARY}
-
-CURRENCY RULES:
-${CURRENCY_RULES}
-
-RECURRENT DETECTION RULES:
-- Keywords: "mensual", "semanal", "quincenal", "anual", "todos los meses", "cada mes", "por mes"
-- Service heuristics (auto-detect as monthly if title matches):
-  netflix, spotify, disney, hbo, amazon prime, youtube premium,
-  luz, gas, agua, internet, teléfono, celular,
-  alquiler, expensas, gym, gimnasio, monotributo, prepaga, obra social, seguro, abono
-- frequency: "monthly" | "weekly" | "biweekly" | "yearly" | null
-
-TITLE RULES:
-- Short: max 30 characters
-- Capitalize first letter
-- Descriptive but concise
-- Example: "Café", "Uber al trabajo", "Netflix mensual"
-
-DESCRIPTION RULES:
-- Extract from "d:" prefix if present (e.g. "d:cumple de juan" → description: "cumple de juan")
-- Otherwise use any extra context from the message
-- Can be empty string
-
-CATEGORY MATCHING:
-- Match to the closest category from the user's list above
-- Use partial matching: "super" → "Supermercado", "sal" → "Salidas"
-- If no category is specified or matched, use "Otros"
-- If a #hashtag is present, use it as the category hint
-
-SUPPORT QUESTION DETECTION:
-- isSupportQuestion: true SOLO si el mensaje es claramente una pregunta general, saludo, consulta de soporte, o texto sin relación a un gasto/pago.
-- Ejemplos de isSupportQuestion=true: "hola", "cómo funciona esto", "necesito ayuda", "qué puedo hacer", "no entiendo"
-- Ejemplos de isSupportQuestion=false: "150", "pizza", "5 lucas", "pagué el netflix" (cualquier cosa que pueda ser un gasto)
-- En caso de duda, usa false.
-
-RESPONSE FORMAT (strict JSON):
-
-For PERSONAL EXPENSE:
-{
-  "type": "personal_expense",
-  "amount": <number>,
-  "currency": "ARS" | "USD" | "EUR" | "BRL",
-  "title": "<short expense title>",
-  "category": "<best matching category>",
-  "description": "<optional detail>",
-  "isRecurrent": true | false,
-  "frequency": "monthly" | "weekly" | "biweekly" | "yearly" | null,
-  "confidence": <0.0 to 1.0>
-}
-
-For UNKNOWN:
-{
-  "type": "unknown",
-  "confidence": <0.0 to 1.0>,
-  "suggestion": "<suggestion for user in Spanish>",
-  "isSupportQuestion": true | false
-}
-
-CONFIDENCE RULES:
-${CONFIDENCE_RULES}
-
-EXAMPLES:
-
-Message: "$1500 café #comida"
-{"type":"personal_expense","amount":1500,"currency":"ARS","title":"Café","category":"Comida","description":"","isRecurrent":false,"frequency":null,"confidence":0.98}
-
-Message: "gasté 2 lucas en uber"
-{"type":"personal_expense","amount":2000,"currency":"ARS","title":"Uber","category":"Transporte","description":"","isRecurrent":false,"frequency":null,"confidence":0.92}
-
-Message: "50 dólares la cena"
-{"type":"personal_expense","amount":50,"currency":"USD","title":"Cena","category":"Salidas","description":"","isRecurrent":false,"frequency":null,"confidence":0.9}
-
-Message: "pagué el netflix"
-{"type":"personal_expense","amount":0,"currency":"ARS","title":"Netflix","category":"Suscripciones","description":"","isRecurrent":true,"frequency":"monthly","confidence":0.6}
-
-Message: "5k super d:compra semanal"
-{"type":"personal_expense","amount":5000,"currency":"ARS","title":"Super","category":"Supermercado","description":"compra semanal","isRecurrent":false,"frequency":null,"confidence":0.92}
-
-Message: "alquiler mensual 350 lucas"
-{"type":"personal_expense","amount":350000,"currency":"ARS","title":"Alquiler","category":"Vivienda","description":"","isRecurrent":true,"frequency":"monthly","confidence":0.95}
-
-Message: "1200 birras con los pibes"
-{"type":"personal_expense","amount":1200,"currency":"ARS","title":"Birras","category":"Salidas","description":"con los pibes","isRecurrent":false,"frequency":null,"confidence":0.88}
-
-Message: "prepaga del mes 45k"
-{"type":"personal_expense","amount":45000,"currency":"ARS","title":"Prepaga","category":"Salud","description":"","isRecurrent":true,"frequency":"monthly","confidence":0.93}
-
-Message: "monotributo"
-{"type":"personal_expense","amount":0,"currency":"ARS","title":"Monotributo","category":"Impuestos","description":"","isRecurrent":true,"frequency":"monthly","confidence":0.5}
-
-Message: "hola"
-{"type":"unknown","confidence":0.1,"suggestion":"Hola! Para registrar un gasto, decime el monto y la descripción. Ej: $500 café #comida","isSupportQuestion":true}
-
-IMPORTANT:
-- Respond ONLY with the JSON, no additional text
-- Do not add explanations, only the JSON
-- The JSON must be valid and parseable
-- If in doubt, use low confidence and suggest clarification
-- For amounts with "lucas" or "k", multiply by 1000
-- If amount is 0 or unclear, set confidence below 0.7
-`
-  }
-
-  // ─── Finanzas AI methods ──────────────────────────────────────
+  // ─── Media processing AI methods ──────────────────────────────
 
   /** Audio transcription + expense extraction */
   async transcribeAudio(base64: string, mimeType: string, userCategories: string[] = []): Promise<TranscriptionResult | null> {
@@ -975,109 +753,6 @@ Si algún campo no está visible o no se puede determinar, usa null.`
     return this.parseJSON<TransferResult>(text, 'parseTransferImage')
   }
 
-  /** Bank transfer PDF parsing (same logic, different prompt mention) */
-  async parseTransferPDF(base64: string, mimeType: string): Promise<TransferResult | null> {
-    const today = new Date().toISOString().slice(0, 10)
-    const year = new Date().getFullYear()
-
-    const parts = [
-      { inlineData: { mimeType: mimeType || 'application/pdf', data: base64 } },
-      {
-        text: `Analiza este comprobante de pago o transferencia bancaria argentina en PDF.
-Hoy es ${today}.
-
-Extraé la siguiente información y devolvela SOLO como JSON válido, sin markdown ni texto extra:
-{
-  "amount": 0,
-  "recipientName": "nombre del destinatario o comercio",
-  "recipientCBU": "CBU o CVU si aparece",
-  "recipientAlias": "alias si aparece",
-  "recipientBank": "banco del destinatario",
-  "senderBank": "banco del emisor",
-  "date": "fecha en formato YYYY-MM-DD",
-  "reference": "número de referencia o comprobante",
-  "concept": "concepto o categoría si aparece"
-}
-
-IMPORTANTE sobre montos argentinos:
-- Los montos usan punto como separador de miles: $67.506 = sesenta y siete mil quinientos seis
-- Los decimales a veces aparecen en tamaño chico/superindice al lado del monto principal. Ej: "$67.506⁰⁸" o "$67.506,08" significa 67506.08 (sesenta y siete mil quinientos seis con 08 centavos)
-- NUNCA interpretes los puntos como decimales. En Argentina el punto es separador de miles.
-- El monto debe ser un número con decimales si los hay (ej: 67506.08), sin signos ni separadores de miles.
-
-Si la fecha no muestra año, asumí ${year}.
-Si algún campo no está visible o no se puede determinar, usa null.`
-      },
-    ]
-
-    const text = await this.generateContent(null, { maxOutputTokens: 1000, temperature: 0.3, parts })
-    if (!text) return null
-    return this.parseJSON<TransferResult>(text, 'parseTransferPDF')
-  }
-
-  /** Classify expense into user's categories */
-  async categorizeExpense(title: string, description: string, userCategories: string[] = []): Promise<string> {
-    if (userCategories.length === 0) return 'Otros'
-
-    const prompt = `Clasifica este gasto en una de las categorías del usuario.
-
-Gasto: "${title}"${description ? ` - ${description}` : ''}
-
-Categorías disponibles: ${userCategories.join(', ')}
-
-Responde SOLO con el nombre exacto de la categoría que mejor aplique. Si ninguna aplica, responde "Otros".`
-
-    const text = await this.generateContent(prompt, { maxOutputTokens: 50, temperature: 0.2 })
-    if (!text) return 'Otros'
-
-    const result = text.trim()
-    const match = userCategories.find(c => c.toLowerCase() === result.toLowerCase())
-    return match || 'Otros'
-  }
-
-  /** 3-month financial health analysis */
-  async getFinancialAnalysis(dataSummary: {
-    months: string[]
-    totalPayments: number
-    totalRecurrent: number
-    recurrentCount: number
-    monthlyData: Record<string, { total: number; count: number; byCategory: Record<string, number> }>
-    recurrents: Array<{ title: string; amount: number; category: string }>
-  }): Promise<string> {
-    const prompt = `Eres un asesor financiero personal amigable. Analiza los siguientes datos de gastos de un usuario argentino y proporciona feedback conciso sobre su salud financiera.
-
-DATOS DEL USUARIO:
-- Meses analizados: ${dataSummary.months.join(', ')}
-- Total de pagos registrados: ${dataSummary.totalPayments}
-- Gastos fijos mensuales: $${dataSummary.totalRecurrent} (${dataSummary.recurrentCount} fijos)
-
-GASTOS POR MES:
-${Object.entries(dataSummary.monthlyData).map(([month, info]) =>
-  `${month}: $${info.total.toLocaleString('es-AR')} (${info.count} pagos)
-   Categorías: ${Object.entries(info.byCategory).map(([cat, amt]) => `${cat}: $${(amt as number).toLocaleString('es-AR')}`).join(', ')}`
-).join('\n\n')}
-
-GASTOS FIJOS PRINCIPALES:
-${dataSummary.recurrents.map(r => `- ${r.title}: $${r.amount.toLocaleString('es-AR')} (${r.category})`).join('\n')}
-
-INSTRUCCIONES:
-1. Analiza tendencias de gasto (subiendo, bajando, estable)
-2. Identifica categorías con mayor gasto. Identifica posibles gastos irresponsables, evitables o anómalos
-3. Evaluá la proporción de gastos fijos vs variables
-4. Da 2-3 consejos prácticos y específicos
-5. Usa un tono amigable y motivador. No marques errores ni juzgues los hábitos. Sos el aliado que quiere ayudar.
-6. NO uses emojis
-7. Responde en español argentino
-8. Mantené la respuesta CORTA (max 800 caracteres) para WhatsApp
-9. Usa *asteriscos* para negritas
-10. Si aplica, haz notar algún patrón interesante en los datos
-
-Responde directamente con el análisis, sin introducción.`
-
-    const text = await this.generateContent(prompt, { maxOutputTokens: 500, temperature: 0.7 })
-    return text || 'No se pudo completar el análisis. Intentá nuevamente.'
-  }
-
   // ─── Support AI methods ────────────────────────────────────────
 
   /** FAQ entry type for support questions */
@@ -1098,16 +773,14 @@ Responde directamente con el análisis, sin introducción.`
         '\n'
     }
 
-    const prompt = `Sos un asistente de soporte de "text the check", una app financiera para Argentina/Latinoamérica con dos modos:
+    const prompt = `Sos un asistente de soporte de "text the check", una app para dividir gastos entre amigos en Argentina/Latinoamérica.
 
 Contexto de la plataforma:
-- *Grupos*: dividir gastos entre amigos (tipo Splitwise). Se registran gastos por WhatsApp, se dividen automáticamente, se pueden hacer @menciones para dividir entre personas específicas, "todos menos X", pagos entre personas, ver balances.
-- *Finanzas*: registrar gastos personales. Se pueden enviar textos, audios, fotos de comprobantes o PDFs. Categorización automática, gastos fijos/recurrentes, resúmenes mensuales, análisis financiero con IA.
+- Dividir gastos entre amigos (tipo Splitwise). Se registran gastos por WhatsApp, se dividen automáticamente, se pueden hacer @menciones para dividir entre personas específicas, "todos menos X", pagos entre personas, ver balances.
 - El usuario interactúa principalmente por WhatsApp enviando mensajes al bot.
 - También hay un dashboard web en textthecheck.app donde se pueden ver y editar gastos.
-- Comandos disponibles: /ayuda, /balance, /lista, /grupo, /modo, /resumen, /fijos, /categorías, /análisis, /borrar
+- Comandos disponibles: /ayuda, /balance, /lista, /grupo, /borrar
 - Para vincular WhatsApp: generar código en la app → enviar "VINCULAR <código>" por WhatsApp
-- Se puede cambiar entre modos con /modo grupos o /modo finanzas
 
 Tu rol es responder consultas usando UNICAMENTE la información del FAQ y el contexto de arriba. No inventes información.
 
@@ -1140,43 +813,5 @@ Si no podés responder:
 
     if (!text) return null
     return this.parseJSON<{ answer: string; noAnswer: boolean }>(text, 'answerSupportQuestion')
-  }
-
-  /** Weekly summary insight */
-  async getWeeklyInsight(weeklyStats: {
-    pastWeek: { count: number; amount: number; paidCount: number; unpaidCount: number; unpaidAmount: number }
-    nextWeek: { count: number; amount: number; paidCount: number; unpaidCount: number; unpaidAmount: number }
-    totalUnpaidAmount: number
-    paidThisMonth: number
-    unpaidThisMonth: number
-    totalPaidAmount: number
-    oneTimeCount: number
-    oneTimeAmount: number
-  }): Promise<string | null> {
-    const { pastWeek, nextWeek } = weeklyStats
-
-    const prompt = `Sos un asesor financiero personal amigable. Analizá los datos semanales de un usuario argentino y armá un resumen breve con dos partes:
-
-1. RESUMEN: En 2-3 oraciones contá qué pasó la semana pasada y qué se viene. Mencioná qué fue lo más pesado, qué estuvo tranquilo, si viene bien o atrasado con los pagos.
-2. TIPS: 1-2 comentarios genéricos, amigables y motivadores. NO sugieras acciones concretas (no "pagá tal cosa", "revisá tal otra"). Solo observaciones positivas o datos curiosos sobre sus finanzas.
-
-DATOS:
-- Semana pasada: ${pastWeek.count} pagos por $${pastWeek.amount.toLocaleString('es-AR')} (${pastWeek.paidCount} pagados, ${pastWeek.unpaidCount} pendientes por $${pastWeek.unpaidAmount.toLocaleString('es-AR')})
-- Semana entrante: ${nextWeek.count} pagos por $${nextWeek.amount.toLocaleString('es-AR')} (${nextWeek.paidCount} pagados, ${nextWeek.unpaidCount} pendientes por $${nextWeek.unpaidAmount.toLocaleString('es-AR')})
-- Total pendiente ambas semanas: $${weeklyStats.totalUnpaidAmount.toLocaleString('es-AR')}
-- Pagados este mes: ${weeklyStats.paidThisMonth}
-- Pendientes este mes: ${weeklyStats.unpaidThisMonth}
-- Total pagado este mes: $${weeklyStats.totalPaidAmount.toLocaleString('es-AR')}
-- Gastos únicos este mes: ${weeklyStats.oneTimeCount} por $${weeklyStats.oneTimeAmount.toLocaleString('es-AR')}
-
-REGLAS:
-- Español argentino, tono amigable y cercano
-- Sin emojis
-- No uses encabezados ni listas, escribí todo como texto corrido
-- Separá el resumen de los tips con un salto de línea
-- Máximo 600 caracteres en total
-- Respondé directamente, sin introducción`
-
-    return await this.generateContent(prompt, { maxOutputTokens: 350, temperature: 0.8 })
   }
 }

@@ -68,7 +68,7 @@
       </h2>
 
       <p class="font-body text-sm md:text-base text-ttc-text-muted leading-relaxed mb-8 max-w-md mx-auto">
-        Empeza a controlar tus finanzas hoy. Sin descargas, sin registros largos — solo tu WhatsApp.
+        Empezá a dividir gastos con amigos hoy. Sin descargas, sin registros largos — solo tu WhatsApp.
       </p>
 
       <a

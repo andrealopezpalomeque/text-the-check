@@ -13,9 +13,7 @@ export default defineNuxtConfig({
     dirs: [
       'stores',
       'stores/grupos',
-      'stores/finanzas',
       'composables',
-      'composables/finanzas',
     ]
   },
   googleFonts: {
@@ -44,10 +42,10 @@ export default defineNuxtConfig({
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1, viewport-fit=cover' },
-        { name: 'description', content: 'Tu compañero financiero por WhatsApp. Dividí gastos de viajes con amigos o llevá tus finanzas personales, todo en un mensaje.' },
+        { name: 'description', content: 'Tu compañero financiero por WhatsApp. Dividí gastos de viajes con amigos, todo en un mensaje.' },
         { name: 'theme-color', content: '#0C1017' },
         { property: 'og:title', content: 'Text the Check — Tu plata, a un mensaje' },
-        { property: 'og:description', content: 'Tu compañero financiero por WhatsApp. Dividí gastos de viajes con amigos o llevá tus finanzas personales, todo en un mensaje.' },
+        { property: 'og:description', content: 'Tu compañero financiero por WhatsApp. Dividí gastos de viajes con amigos, todo en un mensaje.' },
         { property: 'og:type', content: 'website' },
         { property: 'og:url', content: 'https://textthecheck.app' },
         { property: 'og:image', content: 'https://textthecheck.app/img/og-image.png' },
@@ -58,7 +56,7 @@ export default defineNuxtConfig({
         { property: 'og:site_name', content: 'Text the Check' },
         { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:title', content: 'Text the Check — Tu plata, a un mensaje' },
-        { name: 'twitter:description', content: 'Tu compañero financiero por WhatsApp. Dividí gastos de viajes con amigos o llevá tus finanzas personales, todo en un mensaje.' },
+        { name: 'twitter:description', content: 'Tu compañero financiero por WhatsApp. Dividí gastos de viajes con amigos, todo en un mensaje.' },
         { name: 'twitter:image', content: 'https://textthecheck.app/img/og-image.png' },
         { name: 'mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-status-bar-style', content: 'default' },
@@ -101,7 +99,6 @@ export default defineNuxtConfig({
     '/faq': { prerender: true },
     '/iniciar-sesion': { prerender: false },
     '/perfil': { prerender: false },
-    '/grupos/**': { ssr: false },
-    '/finanzas/**': { ssr: false }
+    '/grupos/**': { ssr: false }
   }
 })

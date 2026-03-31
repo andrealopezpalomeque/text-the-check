@@ -6,14 +6,6 @@
         <!-- Left: wordmark + mode toggle -->
         <div class="flex items-center gap-3">
           <AppLogo variant="horizontal" />
-          <!-- Mode Toggle: Switch to Finanzas -->
-          <button
-            @click="switchToFinanzas"
-            class="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-ttc-text-muted hover:text-ttc-primary hover:bg-ttc-primary/10 rounded-md transition-colors"
-          >
-            <IconWallet class="w-3.5 h-3.5" />
-            <span>Finanzas</span>
-          </button>
         </div>
 
         <!-- Right: actions + theme toggle + profile -->
@@ -124,10 +116,8 @@ import IconHome from '~icons/mdi/home'
 import IconGroup from '~icons/mdi/account-group'
 import IconChartBox from '~icons/mdi/chart-box'
 import IconShare from '~icons/mdi/share-variant'
-import IconWallet from '~icons/mdi/wallet'
 
 const { user } = useAuth()
-const { setMode } = useAppMode()
 const groupStore = useGroupStore()
 const expenseStore = useExpenseStore()
 const { activeTab, switchTab, openExpenseModal } = useNavigationState()
@@ -165,11 +155,6 @@ const shareInviteLink = async () => {
 
 const handleAddExpense = () => {
   openExpenseModal()
-}
-
-const switchToFinanzas = () => {
-  setMode('finanzas')
-  navigateTo('/finanzas')
 }
 
 const getUserInitials = (displayName) => {

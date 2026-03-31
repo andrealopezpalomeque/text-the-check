@@ -145,69 +145,40 @@
                   </div>
                 </div>
 
-                <!-- Chat messages: fixed height, crossfade -->
+                <!-- Chat messages: fixed height -->
                 <div class="chat-area">
-                  <Transition name="chat-fade" mode="out-in">
-                    <div :key="activeMode" class="chat-messages px-3 py-3 space-y-2">
+                  <div class="chat-messages px-3 py-3 space-y-2">
+                    <div
+                      v-for="(msg, i) in messages"
+                      :key="i"
+                      :class="['flex', msg.sender === 'user' ? 'justify-end' : 'justify-start']"
+                      class="chat-msg-stagger"
+                      :style="{ animationDelay: i * 0.08 + 's' }"
+                    >
                       <div
-                        v-for="(msg, i) in currentMessages"
-                        :key="i"
-                        :class="['flex', msg.sender === 'user' ? 'justify-end' : 'justify-start']"
-                        class="chat-msg-stagger"
-                        :style="{ animationDelay: i * 0.08 + 's' }"
+                        :class="[
+                          'max-w-[82%] rounded-2xl px-3 py-2',
+                          msg.sender === 'user' ? 'bg-ttc-bubble-user-primary' : 'bg-ttc-bubble-bot'
+                        ]"
                       >
-                        <div
-                          :class="[
-                            'max-w-[82%] rounded-2xl px-3 py-2',
-                            msg.sender === 'user'
-                              ? activeMode === 'viajes' ? 'bg-ttc-bubble-user-primary' : 'bg-ttc-bubble-user-accent'
-                              : 'bg-ttc-bubble-bot'
-                          ]"
-                        >
-                          <p class="font-body text-[11px] leading-relaxed text-ttc-text">{{ msg.text }}</p>
-                          <p class="font-body text-[9px] text-ttc-text-muted text-right mt-0.5">{{ msg.time }}</p>
-                        </div>
+                        <p class="font-body text-[11px] leading-relaxed text-ttc-text">{{ msg.text }}</p>
+                        <p class="font-body text-[9px] text-ttc-text-muted text-right mt-0.5">{{ msg.time }}</p>
                       </div>
                     </div>
-                  </Transition>
+                  </div>
                 </div>
 
                 <!-- Input bar -->
                 <div class="px-3 py-2 border-t border-ttc-border">
                   <div class="flex items-center gap-2 rounded-full border border-ttc-border bg-ttc-surface px-3 py-1.5">
                     <span class="flex-1 font-body text-[10px] text-ttc-text-muted">Escribí un mensaje...</span>
-                    <div :class="['w-5 h-5 rounded-full flex items-center justify-center transition-colors duration-500', activeMode === 'viajes' ? 'bg-ttc-primary' : 'bg-ttc-accent']">
+                    <div class="w-5 h-5 rounded-full flex items-center justify-center bg-ttc-primary">
                       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <!-- Mode indicator pills -->
-              <div class="flex justify-center gap-2 mt-4">
-                <button
-                  @click="switchMode('viajes')"
-                  :class="[
-                    'px-3 py-1 rounded-full font-body text-[10px] font-semibold transition-all duration-300 cursor-pointer',
-                    activeMode === 'viajes'
-                      ? 'bg-[#4A90D9]/15 text-ttc-primary border border-[#4A90D9]/30'
-                      : 'text-ttc-text-muted border border-transparent hover:text-ttc-text'
-                  ]"
-                >
-                  Grupos
-                </button>
-                <button
-                  @click="switchMode('finanzas')"
-                  :class="[
-                    'px-3 py-1 rounded-full font-body text-[10px] font-semibold transition-all duration-300 cursor-pointer',
-                    activeMode === 'finanzas'
-                      ? 'bg-[#34D399]/15 text-ttc-accent border border-[#34D399]/30'
-                      : 'text-ttc-text-muted border border-transparent hover:text-ttc-text'
-                  ]"
-                >
-                  Finanzas
-                </button>
-              </div>
             </div>
           </div>
 
@@ -231,46 +202,22 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref } from 'vue'
 import { MessageCircle } from 'lucide-vue-next'
 
 const config = useRuntimeConfig()
 const whatsappPhone = config.public.whatsappPhoneNumber
 const whatsappUrl = whatsappPhone ? `https://wa.me/${whatsappPhone}?text=Hola` : '/iniciar-sesion'
 
-const activeMode = ref('viajes')
 const recibitoRevealed = ref(false)
 const hasInteracted = ref(false)
-let modeInterval = null
 
-const chatData = {
-  viajes: [
-    { sender: 'user', text: 'Pagué 12.000 la cena para todos', time: '21:32' },
-    { sender: 'bot', text: 'Listo, gasto registrado! Gonza, Mili y Sofi te deben $3.000 c/u.', time: '21:32' },
-    { sender: 'user', text: 'Cuánto me deben en total?', time: '21:33' },
-    { sender: 'bot', text: 'Te deben $14.500 en total. Gonza: $6.500, Mili: $4.000, Sofi: $4.000.', time: '21:33' },
-  ],
-  finanzas: [
-    { sender: 'user', text: 'Gasté 2.500 en el super', time: '18:15' },
-    { sender: 'bot', text: 'Registrado en Supermercado. Llevás $18.200 esta semana.', time: '18:15' },
-    { sender: 'user', text: 'Cómo vengo este mes?', time: '18:16' },
-    { sender: 'bot', text: 'Llevás $85.400 de $120.000. Vas bien, te quedan 12 días.', time: '18:16' },
-  ],
-}
-
-const currentMessages = computed(() => chatData[activeMode.value])
-
-function switchMode(mode) {
-  activeMode.value = mode
-  resetInterval()
-}
-
-function resetInterval() {
-  if (modeInterval) clearInterval(modeInterval)
-  modeInterval = setInterval(() => {
-    activeMode.value = activeMode.value === 'viajes' ? 'finanzas' : 'viajes'
-  }, 8000)
-}
+const messages = [
+  { sender: 'user', text: 'Pagué 12.000 la cena para todos', time: '21:32' },
+  { sender: 'bot', text: 'Listo, gasto registrado! Gonza, Mili y Sofi te deben $3.000 c/u.', time: '21:32' },
+  { sender: 'user', text: 'Cuánto me deben en total?', time: '21:33' },
+  { sender: 'bot', text: 'Te deben $14.500 en total. Gonza: $6.500, Mili: $4.000, Sofi: $4.000.', time: '21:33' },
+]
 
 function onPhoneHover() {
   recibitoRevealed.value = true
@@ -280,14 +227,6 @@ function onPhoneHover() {
 function onPhoneLeave() {
   recibitoRevealed.value = false
 }
-
-onMounted(() => {
-  resetInterval()
-})
-
-onUnmounted(() => {
-  if (modeInterval) clearInterval(modeInterval)
-})
 
 const scrollToComoFunciona = () => {
   document.getElementById('como-funciona')?.scrollIntoView({ behavior: 'smooth' })
@@ -345,22 +284,6 @@ const scrollToComoFunciona = () => {
   height: 290px;
   overflow: hidden;
   position: relative;
-}
-
-/* Chat crossfade transition */
-.chat-fade-enter-active {
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
-.chat-fade-leave-active {
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-.chat-fade-enter-from {
-  opacity: 0;
-  transform: translateY(8px);
-}
-.chat-fade-leave-to {
-  opacity: 0;
-  transform: translateY(-6px);
 }
 
 /* Staggered message entrance */

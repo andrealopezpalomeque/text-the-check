@@ -15,7 +15,7 @@
 
       <!-- Main title -->
       <h1 class="mt-6 font-nunito font-extrabold text-4xl md:text-6xl leading-tight text-balance animate-fade-up" style="animation-delay: 0.1s;">
-        Controlá tus finanzas<br>
+        Controla tus gastos<br>
         <span class="text-ttc-primary">desde WhatsApp</span>
       </h1>
 

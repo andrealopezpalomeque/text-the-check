@@ -1,8 +1,7 @@
 /**
  * wp_webhook.ts — Standalone Express server for the WhatsApp Business API webhook.
  *
- * Single entry point for all WhatsApp messages. Routes to GruposHandler or
- * FinanzasHandler based on user's activeMode field.
+ * Single entry point for all WhatsApp messages. Routes to GruposHandler.
  *
  * Security: HMAC SHA256 signature verification, rate limiting, message dedup.
  */
@@ -22,16 +21,11 @@ import { db, admin } from '../config/firebase.js'
 import { normalizeForComparison, generatePhoneCandidates } from '../helpers/phone.js'
 import { sendMessage, sendButtons } from '../helpers/whatsapp.js'
 import {
-  formatOnboardingWelcome,
   formatOnboardingGruposAskName,
   formatOnboardingGruposCreated,
-  formatOnboardingFinanzasReady,
-  formatOnboardingReprompt,
-  formatModeSwitchPendingCleared,
 } from '../helpers/responseFormatter.js'
 import GeminiHandler from '../handlers/GeminiHandler.js'
 import GruposHandler from '../handlers/GruposHandler.js'
-import FinanzasHandler from '../handlers/FinanzasHandler.js'
 
 // ─── Express setup ─────────────────────────────────────────────────
 
@@ -52,7 +46,6 @@ app.use(express.json({
 
 const gemini = new GeminiHandler(process.env.GEMINI_API_KEY || '')
 const gruposHandler = new GruposHandler(gemini)
-const finanzasHandler = new FinanzasHandler(gemini)
 
 // ─── Message deduplication ─────────────────────────────────────────
 
@@ -77,7 +70,7 @@ interface OnboardingState {
   phone: string
   contactName: string
   userId: string
-  step: 'mode_selection' | 'grupos_name' | 'finanzas_ready'
+  step: 'grupos_name'
   createdAt: number
 }
 
@@ -269,26 +262,6 @@ async function handleAISupport(phone: string, question: string, session: Support
   ])
 }
 
-const DEFAULT_CATEGORIES = [
-  { name: 'Vivienda y Alquiler', color: '#4682B4' },
-  { name: 'Servicios', color: '#0072DF' },
-  { name: 'Supermercado', color: '#1D9A38' },
-  { name: 'Salidas', color: '#FF6347' },
-  { name: 'Transporte', color: '#E6AE2C' },
-  { name: 'Entretenimiento', color: '#6158FF' },
-  { name: 'Salud', color: '#E84A8A' },
-  { name: 'Fitness y Deportes', color: '#FF4500' },
-  { name: 'Cuidado Personal', color: '#DDA0DD' },
-  { name: 'Mascotas', color: '#3CAEA3' },
-  { name: 'Ropa', color: '#800020' },
-  { name: 'Viajes', color: '#FF8C00' },
-  { name: 'Educación', color: '#9370DB' },
-  { name: 'Suscripciones', color: '#20B2AA' },
-  { name: 'Regalos', color: '#FF1493' },
-  { name: 'Impuestos y Gobierno', color: '#8B4513' },
-  { name: 'Otros', color: '#808080' },
-]
-
 async function startOnboarding(phone: string, contactName: string): Promise<void> {
   try {
     const userId = crypto.randomUUID()
@@ -304,24 +277,16 @@ async function startOnboarding(phone: string, contactName: string): Promise<void
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
     })
 
-    // Create pt_whatsapp_link doc (enables finanzas flow)
-    await db.collection('pt_whatsapp_link').doc(canonicalPhone).set({
-      status: 'linked',
-      userId,
-      phoneNumber: canonicalPhone,
-      contactName,
-      linkedAt: admin.firestore.FieldValue.serverTimestamp(),
-    })
-
     pendingOnboarding.set(phone, {
       phone,
       contactName,
       userId,
-      step: 'mode_selection',
+      step: 'grupos_name',
       createdAt: Date.now(),
     })
 
-    await sendMessage(phone, formatOnboardingWelcome(contactName))
+    const greeting = contactName && contactName !== 'Usuario' ? `Hola ${contactName}!` : 'Hola!'
+    await sendMessage(phone, `👋 *${greeting}* Bienvenido a *text the check*\n\n👥 Vamos a crear tu primer grupo para dividir gastos.\n\n¿Cómo se llama? (ej: "Viaje a Bariloche", "Depto")`)
     console.log(`[ONBOARDING] New user created: ${userId} (${contactName}, ${phone})`)
   } catch (error) {
     console.error('[ONBOARDING] Error starting onboarding:', error)
@@ -337,76 +302,31 @@ async function handleOnboardingStep(phone: string, message: any): Promise<void> 
   const textLower = text.toLowerCase()
 
   try {
-    switch (state.step) {
-      case 'mode_selection': {
-        const isGrupos = textLower === '1' || textLower.includes('dividir') || textLower.includes('grupo') || textLower.includes('amigo')
-        const isFinanzas = textLower === '2' || textLower.includes('finanza') || textLower.includes('personal')
-
-        if (isGrupos) {
-          state.step = 'grupos_name'
-          state.createdAt = Date.now() // Reset timeout
-          await sendMessage(phone, formatOnboardingGruposAskName())
-        } else if (isFinanzas) {
-          // Seed categories and finish
-          await seedDefaultCategories(state.userId)
-          await setActiveMode(state.userId, 'finanzas')
-          pendingOnboarding.delete(phone)
-          await sendMessage(phone, formatOnboardingFinanzasReady())
-          console.log(`[ONBOARDING] ${state.contactName} completed → finanzas`)
-        } else {
-          await sendMessage(phone, formatOnboardingReprompt())
-        }
-        break
-      }
-
-      case 'grupos_name': {
-        if (!text || text.length < 2) {
-          await sendMessage(phone, 'Escribi un nombre para tu grupo (ej: "Viaje a Bariloche")')
-          return
-        }
-
-        // Create group
-        const groupRef = db.collection('ttc_group').doc()
-        await groupRef.set({
-          id: groupRef.id,
-          name: text,
-          members: [state.userId],
-          createdBy: state.userId,
-          createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        })
-
-        await setActiveMode(state.userId, 'grupos')
-        pendingOnboarding.delete(phone)
-
-        const inviteLink = `https://textthecheck.app/join?group=${groupRef.id}`
-        await sendMessage(phone, formatOnboardingGruposCreated(text, inviteLink))
-        console.log(`[ONBOARDING] ${state.contactName} completed → grupos (group: ${text})`)
-        break
-      }
-
-      // finanzas_ready is a terminal state — shouldn't reach here
-      default:
-        pendingOnboarding.delete(phone)
-        break
+    if (!text || text.length < 2) {
+      await sendMessage(phone, 'Escribí un nombre para tu grupo (ej: "Viaje a Bariloche")')
+      return
     }
+
+    // Create group
+    const groupRef = db.collection('ttc_group').doc()
+    await groupRef.set({
+      id: groupRef.id,
+      name: text,
+      members: [state.userId],
+      createdBy: state.userId,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    })
+
+    await setActiveMode(state.userId, 'grupos')
+    pendingOnboarding.delete(phone)
+
+    const inviteLink = `https://textthecheck.app/join?group=${groupRef.id}`
+    await sendMessage(phone, formatOnboardingGruposCreated(text, inviteLink))
+    console.log(`[ONBOARDING] ${state.contactName} completed → grupos (group: ${text})`)
   } catch (error) {
     console.error('[ONBOARDING] Error in step:', error)
     await sendMessage(phone, '⚠️ Hubo un error. Intentá de nuevo.')
   }
-}
-
-async function seedDefaultCategories(userId: string): Promise<void> {
-  const batch = db.batch()
-  for (const cat of DEFAULT_CATEGORIES) {
-    const ref = db.collection('pt_expense_category').doc()
-    batch.set(ref, {
-      ...cat,
-      userId,
-      deletedAt: null,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    })
-  }
-  await batch.commit()
 }
 
 // ─── Security middleware ───────────────────────────────────────────
@@ -552,27 +472,14 @@ async function processMessage(message: any, contacts: any[]): Promise<void> {
       return
     }
 
-    // /modo or /mode — switch between grupos/finanzas (with or without /)
-    if (textLower.startsWith('/modo') || textLower.startsWith('/mode') || textLower.startsWith('modo ') || textLower === 'modo') {
-      await handleModo(from, textLower.replace(/^\//, ''))
-      return
-    }
-
-    // Legacy MODE command (backward compat)
-    if (textUpper === 'MODE GRUPOS' || textUpper === 'MODE FINANZAS') {
-      const targetMode = textUpper === 'MODE GRUPOS' ? 'grupos' : 'finanzas'
-      await handleModoSwitch(from, targetMode)
-      return
-    }
-
     // /ayuda or /help — two-step flow with buttons
     if (textLower === '/ayuda' || textLower === '/help' || textLower === 'ayuda' || textLower === 'help') {
-      const { mode: userMode } = await determineUserMode(from)
-      if (!userMode) {
-        await sendMessage(from, `📖 *Cómo usar text the check*\n\nEste bot tiene dos modos:\n👥 *Grupos* — Dividir gastos con amigos\n📊 *Finanzas* — Registrar gastos personales\n\nMandá cualquier mensaje para empezar!\n\nUna vez configurado, usá /modo grupos o /modo finanzas para cambiar.`)
+      const { user: helpUser } = await determineUserMode(from)
+      if (!helpUser) {
+        await sendMessage(from, `📖 *Cómo usar text the check*\n\nMandá cualquier mensaje para crear tu cuenta y empezar a dividir gastos con amigos.`)
         return
       }
-      // Has mode — show button choice: Comandos vs Soporte AI
+      // Has account — show button choice: Comandos vs Soporte AI
       await sendButtons(from, '¿En qué te puedo ayudar?', [
         { id: 'ayuda_comandos', title: 'Comandos' },
         { id: 'ayuda_soporte', title: 'Soporte AI' },
@@ -588,11 +495,9 @@ async function processMessage(message: any, contacts: any[]): Promise<void> {
 
     // /ayuda button responses
     if (buttonId === 'ayuda_comandos') {
-      const { mode: userMode, user } = await determineUserMode(from)
-      if (userMode === 'grupos' && user) {
+      const { user } = await determineUserMode(from)
+      if (user) {
         await gruposHandler.handleMessage(from, 'text', { type: 'text', text: { body: '/ayuda' } }, user, contactName)
-      } else if (userMode === 'finanzas') {
-        await finanzasHandler.handleMessage(from, 'text', { type: 'text', text: { body: 'ayuda' } }, contactName)
       }
       return
     }
@@ -629,7 +534,6 @@ async function processMessage(message: any, contacts: any[]): Promise<void> {
       const user = await gruposHandler.getUserByPhone(from)
       if (user) {
         gruposHandler.clearPendingSupportText(user.id)
-        finanzasHandler.clearPendingSupportText(user.id)
       }
       return
     }
@@ -640,17 +544,11 @@ async function processMessage(message: any, contacts: any[]): Promise<void> {
         await sendMessage(from, 'Escribí el gasto que querés registrar.')
         return
       }
-      const { mode } = await determineUserMode(from)
-      const originalText = mode === 'grupos'
-        ? gruposHandler.getPendingSupportText(user.id)
-        : finanzasHandler.getPendingSupportText(user.id)
+      const originalText = gruposHandler.getPendingSupportText(user.id)
 
-      if (originalText && mode === 'grupos') {
+      if (originalText) {
         gruposHandler.clearPendingSupportText(user.id)
         await gruposHandler.handleMessage(from, 'text', { type: 'text', text: { body: originalText } }, user, contactName, true)
-      } else if (originalText && mode === 'finanzas') {
-        finanzasHandler.clearPendingSupportText(user.id)
-        await finanzasHandler.handleMessage(from, 'text', { type: 'text', text: { body: originalText } }, contactName, true)
       } else {
         await sendMessage(from, 'Escribí el gasto que querés registrar.')
       }
@@ -679,11 +577,11 @@ async function processMessage(message: any, contacts: any[]): Promise<void> {
     }
   }
 
-  // ── Determine user mode ──
+  // ── Determine user ──
 
-  const { mode, user } = await determineUserMode(from)
+  const { user } = await determineUserMode(from)
 
-  if (!mode) {
+  if (!user) {
     // Check if user is mid-onboarding
     if (pendingOnboarding.has(from)) {
       await handleOnboardingStep(from, message)
@@ -695,13 +593,8 @@ async function processMessage(message: any, contacts: any[]): Promise<void> {
     return
   }
 
-  // Route to handler
-  if (mode === 'grupos') {
-    if (!user) return
-    await gruposHandler.handleMessage(from, messageType, message, user, contactName)
-  } else {
-    await finanzasHandler.handleMessage(from, messageType, message, contactName)
-  }
+  // Route to Grupos handler
+  await gruposHandler.handleMessage(from, messageType, message, user, contactName)
 }
 
 // ─── VINCULAR / DESVINCULAR ──────────────────────────────────────
@@ -744,16 +637,7 @@ async function handleVincular(phone: string, code: string, contactName: string):
     // Set ttc_user.phone (enables Grupos)
     await db.collection('ttc_user').doc(userId).update({ phone: canonicalPhone })
 
-    // Create linked doc in pt_whatsapp_link (enables Finanzas)
-    await db.collection('pt_whatsapp_link').doc(canonicalPhone).set({
-      status: 'linked',
-      userId,
-      phoneNumber: canonicalPhone,
-      contactName,
-      linkedAt: admin.firestore.FieldValue.serverTimestamp(),
-    })
-
-    await sendMessage(phone, `✅ *¡Cuenta vinculada!*\n\nAhora podés usar:\n👥 *Grupos* — Dividir gastos con amigos\n📊 *Finanzas* — Registrar gastos personales\n\nEscribí /modo grupos o /modo finanzas para elegir.\nO simplemente mandá un mensaje y te guío.`)
+    await sendMessage(phone, `✅ *¡Cuenta vinculada!*\n\nYa podés dividir gastos con amigos por WhatsApp.\nContame qué pagaste y lo divido.\n\n_Escribí /ayuda para ver todas las opciones._`)
   } catch (error) {
     console.error('Error in VINCULAR:', error)
     await sendMessage(phone, '⚠️ Error al vincular la cuenta. Intentá nuevamente.')
@@ -785,104 +669,21 @@ async function handleDesvincular(phone: string): Promise<void> {
   }
 }
 
-// ─── /modo command ───────────────────────────────────────────────
+// ─── User detection ──────────────────────────────────────────
 
-async function handleModo(phone: string, textLower: string): Promise<void> {
-  const parts = textLower.split(/\s+/)
-  const arg = parts[1] || ''
-
-  if (arg === 'grupos' || arg === 'finanzas') {
-    await handleModoSwitch(phone, arg)
-    return
-  }
-
-  // /modo with no valid arg — show current mode
-  const { mode } = await determineUserMode(phone)
-  const modeEmoji = mode === 'grupos' ? '👥' : mode === 'finanzas' ? '📊' : ''
-  if (mode) {
-    await sendMessage(phone, `🔄 Modo actual: *${mode}* ${modeEmoji}\n\nPara cambiar, escribí:\n/modo grupos — Dividir gastos con amigos 👥\n/modo finanzas — Registrar gastos personales 📊`)
-  } else {
-    await sendMessage(phone, `🔄 No tenés un modo activo.\n\nEscribí:\n/modo grupos — Dividir gastos con amigos 👥\n/modo finanzas — Registrar gastos personales 📊`)
-  }
-}
-
-async function handleModoSwitch(phone: string, targetMode: string): Promise<void> {
-  const user = await gruposHandler.getUserByPhone(phone)
-  if (!user) {
-    await sendMessage(phone, `🔗 No encontré tu cuenta. Mandá cualquier mensaje para crear tu cuenta y empezar.`)
-    return
-  }
-
-  // Clear pending states in BOTH handlers before switching
-  const gruposHadPending = gruposHandler.clearPendingStates(user.id)
-  const finanzasHadPending = finanzasHandler.clearPendingStates(user.id)
-  if (gruposHadPending || finanzasHadPending) {
-    await sendMessage(phone, formatModeSwitchPendingCleared())
-  }
-
-  await setActiveMode(user.id, targetMode)
-
-  if (targetMode === 'grupos') {
-    const groups = await gruposHandler.getAllGroupsByUserId(user.id)
-    if (groups.length > 1) {
-      await sendMessage(phone, `✅ Modo cambiado a *grupos* 👥\n\nTenés ${groups.length} grupos. Cuando cargues un gasto, te voy a preguntar en cuál registrarlo.\n\n_Escribí /ayuda para ver todas las opciones._`)
-    } else if (groups.length === 1) {
-      await sendMessage(phone, `✅ Modo cambiado a *grupos* 👥\n\n📁 Grupo: *${groups[0].name}*\nContame qué pagaste y lo divido.\n\n_Escribí /ayuda para ver todas las opciones._`)
-    } else {
-      await sendMessage(phone, `✅ Modo cambiado a *grupos* 👥\n\nNo pertenecés a ningún grupo todavía. Creá uno desde la app.\n\n_Escribí /ayuda para ver todas las opciones._`)
-    }
-  } else {
-    await sendMessage(phone, `✅ Modo cambiado a *finanzas* 📊\n\nContame qué pagaste o enviá un comprobante.\n\n_Escribí /ayuda para ver todas las opciones._`)
-  }
-}
-
-// ─── User mode detection ──────────────────────────────────────────
-
-interface UserWithMode {
-  mode: string | null
+interface UserLookupResult {
   user: any | null
 }
 
-async function determineUserMode(phone: string): Promise<UserWithMode> {
-  // 1. Look up user in ttc_user
+async function determineUserMode(phone: string): Promise<UserLookupResult> {
   const user = await gruposHandler.getUserByPhone(phone)
 
-  // 2. Check activeMode on user doc
-  if (user?.activeMode) {
-    return { mode: user.activeMode as string, user }
-  }
-
-  // 3. Check if linked in finanzas
-  const isLinked = await finanzasHandler.checkLinked(phone)
-
-  // 4. Check if member of any grupo
-  const hasGroups = user !== null
-
-  if (!isLinked && !hasGroups) {
+  if (!user) {
     const candidates = generatePhoneCandidates(phone)
     console.log(`[MODE] User not found for phone ${phone}. Candidates tried: ${candidates.join(', ')}`)
   }
 
-  if (isLinked && hasGroups) {
-    // Both — need explicit mode selection
-    // For now, default to the one they used most recently, or prompt
-    await sendMessage(phone, `🔄 Estás registrado en ambos modos.\n\nEscribí:\n/modo grupos — Dividir gastos con amigos 👥\n/modo finanzas — Registrar gastos personales 📊`)
-    return { mode: null, user }
-  }
-
-  if (isLinked) {
-    // Auto-set finanzas
-    if (user) await setActiveMode(user.id, 'finanzas')
-    return { mode: 'finanzas', user }
-  }
-
-  if (hasGroups) {
-    // Auto-set grupos
-    if (user) await setActiveMode(user.id, 'grupos')
-    return { mode: 'grupos', user }
-  }
-
-  return { mode: null, user: null }
+  return { user }
 }
 
 
