@@ -17,7 +17,7 @@
           <div>
             <h2 class="text-xl font-semibold text-ttc-text mt-8 mb-3">1. Responsables</h2>
             <p>
-              <strong class="text-ttc-text">text the check</strong> es operado por Andrea Lopez Palomeque
+              <strong class="text-ttc-text">text the check</strong> es operado por Andrea Lopez Palomeque e Imanol Corimayo
               (en adelante, "nosotros"). Para cualquier consulta sobre esta política o el tratamiento de tus datos,
               podés escribirnos a <a href="mailto:hello@textthecheck.app" class="text-ttc-primary hover:text-ttc-primary/80">hello@textthecheck.app</a>.
             </p>
