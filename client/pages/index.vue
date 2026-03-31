@@ -54,45 +54,9 @@
           </div>
         </div>
 
-        <!-- Right column: chat demo -->
-        <div class="mt-10 lg:mt-0 lg:flex-shrink-0">
-          <div class="chat-demo max-w-[380px] mx-auto bg-ttc-card rounded-2xl border border-ttc-border overflow-hidden">
-            <!-- Chat header -->
-            <div class="bg-ttc-surface px-4 py-3 flex items-center gap-2.5 border-b border-ttc-border">
-              <div class="w-8 h-8 rounded-full bg-ttc-primary/[0.18] flex items-center justify-center">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--color-primary)"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-              </div>
-              <div>
-                <div class="font-semibold text-[13px] text-ttc-text">Text the Check</div>
-                <div class="text-[11px] text-ttc-accent">en línea</div>
-              </div>
-            </div>
-
-            <!-- Chat messages -->
-            <div class="p-4 flex flex-col gap-2">
-              <div class="msg msg-user">
-                gasté 12 lucas en la cena con Gonza y Mati
-                <div class="msg-time">21:34</div>
-              </div>
-              <div class="msg msg-bot">
-                Gasto registrado:<br />
-                <span class="font-nunito font-bold text-ttc-primary">$12.000</span> — Cena<br />
-                Pagaste vos, dividido con Gonza y Mati
-                <div class="msg-time">21:34</div>
-              </div>
-              <div class="msg msg-user">
-                /balance
-                <div class="msg-time">21:35</div>
-              </div>
-              <div class="msg msg-bot">
-                <strong>Brasil 2026</strong><br />
-                Gonza te debe <span class="font-nunito font-bold text-ttc-accent">$4.000</span><br />
-                Mati te debe <span class="font-nunito font-bold text-ttc-accent">$4.000</span><br />
-                Vos estás al día
-                <div class="msg-time">21:35</div>
-              </div>
-            </div>
-          </div>
+        <!-- Right column: animated WhatsApp demo -->
+        <div class="mt-10 lg:mt-0 lg:flex-shrink-0 flex justify-center">
+          <WhatsAppHeroDemo />
         </div>
       </div>
     </div>
@@ -295,48 +259,6 @@ watch(authLoading, (loading) => {
 </script>
 
 <style scoped>
-/* Chat demo messages */
-.msg {
-  max-width: 85%;
-  padding: 8px 12px;
-  border-radius: 12px;
-  font-size: 13px;
-  line-height: 1.5;
-  animation: chatFadeUp 0.4s ease both;
-}
-
-.msg-user {
-  background: #005C4B;
-  color: #E2E8F0;
-  align-self: flex-end;
-  border-bottom-right-radius: 4px;
-}
-
-.msg-bot {
-  background: var(--color-surface);
-  color: var(--color-text);
-  align-self: flex-start;
-  border-bottom-left-radius: 4px;
-}
-
-.msg-time {
-  font-size: 10px;
-  color: var(--color-text-dim);
-  margin-top: 2px;
-  text-align: right;
-}
-
-/* Staggered animation delays */
-.msg:nth-child(1) { animation-delay: 0.1s; }
-.msg:nth-child(2) { animation-delay: 0.5s; }
-.msg:nth-child(3) { animation-delay: 1.0s; }
-.msg:nth-child(4) { animation-delay: 1.6s; }
-
-@keyframes chatFadeUp {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
 /* Auth overlay transition */
 .fade-leave-active { transition: opacity 0.3s ease; }
 .fade-leave-to { opacity: 0; }
