@@ -20,7 +20,7 @@
         <!-- Left column: text + CTAs -->
         <div class="text-center lg:text-left lg:flex-1">
           <div class="font-body font-medium text-[10px] tracking-[3px] uppercase text-ttc-primary-light mb-5">
-            Your money, one message away
+            Tu plata, a un mensaje
           </div>
 
           <h1 class="font-nunito font-extrabold text-[clamp(28px,6vw,44px)] leading-[1.15] text-ttc-text mb-5">
