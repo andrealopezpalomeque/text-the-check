@@ -21,6 +21,7 @@ export default defineNuxtConfig({
       'Outfit': [500, 600],
       'Nunito': [700, 800],
       'DM Sans': [400, 500, 600, 700],
+      'DM Mono': [400],
       'Poppins': [600, 700],
       'Inter': [400, 500, 600],
     },

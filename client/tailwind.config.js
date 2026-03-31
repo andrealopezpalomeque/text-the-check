@@ -32,6 +32,7 @@ module.exports = {
         'ttc-bubble-bot': 'var(--color-bubble-bot)',
         'ttc-toggle-primary': 'var(--color-toggle-primary)',
         'ttc-toggle-accent': 'var(--color-toggle-accent)',
+        'ttc-whatsapp': '#25D366',
         // Semantic app colors (mapped to CSS variables for theme switching)
         positive: {
           50: '#f0fdf4',
@@ -71,6 +72,7 @@ module.exports = {
         'nunito': ['Nunito', 'sans-serif'],
         'body': ['DM Sans', 'sans-serif'],
         'display': ['Nunito', 'sans-serif'],
+        'dm-mono': ['DM Mono', 'monospace'],
         'sans': ['Inter', 'Roboto', 'system-ui', 'sans-serif'],
         'mono': ['Monaco', 'Courier New', 'monospace'],
       },
