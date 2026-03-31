@@ -15,7 +15,7 @@
     </Transition>
 
     <!-- HERO -->
-    <div class="pt-16 md:pt-[84px] pb-16 md:pb-20 px-5 max-w-[960px] mx-auto">
+    <div class="pt-16 md:pt-[84px] pb-16 md:pb-20 px-5 max-w-6xl mx-auto">
       <div class="flex flex-col lg:flex-row lg:items-center lg:gap-16">
         <!-- Left column: text + CTAs -->
         <div class="text-center lg:text-left lg:flex-1">
@@ -62,7 +62,7 @@
     </div>
 
     <!-- HOW IT WORKS -->
-    <section class="py-16 md:py-20 px-5 max-w-[900px] mx-auto">
+    <section class="py-16 md:py-20 px-5 max-w-6xl mx-auto">
       <div class="font-body font-semibold text-[11px] tracking-[1px] uppercase text-ttc-primary mb-3">
         Cómo funciona
       </div>
@@ -113,7 +113,7 @@
     </section>
 
     <!-- FEATURES -->
-    <section class="py-16 md:py-20 px-5 max-w-[900px] mx-auto">
+    <section class="py-16 md:py-20 px-5 max-w-6xl mx-auto">
       <div class="font-body font-semibold text-[11px] tracking-[1px] uppercase text-ttc-primary mb-3">
         Hecho para vos
       </div>
