@@ -5,9 +5,7 @@
         to="/"
         class="inline-flex items-center gap-2 text-ttc-text-muted hover:text-ttc-text transition-colors mb-8"
       >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-        </svg>
+        <ArrowLeft :size="20" :stroke-width="1.5" />
         Volver al inicio
       </NuxtLink>
 
@@ -118,6 +116,8 @@
 </template>
 
 <script setup>
+import { ArrowLeft } from 'lucide-vue-next'
+
 definePageMeta({
   layout: 'landing',
   ssr: false

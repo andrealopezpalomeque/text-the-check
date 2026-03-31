@@ -6,7 +6,19 @@
     </div>
 
     <!-- Links -->
-    <div class="flex gap-5 justify-center mb-3">
+    <div class="flex flex-wrap gap-5 justify-center mb-3">
+      <NuxtLink
+        to="/faq"
+        class="text-xs text-ttc-text-muted hover:text-ttc-primary-light transition-colors"
+      >
+        Preguntas Frecuentes
+      </NuxtLink>
+      <NuxtLink
+        to="/privacy"
+        class="text-xs text-ttc-text-muted hover:text-ttc-primary-light transition-colors"
+      >
+        Política de Privacidad
+      </NuxtLink>
       <a
         href="https://instagram.com/textthecheck"
         target="_blank"
