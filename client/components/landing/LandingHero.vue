@@ -8,11 +8,11 @@
             ✦ beta gratuita — sin tarjeta
           </span>
 
-          <div class="font-body font-medium text-[10px] tracking-[3px] uppercase text-ttc-primary-light mb-5 animate-fade-up stagger-1">
+          <div class="font-body font-medium text-base md:text-lg italic text-ttc-primary-light mb-5 animate-fade-up stagger-1">
             Tu plata, a un mensaje
           </div>
 
-          <h1 class="font-nunito font-extrabold text-[clamp(30px,7vw,48px)] leading-[1.1] text-ttc-text mb-5 animate-fade-up stagger-2">
+          <h1 class="font-outfit font-bold uppercase text-[clamp(32px,7.5vw,56px)] leading-[1.1] tracking-[0.08em] text-ttc-text mb-7 animate-fade-up stagger-2">
             Dividí gastos en grupo.<br />
             <span class="text-ttc-primary">Sin planillas.</span><br />
             <span class="text-ttc-whatsapp">Sin discusiones.</span>

@@ -2,7 +2,7 @@
   <section ref="sectionRef" class="relative py-14 md:py-20 overflow-hidden bg-ttc-surface">
     <div class="relative z-10 max-w-4xl mx-auto px-5">
       <!-- Single small question — not the formula -->
-      <p class="font-body italic text-sm text-ttc-text-muted text-center mb-10">
+      <p class="font-body italic text-lg md:text-xl text-ttc-text-muted text-center mb-10">
         ...¿te suena?
       </p>
 
@@ -68,19 +68,19 @@ const sectionRef = ref(null)
 const { isVisible } = useScrollReveal(sectionRef)
 
 const desktopBubbles = [
-  { text: '¿quién pagó la pizza? 🍕', top: '-8px', left: '-40px', size: '13px', delay: '0ms', rotate: '-4deg' },
-  { text: 'pará que reviso el historial 😅', top: '10px', right: '-60px', size: '11px', delay: '250ms', rotate: '3deg' },
-  { text: 'te debo del viaje anterior', bottom: '20px', left: '-20px', size: '12px', delay: '120ms', rotate: '5deg' },
-  { text: 'no sé cuánto puse yo 😬', bottom: '-10px', right: '-30px', size: '14px', delay: '400ms', rotate: '-2deg' },
-  { text: 'pero eso ya lo pagué! 🤦', top: '50%', left: '-70px', size: '10px', delay: '320ms', rotate: '-6deg' },
+  { text: '¿quién pagó la pizza? 🍕', top: '-8px', left: '-40px', size: '16px', delay: '0ms', rotate: '-4deg' },
+  { text: 'pará que reviso el historial 😅', top: '10px', right: '-60px', size: '14px', delay: '250ms', rotate: '3deg' },
+  { text: 'te debo del viaje anterior', bottom: '20px', left: '-20px', size: '15px', delay: '120ms', rotate: '5deg' },
+  { text: 'no sé cuánto puse yo 😬', bottom: '-10px', right: '-30px', size: '17px', delay: '400ms', rotate: '-2deg' },
+  { text: 'pero eso ya lo pagué! 🤦', top: '50%', left: '-70px', size: '13px', delay: '320ms', rotate: '-6deg' },
 ]
 
 const mobileBubbles = [
-  { text: '¿quién pagó? 🍕', size: '12px', delay: '0ms', rotate: '-3deg' },
-  { text: 'pará que reviso 😅', size: '11px', delay: '200ms', rotate: '2deg' },
-  { text: 'te debo del viaje', size: '13px', delay: '80ms', rotate: '4deg' },
-  { text: 'no sé cuánto puse 😬', size: '11px', delay: '350ms', rotate: '-5deg' },
-  { text: 'ya lo pagué! ��', size: '10px', delay: '150ms', rotate: '3deg' },
+  { text: '¿quién pagó? 🍕', size: '14px', delay: '0ms', rotate: '-3deg' },
+  { text: 'pará que reviso 😅', size: '13px', delay: '200ms', rotate: '2deg' },
+  { text: 'te debo del viaje', size: '15px', delay: '80ms', rotate: '4deg' },
+  { text: 'no sé cuánto puse 😬', size: '14px', delay: '350ms', rotate: '-5deg' },
+  { text: 'ya lo pagué! 🤦', size: '13px', delay: '150ms', rotate: '3deg' },
 ]
 </script>
 
@@ -100,7 +100,7 @@ const mobileBubbles = [
   background: var(--color-card);
   border: 1px solid var(--color-border);
   border-radius: 999px;
-  padding: 6px 14px;
+  padding: 8px 18px;
   font-family: 'DM Sans', sans-serif;
   color: var(--color-text-muted);
   white-space: nowrap;
