@@ -33,6 +33,8 @@ module.exports = {
         'ttc-toggle-primary': 'var(--color-toggle-primary)',
         'ttc-toggle-accent': 'var(--color-toggle-accent)',
         'ttc-whatsapp': '#25D366',
+        'ttc-gold': 'var(--color-secondary)',
+        'ttc-red': 'var(--color-accent)',
         // Semantic app colors (mapped to CSS variables for theme switching)
         positive: {
           50: '#f0fdf4',

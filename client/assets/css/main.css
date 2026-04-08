@@ -2,58 +2,58 @@
 @tailwind components;
 @tailwind utilities;
 
-/* DARK MODE (default) — "Deep Trust" palette */
+/* DARK MODE (default) — "Buenos Aires Night" palette */
 :root {
-  --color-bg: #0C1017;
-  --color-surface: #131920;
-  --color-card: #1A222C;
-  --color-border: #242E3C;
+  --color-bg: #14110F;
+  --color-surface: #1C1815;
+  --color-card: #241F1A;
+  --color-border: #3A322A;
   --color-primary: #4A90D9;
   --color-primary-light: #6BA8ED;
-  --color-secondary: #A78BFA;
-  --color-accent: #34D399;
-  --color-text: #E2E8F0;
-  --color-text-muted: #7B8FA6;
-  --color-text-dim: #4A5A6E;
-  --color-danger: #EF4444;
-  --color-success: #22C55E;
-  --color-warning: #F59E0B;
-  --color-input: #1E2736;
-  --color-card-hover: #1F2937;
-  /* Chat bubble backgrounds (pre-mixed for reliable rendering) */
-  --color-bubble-user-primary: #1E3254;
-  --color-bubble-user-accent: #153B2E;
-  --color-bubble-bot: #141C26;
+  --color-secondary: #25D366;
+  --color-accent: #E8533F;
+  --color-text: #F0EBE3;
+  --color-text-muted: #9B8E80;
+  --color-text-dim: #6B5E52;
+  --color-danger: #E8533F;
+  --color-success: #25D366;
+  --color-warning: #F5A623;
+  --color-input: #1E1A16;
+  --color-card-hover: #2A2420;
+  /* Chat bubble backgrounds (warm-tinted) */
+  --color-bubble-user-primary: #1A2440;
+  --color-bubble-user-accent: #1A2E1F;
+  --color-bubble-bot: #1C1815;
   /* Toggle active backgrounds */
-  --color-toggle-primary: #1A2D4A;
-  --color-toggle-accent: #132E23;
+  --color-toggle-primary: #1A2440;
+  --color-toggle-accent: #1A2E1F;
 }
 
-/* LIGHT MODE */
+/* LIGHT MODE — warm cream */
 [data-theme="light"] {
-  --color-bg: #F8FAFB;
+  --color-bg: #FBF8F3;
   --color-surface: #FFFFFF;
   --color-card: #FFFFFF;
-  --color-border: #E2E7ED;
+  --color-border: #E8E0D4;
   --color-primary: #3B7DD8;
   --color-primary-light: #5A9AE8;
-  --color-secondary: #8B6FE0;
-  --color-accent: #059669;
-  --color-text: #1A2030;
-  --color-text-muted: #5A6B80;
-  --color-text-dim: #8A96A8;
-  --color-danger: #DC2626;
-  --color-success: #16A34A;
+  --color-secondary: #1FAD54;
+  --color-accent: #D04030;
+  --color-text: #1A1510;
+  --color-text-muted: #6B5E52;
+  --color-text-dim: #9B8E80;
+  --color-danger: #D04030;
+  --color-success: #1FAD54;
   --color-warning: #D97706;
-  --color-input: #F1F5F9;
-  --color-card-hover: #F1F5F9;
-  /* Chat bubble backgrounds (pre-mixed for reliable rendering) */
+  --color-input: #F5F0E8;
+  --color-card-hover: #F5F0E8;
+  /* Chat bubble backgrounds (warm-tinted) */
   --color-bubble-user-primary: #D6E5F6;
-  --color-bubble-user-accent: #D1F0E4;
-  --color-bubble-bot: #EEF1F5;
+  --color-bubble-user-accent: #DCF5E4;
+  --color-bubble-bot: #F5F0E8;
   /* Toggle active backgrounds */
   --color-toggle-primary: #D6E5F6;
-  --color-toggle-accent: #D1F0E4;
+  --color-toggle-accent: #DCF5E4;
 }
 
 /* Global cursor: default everywhere, pointer/text only where appropriate */
@@ -174,4 +174,63 @@ body.modal-opened {
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* === Landing page animations === */
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes popIn {
+  0% { opacity: 0; transform: scale(0.9); }
+  70% { transform: scale(1.02); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-pop-in {
+  animation: popIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Stagger delays */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }
+
+/* Hide scrollbar for horizontal scroll */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Reduced motion: respect user preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
