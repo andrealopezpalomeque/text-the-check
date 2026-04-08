@@ -1,36 +1,42 @@
 <template>
-  <section ref="sectionRef" class="relative py-20 md:py-28 px-5 overflow-hidden">
+  <section ref="sectionRef" class="relative py-20 md:py-28 px-5 overflow-hidden bg-ttc-surface">
     <!-- Receipt edge top -->
     <svg class="absolute top-0 left-0 w-full h-3 text-ttc-border" preserveAspectRatio="none" viewBox="0 0 1200 12">
       <path d="M0,0 L0,6 Q15,12 30,6 Q45,0 60,6 Q75,12 90,6 Q105,0 120,6 Q135,12 150,6 Q165,0 180,6 Q195,12 210,6 Q225,0 240,6 Q255,12 270,6 Q285,0 300,6 Q315,12 330,6 Q345,0 360,6 Q375,12 390,6 Q405,0 420,6 Q435,12 450,6 Q465,0 480,6 Q495,12 510,6 Q525,0 540,6 Q555,12 570,6 Q585,0 600,6 Q615,12 630,6 Q645,0 660,6 Q675,12 690,6 Q705,0 720,6 Q735,12 750,6 Q765,0 780,6 Q795,12 810,6 Q825,0 840,6 Q855,12 870,6 Q885,0 900,6 Q915,12 930,6 Q945,0 960,6 Q975,12 990,6 Q1005,0 1020,6 Q1035,12 1050,6 Q1065,0 1080,6 Q1095,12 1110,6 Q1125,0 1140,6 Q1155,12 1170,6 Q1185,0 1200,6 L1200,0 Z" fill="var(--color-bg)"/>
     </svg>
 
-    <!-- Warm glow -->
-    <div
-      class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] rounded-full pointer-events-none opacity-[0.06]"
-      style="background: radial-gradient(ellipse, #4A90D9 0%, #25D366 40%, transparent 70%); filter: blur(80px);"
-    />
+    <!-- Receipt edge bottom -->
+    <svg class="absolute bottom-0 left-0 w-full h-3 text-ttc-border" preserveAspectRatio="none" viewBox="0 0 1200 12">
+      <path d="M0,12 L0,6 Q15,0 30,6 Q45,12 60,6 Q75,0 90,6 Q105,12 120,6 Q135,0 150,6 Q165,12 180,6 Q195,0 210,6 Q225,12 240,6 Q255,0 270,6 Q285,12 300,6 Q315,0 330,6 Q345,12 360,6 Q375,0 390,6 Q405,12 420,6 Q435,0 450,6 Q465,12 480,6 Q495,0 510,6 Q525,12 540,6 Q555,0 570,6 Q585,12 600,6 Q615,0 630,6 Q645,12 660,6 Q675,0 690,6 Q705,12 720,6 Q735,0 750,6 Q765,12 780,6 Q795,0 810,6 Q825,12 840,6 Q855,0 870,6 Q885,12 900,6 Q915,0 930,6 Q945,12 960,6 Q975,0 990,6 Q1005,12 1020,6 Q1035,0 1050,6 Q1065,12 1080,6 Q1095,0 1110,6 Q1125,12 1140,6 Q1155,0 1170,6 Q1185,12 1200,6 L1200,12 Z" fill="var(--color-bg)"/>
+    </svg>
 
     <div
-      class="relative z-10 max-w-[560px] mx-auto"
+      class="relative z-10 max-w-[480px] mx-auto text-center"
       :class="isVisible ? 'animate-pop-in' : 'opacity-0'"
     >
       <!-- Beta badge -->
-      <div class="flex justify-center md:justify-start mb-6">
+      <div class="flex justify-center mb-5">
         <span class="inline-flex items-center gap-1.5 font-body font-bold text-[10px] tracking-[1.5px] uppercase text-ttc-whatsapp bg-ttc-whatsapp/10 border border-ttc-whatsapp/20 px-3 py-1.5 rounded-full">
           ✦ beta gratuita — sin tarjeta
         </span>
       </div>
 
-      <h2 class="font-nunito font-extrabold text-[clamp(26px,5vw,40px)] text-ttc-text mb-4 leading-tight text-center md:text-left">
+      <!-- Dashed divider -->
+      <div class="border-b border-dashed border-ttc-border my-5" />
+
+      <h2 class="font-nunito font-extrabold text-[clamp(26px,5vw,40px)] text-ttc-text mb-4 leading-tight">
         Empezá a dividir gastos con un mensaje.
       </h2>
-      <p class="text-ttc-text-muted text-[15px] mb-8 text-center md:text-left">
+
+      <!-- Dashed divider -->
+      <div class="border-b border-dashed border-ttc-border my-5" />
+
+      <p class="text-ttc-text-muted text-[15px] mb-8">
         Estamos construyendo esto con los primeros usuarios. Entrá, probá, y contanos qué te parece.
       </p>
 
       <!-- CTAs -->
-      <div class="flex flex-col sm:flex-row items-center md:items-start gap-3">
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
         <a
           :href="whatsappLink"
           target="_blank"

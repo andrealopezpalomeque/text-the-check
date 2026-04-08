@@ -11,16 +11,16 @@
     </div>
 
     <!-- Links -->
-    <div class="flex flex-wrap gap-5 justify-center mb-3">
+    <div class="flex flex-wrap gap-x-5 gap-y-1 justify-center mb-3">
       <NuxtLink
         to="/faq"
-        class="text-xs text-ttc-text-muted hover:text-ttc-primary-light transition-colors"
+        class="text-sm md:text-xs py-2 md:py-0 text-ttc-text-muted hover:text-ttc-primary-light transition-colors"
       >
         Preguntas Frecuentes
       </NuxtLink>
       <NuxtLink
         to="/privacy"
-        class="text-xs text-ttc-text-muted hover:text-ttc-primary-light transition-colors"
+        class="text-sm md:text-xs py-2 md:py-0 text-ttc-text-muted hover:text-ttc-primary-light transition-colors"
       >
         Política de Privacidad
       </NuxtLink>
@@ -28,13 +28,13 @@
         href="https://instagram.com/textthecheck"
         target="_blank"
         rel="noopener noreferrer"
-        class="text-xs text-ttc-text-muted hover:text-ttc-primary-light transition-colors"
+        class="text-sm md:text-xs py-2 md:py-0 text-ttc-text-muted hover:text-ttc-primary-light transition-colors"
       >
         Instagram
       </a>
       <a
         href="mailto:hola@textthecheck.app"
-        class="text-xs text-ttc-text-muted hover:text-ttc-primary-light transition-colors"
+        class="text-sm md:text-xs py-2 md:py-0 text-ttc-text-muted hover:text-ttc-primary-light transition-colors"
       >
         Contacto
       </a>

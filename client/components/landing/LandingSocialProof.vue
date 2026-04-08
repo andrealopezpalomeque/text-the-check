@@ -1,42 +1,51 @@
 <template>
-  <section ref="sectionRef" class="relative py-16 md:py-24 overflow-hidden">
-    <!-- Full-bleed warm glow -->
-    <div
-      class="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[400px] rounded-full pointer-events-none opacity-[0.05]"
-      style="background: radial-gradient(ellipse, #E8533F 0%, #4A90D9 50%, transparent 70%); filter: blur(80px);"
-    />
-
+  <section ref="sectionRef" class="relative py-14 md:py-20 overflow-hidden bg-ttc-surface">
     <div class="relative z-10 max-w-4xl mx-auto px-5">
-      <!-- Section label -->
-      <p class="font-body font-semibold text-[11px] tracking-[2px] uppercase text-ttc-primary-light mb-3 text-left md:text-center">
-        ¿te suena esto?
+      <!-- Single small question — not the formula -->
+      <p class="font-body italic text-sm text-ttc-text-muted text-center mb-10">
+        ...¿te suena?
       </p>
 
-      <h2 class="font-nunito font-extrabold text-[clamp(24px,5vw,40px)] text-ttc-text text-left md:text-center mb-4 leading-tight">
-        El chat que nadie termina<br class="hidden sm:block"> de entender
-      </h2>
+      <!-- Illustration: Recibito + chaotic floating bubbles -->
+      <div class="relative flex justify-center items-center min-h-[260px] md:min-h-[300px]">
+        <!-- Desktop bubbles — scattered chaotically -->
+        <template v-if="isVisible">
+          <div class="hidden md:block">
+            <div
+              v-for="(b, i) in desktopBubbles"
+              :key="i"
+              class="bubble-chaos absolute"
+              :style="{
+                top: b.top,
+                left: b.left,
+                right: b.right,
+                bottom: b.bottom,
+                fontSize: b.size,
+                animationDelay: b.delay,
+                '--rot-end': b.rotate,
+              }"
+            >
+              {{ b.text }}
+            </div>
+          </div>
 
-      <p class="font-body text-sm sm:text-base text-ttc-text-muted text-left md:text-center max-w-md md:mx-auto mb-12 leading-relaxed">
-        "¿quién pagó la pizza?", "yo te debo del viaje anterior", "no sé cuánto puse yo"&hairsp;—&hairsp;todos en el mismo grupo, nadie con la cuenta clara.
-      </p>
-
-      <!-- Illustration: Recibito + floating bubbles -->
-      <div class="relative flex justify-center items-center mb-10">
-        <!-- Desktop bubbles (absolute positioned) -->
-        <div class="hidden md:block" v-if="isVisible">
-          <div class="bubble absolute -top-4 -left-8 lg:-left-20 animate-pop-in stagger-1" style="transform: rotate(-3deg)">
-            ¿quién pagó la pizza? 🍕
+          <!-- Mobile bubbles — scattered flex, not a grid -->
+          <div class="md:hidden flex flex-wrap justify-center gap-2 absolute inset-0 items-center px-4">
+            <div
+              v-for="(b, i) in mobileBubbles"
+              :key="i"
+              class="bubble-chaos"
+              :style="{
+                fontSize: b.size,
+                animationDelay: b.delay,
+                '--rot-end': b.rotate,
+                transform: `rotate(${b.rotate})`,
+              }"
+            >
+              {{ b.text }}
+            </div>
           </div>
-          <div class="bubble absolute -top-2 -right-4 lg:-right-16 animate-pop-in stagger-2" style="transform: rotate(2deg)">
-            pará que reviso el historial 😅
-          </div>
-          <div class="bubble absolute -bottom-2 -left-4 lg:-left-18 animate-pop-in stagger-3" style="transform: rotate(2deg)">
-            te debo del viaje anterior
-          </div>
-          <div class="bubble absolute -bottom-4 -right-6 lg:-right-18 animate-pop-in stagger-4" style="transform: rotate(-2deg)">
-            no sé cuánto puse yo 😬
-          </div>
-        </div>
+        </template>
 
         <!-- Recibito mascot -->
         <img
@@ -50,14 +59,6 @@
         />
         <div v-else class="w-[160px] h-[200px]" />
       </div>
-
-      <!-- Mobile bubbles: scattered chips -->
-      <div class="md:hidden grid grid-cols-2 gap-2 mb-10 px-2" v-if="isVisible">
-        <div class="bubble text-center animate-fade-up stagger-1">¿quién pagó la pizza? 🍕</div>
-        <div class="bubble text-center animate-fade-up stagger-2">pará que reviso 😅</div>
-        <div class="bubble text-center animate-fade-up stagger-3">te debo del viaje</div>
-        <div class="bubble text-center animate-fade-up stagger-4">no sé cuánto puse 😬</div>
-      </div>
     </div>
   </section>
 </template>
@@ -65,19 +66,46 @@
 <script setup>
 const sectionRef = ref(null)
 const { isVisible } = useScrollReveal(sectionRef)
+
+const desktopBubbles = [
+  { text: '¿quién pagó la pizza? 🍕', top: '-8px', left: '-40px', size: '13px', delay: '0ms', rotate: '-4deg' },
+  { text: 'pará que reviso el historial 😅', top: '10px', right: '-60px', size: '11px', delay: '250ms', rotate: '3deg' },
+  { text: 'te debo del viaje anterior', bottom: '20px', left: '-20px', size: '12px', delay: '120ms', rotate: '5deg' },
+  { text: 'no sé cuánto puse yo 😬', bottom: '-10px', right: '-30px', size: '14px', delay: '400ms', rotate: '-2deg' },
+  { text: 'pero eso ya lo pagué! 🤦', top: '50%', left: '-70px', size: '10px', delay: '320ms', rotate: '-6deg' },
+]
+
+const mobileBubbles = [
+  { text: '¿quién pagó? 🍕', size: '12px', delay: '0ms', rotate: '-3deg' },
+  { text: 'pará que reviso 😅', size: '11px', delay: '200ms', rotate: '2deg' },
+  { text: 'te debo del viaje', size: '13px', delay: '80ms', rotate: '4deg' },
+  { text: 'no sé cuánto puse 😬', size: '11px', delay: '350ms', rotate: '-5deg' },
+  { text: 'ya lo pagué! ��', size: '10px', delay: '150ms', rotate: '3deg' },
+]
 </script>
 
 <style scoped>
-.bubble {
+@keyframes chaosPopIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.7) rotate(-5deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(var(--rot-end, 0deg));
+  }
+}
+
+.bubble-chaos {
   background: var(--color-card);
   border: 1px solid var(--color-border);
   border-radius: 999px;
   padding: 6px 14px;
   font-family: 'DM Sans', sans-serif;
-  font-size: 12px;
   color: var(--color-text-muted);
   white-space: nowrap;
   pointer-events: none;
   user-select: none;
+  animation: chaosPopIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 </style>
