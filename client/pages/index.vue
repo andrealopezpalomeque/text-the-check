@@ -38,8 +38,6 @@
     <!-- 7. Final CTA (with beta badge) -->
     <LandingFinalCta />
 
-    <!-- Bottom padding for sticky mobile CTA -->
-    <div class="h-20 md:h-0" />
   </div>
 </template>
 
