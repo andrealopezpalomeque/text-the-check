@@ -1,0 +1,250 @@
+{
+  "metadata": {
+    "product": "Text the Check",
+    "version": "1.0",
+    "generated_from": "brand-audit.md",
+    "source_note": "brand-audit.md currently lives at the repo root. Token hexes verified against client/assets/css/main.css and client/tailwind.config.js.",
+    "canonical_green": "ttc-secondary",
+    "canonical_green_rationale": "Three greens currently compete in the system: ttc-whatsapp (#25D366, hardcoded raw hex in tailwind.config.js:35, no theme variant), ttc-secondary / ttc-success (both route through the CSS variable --color-secondary and theme-shift #25D366 → #1FAD54), and the shopping category (#10B981, hardcoded outside the token system). ttc-secondary is the only candidate already plumbed into the token system with light+dark variants, so it is the only green that can theme-switch today. It is also the canonical semantic 'success / positive amount' color in AmountDisplay. Promoting it to THE brand green unifies success, WhatsApp-adjacent identity, and marketing energy under one token. ttc-whatsapp should remain available for WhatsApp-specific chrome only (CTA buttons, WhatsAppHeroDemo mimicry), but is not the brand green. See marketing-decisions.md decision #2.",
+    "defaults": {
+      "theme": "dark"
+    },
+    "theme_mechanics": {
+      "dark_selector": ":root (also .dark class)",
+      "light_selector": "[data-theme=\"light\"]",
+      "toggle_source": "useTheme composable, persisted to localStorage"
+    }
+  },
+
+  "tokens": [
+    {
+      "name": "ttc-primary",
+      "hex": { "dark": "#4A90D9", "light": "#3B7DD8" },
+      "intent": "brand",
+      "tailwind_class": "ttc-primary",
+      "notes": "Brand blue. Always used as the 'the' accent in the wordmark (AppLogo.vue:9) and as primary CTA background. This is the single strongest brand identity color."
+    },
+    {
+      "name": "ttc-primary-light",
+      "hex": { "dark": "#6BA8ED", "light": "#5A9AE8" },
+      "intent": "brand",
+      "tailwind_class": "ttc-primary-light",
+      "notes": "Hover state and gradient partner for ttc-primary. Rarely used alone."
+    },
+    {
+      "name": "ttc-secondary",
+      "hex": { "dark": "#25D366", "light": "#1FAD54" },
+      "intent": "brand",
+      "tailwind_class": "ttc-secondary",
+      "notes": "CANONICAL 'our green' (see metadata.canonical_green). Routes through --color-secondary so it theme-switches. Shares dark-mode hex with ttc-whatsapp but is the themeable/brand-owned token."
+    },
+    {
+      "name": "ttc-whatsapp",
+      "hex": { "dark": "#25D366", "light": "#25D366" },
+      "intent": "product",
+      "tailwind_class": "ttc-whatsapp",
+      "notes": "Hardcoded raw hex in tailwind.config.js:35 — bypasses the CSS variable system, does NOT theme-switch. Reserve for WhatsApp-specific chrome only (WhatsApp CTA in LandingHero.vue:28, beta badge LandingHero.vue:7, WhatsAppHeroDemo). For brand-green usage, use ttc-secondary instead. Shares dark hex with ttc-secondary."
+    },
+    {
+      "name": "ttc-success",
+      "hex": { "dark": "#25D366", "light": "#1FAD54" },
+      "intent": "semantic",
+      "tailwind_class": "ttc-success",
+      "notes": "Semantic alias of ttc-secondary (both route through different CSS vars but resolve to identical hexes). Use for success toasts, positive amounts in AmountDisplay, and confirmation states."
+    },
+    {
+      "name": "ttc-gold",
+      "hex": { "dark": "#25D366", "light": "#1FAD54" },
+      "intent": "brand",
+      "tailwind_class": "ttc-gold",
+      "notes": "Alias of ttc-secondary via tailwind.config.js:36. Name is legacy/confusing — the color is green, not gold. Avoid in new code; prefer ttc-secondary."
+    },
+    {
+      "name": "ttc-accent",
+      "hex": { "dark": "#E8533F", "light": "#D04030" },
+      "intent": "brand",
+      "tailwind_class": "ttc-accent",
+      "notes": "Warm coral-red accent. Shares hex with ttc-danger — see marketing-decisions.md decision #3. Per that decision, ttc-accent is RESERVED for destructive/error contexts and should NOT be used as a marketing energy color. Use ttc-primary gradients for marketing instead."
+    },
+    {
+      "name": "ttc-danger",
+      "hex": { "dark": "#E8533F", "light": "#D04030" },
+      "intent": "semantic",
+      "tailwind_class": "ttc-danger",
+      "notes": "Destructive / error state. Identical hex to ttc-accent — the two are currently interchangeable in code. Per marketing-decisions.md decision #3, this pairing is owned by destructive semantics; accent-as-marketing is retired."
+    },
+    {
+      "name": "ttc-red",
+      "hex": { "dark": "#E8533F", "light": "#D04030" },
+      "intent": "semantic",
+      "tailwind_class": "ttc-red",
+      "notes": "Alias of ttc-accent via tailwind.config.js:37. Avoid in new code; prefer ttc-danger for destructive semantics."
+    },
+    {
+      "name": "ttc-warning",
+      "hex": { "dark": "#F5A623", "light": "#D97706" },
+      "intent": "semantic",
+      "tailwind_class": "ttc-warning",
+      "notes": "Warning / caution state. Darker in light mode for AA contrast on cream surface."
+    },
+
+    {
+      "name": "ttc-bg",
+      "hex": { "dark": "#14110F", "light": "#FBF8F3" },
+      "intent": "surface",
+      "tailwind_class": "ttc-bg",
+      "notes": "App-level background. Warm off-black ('Buenos Aires Night') in dark mode, warm cream in light mode — intentionally NOT pure black/white."
+    },
+    {
+      "name": "ttc-surface",
+      "hex": { "dark": "#1C1815", "light": "#FFFFFF" },
+      "intent": "surface",
+      "tailwind_class": "ttc-surface",
+      "notes": "Elevated surfaces above ttc-bg (sheets, headers)."
+    },
+    {
+      "name": "ttc-card",
+      "hex": { "dark": "#241F1A", "light": "#FFFFFF" },
+      "intent": "surface",
+      "tailwind_class": "ttc-card",
+      "notes": "Card backgrounds. Identical to ttc-surface in light mode — the elevation is conveyed by border/shadow there."
+    },
+    {
+      "name": "ttc-card-hover",
+      "hex": { "dark": "#2A2420", "light": "#F5F0E8" },
+      "intent": "surface",
+      "tailwind_class": "ttc-card-hover",
+      "notes": "Hover state for tappable cards. Identical to ttc-input in light mode."
+    },
+    {
+      "name": "ttc-border",
+      "hex": { "dark": "#3A322A", "light": "#E8E0D4" },
+      "intent": "surface",
+      "tailwind_class": "ttc-border",
+      "notes": "Warm neutral border color."
+    },
+    {
+      "name": "ttc-input",
+      "hex": { "dark": "#1E1A16", "light": "#F5F0E8" },
+      "intent": "surface",
+      "tailwind_class": "ttc-input",
+      "notes": "Form field backgrounds."
+    },
+
+    {
+      "name": "ttc-text",
+      "hex": { "dark": "#F0EBE3", "light": "#1A1510" },
+      "intent": "text",
+      "tailwind_class": "ttc-text",
+      "notes": "Primary body text. Warm off-white / warm dark brown — intentionally NOT pure white/black."
+    },
+    {
+      "name": "ttc-text-muted",
+      "hex": { "dark": "#9B8E80", "light": "#6B5E52" },
+      "intent": "text",
+      "tailwind_class": "ttc-text-muted",
+      "notes": "Secondary text. In dark mode this is LIGHTER than ttc-text-dim (inverted naming — see brand-audit.md §1 flag #5). Treat 'muted' as 'slightly less prominent than body', not as 'most faded'."
+    },
+    {
+      "name": "ttc-text-dim",
+      "hex": { "dark": "#6B5E52", "light": "#9B8E80" },
+      "intent": "text",
+      "tailwind_class": "ttc-text-dim",
+      "notes": "Tertiary / most-faded text. Naming is inverted vs ttc-text-muted between themes; this token is always the MOST faded text in its respective theme."
+    },
+
+    {
+      "name": "ttc-bubble-user-primary",
+      "hex": { "dark": "#1A2440", "light": "#D6E5F6" },
+      "intent": "product",
+      "tailwind_class": "ttc-bubble-user-primary",
+      "notes": "WhatsApp-style user bubble when Grupos mode (primary/blue) is active. Warm-tinted so it doesn't read as pure blue."
+    },
+    {
+      "name": "ttc-bubble-user-accent",
+      "hex": { "dark": "#1A2E1F", "light": "#DCF5E4" },
+      "intent": "product",
+      "tailwind_class": "ttc-bubble-user-accent",
+      "notes": "WhatsApp-style user bubble when Finanzas mode (accent/green) is active."
+    },
+    {
+      "name": "ttc-bubble-bot",
+      "hex": { "dark": "#1C1815", "light": "#F5F0E8" },
+      "intent": "product",
+      "tailwind_class": "ttc-bubble-bot",
+      "notes": "Bot reply bubble. Matches ttc-surface (dark) / ttc-input (light)."
+    },
+    {
+      "name": "ttc-toggle-primary",
+      "hex": { "dark": "#1A2440", "light": "#D6E5F6" },
+      "intent": "product",
+      "tailwind_class": "ttc-toggle-primary",
+      "notes": "Active state for Grupos mode toggle. Same hex as ttc-bubble-user-primary by design."
+    },
+    {
+      "name": "ttc-toggle-accent",
+      "hex": { "dark": "#1A2E1F", "light": "#DCF5E4" },
+      "intent": "product",
+      "tailwind_class": "ttc-toggle-accent",
+      "notes": "Active state for Finanzas mode toggle. Same hex as ttc-bubble-user-accent by design."
+    },
+
+    {
+      "name": "category-food",
+      "hex": { "dark": "#F97316", "light": "#F97316" },
+      "intent": "category",
+      "tailwind_class": null,
+      "notes": "Hardcoded in ExpenseItem.vue:149 as a JS map — outside the token system, no dark-mode variant. Orange. Spanish label: 'Comida'."
+    },
+    {
+      "name": "category-transport",
+      "hex": { "dark": "#3B82F6", "light": "#3B82F6" },
+      "intent": "category",
+      "tailwind_class": null,
+      "notes": "Hardcoded in ExpenseItem.vue:150. Blue — visually similar to ttc-primary but distinct hex. Spanish label: 'Transporte'."
+    },
+    {
+      "name": "category-accommodation",
+      "hex": { "dark": "#A855F7", "light": "#A855F7" },
+      "intent": "category",
+      "tailwind_class": null,
+      "notes": "Hardcoded in ExpenseItem.vue:151. Purple. Spanish label: 'Alojamiento'."
+    },
+    {
+      "name": "category-entertainment",
+      "hex": { "dark": "#EC4899", "light": "#EC4899" },
+      "intent": "category",
+      "tailwind_class": null,
+      "notes": "Hardcoded in ExpenseItem.vue:152. Pink. Spanish label: 'Entretenimiento'."
+    },
+    {
+      "name": "category-shopping",
+      "hex": { "dark": "#10B981", "light": "#10B981" },
+      "intent": "category",
+      "tailwind_class": null,
+      "notes": "Hardcoded in ExpenseItem.vue:153. Emerald green — a FOURTH green in the system, distinct from ttc-secondary / ttc-whatsapp / ttc-success. Flagged as a conflict in brand-audit.md §1. Spanish label: 'Compras'."
+    },
+    {
+      "name": "category-general",
+      "hex": { "dark": "#6B7280", "light": "#6B7280" },
+      "intent": "category",
+      "tailwind_class": null,
+      "notes": "Hardcoded in ExpenseItem.vue:154. Neutral gray fallback. Spanish label: 'Otro'."
+    },
+
+    {
+      "name": "positive-500",
+      "hex": { "dark": "#22c55e", "light": "#22c55e" },
+      "intent": "semantic",
+      "tailwind_class": "positive-500",
+      "notes": "Sentiment scale (50/100/400/500/600/700/900) for AmountDisplay and UserAvatar. Used to color-code positive/credit amounts. Distinct from ttc-secondary — does not theme-switch."
+    },
+    {
+      "name": "negative-500",
+      "hex": { "dark": "#ef4444", "light": "#ef4444" },
+      "intent": "semantic",
+      "tailwind_class": "negative-500",
+      "notes": "Sentiment scale (50/100/400/500/600/700/900) for AmountDisplay and UserAvatar. Used to color-code negative/debit amounts. Distinct from ttc-danger — does not theme-switch."
+    }
+  ]
+}
